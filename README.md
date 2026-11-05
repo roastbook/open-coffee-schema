@@ -7,7 +7,7 @@
 <p align="center">An open standard for describing coffee places, equipment and brew methods: JSON Schema, a JSON-LD context and plain-language docs. By Roastbook.</p>
 
 <p align="center">
-  <a href="https://github.com/Roastbook/open-coffee-schema/actions/workflows/cupping.yml"><img alt="Cupping (validate)" src="https://github.com/Roastbook/open-coffee-schema/actions/workflows/cupping.yml/badge.svg"></a>
+  <a href="https://github.com/Roastbook/open-coffee-schema/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Roastbook/open-coffee-schema/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/Roastbook/open-coffee-schema/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/Roastbook/open-coffee-schema?label=schema"></a>
   <a href="LICENSE"><img alt="Licence: MIT" src="https://img.shields.io/badge/licence-MIT-aa612f"></a>
   <a href="https://schema.roastbook.coffee/"><img alt="Schema Explorer" src="https://img.shields.io/badge/explorer-schema.roastbook.coffee-6f4e37"></a>

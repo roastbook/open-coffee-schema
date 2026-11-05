@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every check CI runs, in the same way: schemas, examples, breaking changes, immutability,
-# JSON-LD context, generated docs. Writes .roast/report.json. Usage: scripts/validate.sh
+# JSON-LD context, generated docs. Writes .ci/report.json. Usage: scripts/validate.sh
 source "$(dirname "$0")/lib.sh"
 install_deps
 bun scripts/validate.ts

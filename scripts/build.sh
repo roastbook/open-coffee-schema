@@ -23,8 +23,8 @@ bun -e '
   let bytes = 0, files = 0;
   const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else { files++; bytes += fs.statSync(p).size; } } };
   walk("dist");
-  fs.mkdirSync(".roast", { recursive: true });
-  const out = ".roast/report.json";
+  fs.mkdirSync(".ci", { recursive: true });
+  const out = ".ci/report.json";
   const report = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, "utf8")) : {};
   fs.writeFileSync(out, JSON.stringify({ ...report, build: { bytes, files }, url: "https://schema.roastbook.coffee/" }, null, 2) + "\n");
   console.log(`dist/: ${files} files, ${(bytes / 1024).toFixed(0)} KiB`);

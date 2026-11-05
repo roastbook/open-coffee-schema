@@ -172,8 +172,8 @@ await check("7. Generated README stats block is up to date", () => {
 
 await check("8. Self-test: breaking-change rules, unknown keywords, playground error wording", async () => { await import("./self-test.ts"); });
 
-const out = join(ROOT, ".roast", "report.json");
-mkdirSync(join(ROOT, ".roast"), { recursive: true });
+const out = join(ROOT, ".ci", "report.json");
+mkdirSync(join(ROOT, ".ci"), { recursive: true });
 const report = existsSync(out) ? JSON.parse(readFileSync(out, "utf8")) : {};
 const latest = families.get("coffee-places")?.at(-1)?.version;
 writeFileSync(out, JSON.stringify({

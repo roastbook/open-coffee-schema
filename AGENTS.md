@@ -19,7 +19,7 @@ Follow [docs/runbook.md#adding-a-schema-version](docs/runbook.md#adding-a-schema
 
 | Command | What it does |
 |---|---|
-| `scripts/validate.sh` | All CI checks: meta-schema (Ajv strict), examples, file names and `$id`, breaking-change bump, immutability against tags, JSON-LD context, generated files, self-tests. Writes `.roast/report.json`. |
+| `scripts/validate.sh` | All CI checks: meta-schema (Ajv strict), examples, file names and `$id`, breaking-change bump, immutability against tags, JSON-LD context, generated files, self-tests. Writes `.ci/report.json`. |
 | `scripts/build.sh` | Builds the Schema Explorer into `dist/` with every schema at its `$id` path, `latest` aliases, contexts, `CNAME`. |
 | `bun scripts/generate.ts` | Rewrites the README stats block from the schemas. |
 | `scripts/release-assets.sh vX.Y.Z` | Builds `release/` (packages in `release/npm` and `release/npm-ui`, types, schemas tarball). Run by the release workflow. |

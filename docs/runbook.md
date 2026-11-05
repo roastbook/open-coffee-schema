@@ -26,14 +26,14 @@ Operational procedures for `Roastbook/open-coffee-schema`. Every command runs fr
 
 Nobody creates tags by hand.
 
-1. GitHub → Actions → **Roastbook · 🫘 Release** → Run workflow. Leave the bump on `auto` (git-cliff derives it from Conventional Commits) or choose `patch`, `minor` or `major`.
-2. The shared workflow (`Roastbook/workflows`, `release.yml`) waits for a green `cupping.yml` run on the commit, computes `vX.Y.Z`, tags the commit, writes the release notes with git-cliff (`cliff.toml` is rendered from the shared preset by the workflows repository) and runs `scripts/release-assets.sh "$TAG"`.
+1. GitHub → Actions → **Release** → Run workflow. Leave the bump on `auto` (git-cliff derives it from Conventional Commits) or choose `patch`, `minor` or `major`.
+2. The shared workflow (`Roastbook/workflows`, `release.yml`) waits for a green `ci.yml` run on the commit, computes `vX.Y.Z`, tags the commit, writes the release notes with git-cliff (`cliff.toml` is rendered from the shared preset by the workflows repository) and runs `scripts/release-assets.sh "$TAG"`.
 3. `scripts/release-assets.sh` builds only assets for the tag it receives:
    - `release/npm/`: the publishable `@roastbook/open-coffee-schema` package, version = tag without `v`;
    - `release/npm-ui/`: the publishable `@roastbook/open-coffee-ui` package (`packages/ui`), same version;
    - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/roastbook-open-coffee-ui-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
    **Version rule:** the release version is the version of the whole standard. Every family's newest schema file must be at most the tag (a `coffee-places.schema.v2.0.0.json` cannot ship in `v1.4.0`); the script fails otherwise. Families keep their own versions below it.
-4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` and `release/npm-ui` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `serve.yml`.
+4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` and `release/npm-ui` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
 
 Try the asset build locally without publishing: `scripts/release-assets.sh v0.1.0`, then `(cd release/npm && bun pm pack --dry-run)` and `(cd release/npm-ui && bun pm pack --dry-run)`.
 
@@ -70,7 +70,7 @@ Locally: `export NPM_GITHUB_TOKEN="$(gh auth token)"` (the token needs `read:pac
 
 Schema files are immutable, so a bad deploy is almost always a site bug, not a data change.
 
-1. Find the last good run: Actions → **Roastbook · 🫖 Serve (deploy)** → pick the newest successful run before the bad one, and note its commit.
+1. Find the last good run: Actions → **Deploy** → pick the newest successful run before the bad one, and note its commit.
 2. Fastest: open that run and choose **Re-run all jobs**. It rebuilds the site from that commit and deploys it.
 3. Then fix forward: revert the bad commit on `main` with a pull request (`git revert <sha>`), so the next push does not redeploy the bug.
 4. Check `https://schema.roastbook.coffee/`, one `$id` URL (for example `/coffee-places/coffee-places.schema.v0.1.0.json`) and `/coffee-places/latest/`.
