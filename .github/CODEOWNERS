@@ -1,8 +1,0 @@
-# Default owner for everything.
-*            @michidk
-
-# Changes to the standard, the checks and CI always need a maintainer review.
-/schemas/    @michidk
-/scripts/    @michidk
-/lib/        @michidk
-/.github/    @michidk

@@ -5,7 +5,6 @@ Status: proposal. Not applied; changing branch protection needs a maintainer's g
 | Rule | Setting | Why |
 |---|---|---|
 | Require a pull request | 1 approval; dismiss stale approvals on new commits | Every change is reviewed. |
-| Require review from Code Owners | on | `schemas/`, `scripts/`, `lib/` and `.github/` always need a maintainer ([CODEOWNERS](../.github/CODEOWNERS)). |
 | Required status checks | `Roastbook · ☕ Cupping (validate) / Validate` (validate.sh), its actionlint job, `Roastbook · 🔥 Roast (build) / Build`; require branches to be up to date | Schemas, examples, immutability, breaking changes and the site build pass before merge. |
 | Require signed commits | on | Commits on `main` are verified. Squash merges made in the GitHub UI are signed by GitHub. |
 | Merge method | squash only (repository setting); delete branches after merge | Linear history with one Conventional Commit per pull request, which git-cliff turns into release notes. |

@@ -45,7 +45,7 @@ Brand assets (logo, wordmark) are all rights reserved. Attribution for the data:
 |---|---|---|
 | Records in `datasets/coffee-places/**`, `assets/**` | Contributors, owners, the Sourcing agent | Auto-merge when every changed field has confidence ≥ 0.85 and no rule below applies |
 | `status: closed`, tier changes, low confidence, new source domains | Anyone | One maintainer |
-| Schemas, `sources.json`, scripts, `.github/` | Maintainers | One maintainer via `CODEOWNERS`; the agent cannot touch them |
+| Schemas, `sources.json`, scripts, `.github/` | Maintainers | One maintainer; CI fails any Sourcing-bot pull request that touches them |
 | New schema major version | Maintainers | Announced in Discussions at least two weeks before release |
 
 All contributions require DCO sign-off (`git commit -s`). Owners claim a place by opening an issue from an address on the place's website domain, or by linking the issue from the place's website or Instagram bio.
