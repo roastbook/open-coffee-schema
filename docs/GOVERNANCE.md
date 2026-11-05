@@ -31,7 +31,7 @@ Everything is MIT-licensed: schemas, code, sites, docs and data. Images are neve
 
 ## Collecting facts
 
-Facts come only from open datasets with permissive licences (Overture Maps, Foursquare Open Source Places, Wikidata), roasters' partner pages, the place's own website and Instagram bio, openly licensed image repositories, and submissions from owners and contributors. Never Google Maps, OpenStreetMap, closed guides or review sites. Crawling respects robots.txt, identifies itself (`RoastbookOpenCoffeeBot/1.0 (+https://data.roastbook.coffee/bot/)`) and stays at or below one request per second per host. CI rejects any URL on the deny-list of forbidden domains. A reviewer can trace each change through the pull request, which links the pages the facts were read from.
+Facts come only from open datasets with permissive licences (Overture Maps, Foursquare Open Source Places, Wikidata), roasters' partner pages, the place's own website and Instagram bio, openly licensed image repositories, and submissions from owners and contributors. Never Google Maps, OpenStreetMap, closed guides or review sites. Websites are read politely, with at most one request per second per host. CI rejects any URL on the deny-list of forbidden domains. A reviewer can trace each change through the pull request, which links the pages the facts were read from.
 
 ## Versioning
 
