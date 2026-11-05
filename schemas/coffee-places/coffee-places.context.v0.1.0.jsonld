@@ -13,14 +13,7 @@
     "meta": {
       "@id": "oc:meta",
       "@context": {
-        "version": "schema:version",
-        "generated_at": {
-          "@id": "schema:dateModified",
-          "@type": "xsd:dateTime"
-        },
         "licence": "schema:license",
-        "attribution": "schema:creditText",
-        "schema_version": "schema:schemaVersion",
         "country_code": "schema:addressCountry",
         "city": "oc:city",
         "city_name": "oc:cityName"

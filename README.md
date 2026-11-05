@@ -48,7 +48,7 @@ A minimal valid file with one place looks like this ([more examples](examples/))
 ```json
 {
   "$schema": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.1.0.json",
-  "meta": { "version": "2026.11.05.1", "generated_at": "2026-11-05T12:00:00Z", "country_code": "DE", "city": "example-city" },
+  "meta": { "licence": "MIT", "country_code": "DE", "city": "example-city" },
   "places": [
     {
       "id": "cp-7k2m9x4qvd",

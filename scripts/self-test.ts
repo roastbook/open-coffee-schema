@@ -58,13 +58,13 @@ assert.equal(checkBump("1.0.0", "1.0.1", [{ anchor: "", path: "x", section: "", 
 assert.throws(() => { const f = file("1.0.0", { ...base, oneOf: [] }); buildModel(f, new Registry([f])); }, /Unknown JSON Schema keyword "oneOf"/);
 
 const t: Target = { key: "", family: "coffee-places", version: "1.0.0", id: "", recordKey: "places", recordRef: "#/$defs/place", recordTitle: "Coffee place",
-  anchors: ["field", "field-serving", "field-serving.filter", "field-prices", "field-prices.*", "field-prices.*.amount", "field-roasters_served", "field-roasters_served.url", "file", "file-meta", "file-meta.version"] };
+  anchors: ["field", "field-serving", "field-serving.filter", "field-prices", "field-prices.*", "field-prices.*.amount", "field-roasters_served", "field-roasters_served.url", "file", "file-meta", "file-meta.city"] };
 const doc = { places: [{ name: "Corner Café" }] };
 const err = (instancePath: string, keyword: string, params: object) => ({ instancePath, keyword, params, schemaPath: "" });
 assert.deepEqual(locate(err("/places/0/serving/filter", "type", { type: "boolean" }), doc, t, false), { where: "Coffee place 1 (“Corner Café”) → serving.filter", anchor: "field-serving.filter" });
 assert.deepEqual(locate(err("/places/0/prices/cappuccino/amount", "minimum", {}), doc, t, false).anchor, "field-prices.*.amount");
 assert.deepEqual(locate(err("/places/0/roasters_served/1/url", "format", {}), doc, t, false).where, "Coffee place 1 (“Corner Café”) → roasters_served #2.url");
-assert.deepEqual(locate(err("/meta/version", "pattern", {}), doc, t, false), { where: "meta.version", anchor: "file-meta.version" });
+assert.deepEqual(locate(err("/meta/city", "pattern", {}), doc, t, false), { where: "meta.city", anchor: "file-meta.city" });
 assert.deepEqual(locate(err("/serving", "required", { missingProperty: "filter" }), {}, t, true), { where: "serving", anchor: "field-serving.filter" });
 assert.equal(locate(err("/serving", "additionalProperties", { additionalProperty: "drip" }), {}, t, true).anchor, "field-serving");
 assert.equal(explain(err("", "type", { type: "boolean" }) as any), "Must be true or false.");

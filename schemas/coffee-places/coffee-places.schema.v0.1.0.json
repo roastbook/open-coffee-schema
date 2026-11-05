@@ -52,13 +52,7 @@
           "type": "string",
           "description": "City name in the local language."
         },
-        "schema_version": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/semver"
-        },
-        "version": true,
-        "generated_at": true,
-        "licence": true,
-        "attribution": true
+        "licence": true
       },
       "unevaluatedProperties": false
     },
