@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.1.0.json",
+  "$schema": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.2.0.json",
   "meta": {
     "licence": "MIT",
     "country_code": "DE",

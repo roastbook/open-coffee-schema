@@ -1,0 +1,1122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.2.0.json",
+  "title": "Open Coffee equipment catalog",
+  "description": "Coffee equipment models (machines, grinders, brewers, kettles, scales and accessories) as sold, not individual owned items. Measurements put the unit in the property name. Part of Roastbook Open Coffee; derived from the Roastbook journal gear model.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "equipment"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/equipment/equipment\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "type": {
+      "title": "Equipment type",
+      "enum": [
+        "espresso_machine",
+        "espresso_machine_with_grinder",
+        "grinder",
+        "brewer",
+        "kettle",
+        "scale",
+        "tamper",
+        "wdt",
+        "basket",
+        "filter",
+        "roaster",
+        "milk_frother",
+        "accessory"
+      ],
+      "description": "espresso_machine_with_grinder is an espresso machine with a built-in grinder; filter covers paper and metal filters; accessory covers everything without a dedicated type (puck screens, distribution tools, thermometers, dosing cups)."
+    },
+    "espresso_machine": {
+      "title": "Espresso machine details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "heating_architecture": {
+          "enum": [
+            "single_boiler",
+            "heat_exchanger",
+            "dual_boiler",
+            "multi_boiler",
+            "single_thermoblock",
+            "dual_thermoblock",
+            "hybrid",
+            "manual",
+            "other"
+          ],
+          "description": "How the machine heats water. single_boiler: one boiler for brewing and steam, used in turn; heat_exchanger: one steam boiler that heats brew water passing through a pipe inside it; dual_boiler: separate brew and steam boilers; multi_boiler: more than two boilers, for example one per group; single_thermoblock and dual_thermoblock: water heated on the fly in one or two thermoblocks; hybrid: a boiler combined with a thermoblock; manual: no heater, you pour in hot water."
+        },
+        "temperature_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable",
+            "programmable"
+          ],
+          "description": "How brew temperature is set. none: no control; fixed: set at the factory; adjustable: the user can change it (for example with a PID); programmable: can change during the shot or follow profiles."
+        },
+        "pressure_control": {
+          "enum": [
+            "fixed",
+            "adjustable_opv",
+            "manual",
+            "programmable"
+          ],
+          "description": "How brew pressure is set. fixed: set by the factory; adjustable_opv: the over-pressure valve can be adjusted; manual: controlled by hand, for example with a lever; programmable: follows set pressure profiles."
+        },
+        "flow_control": {
+          "enum": [
+            "none",
+            "manual",
+            "programmable"
+          ],
+          "description": "Whether water flow during the shot can be controlled. none: no control; manual: by hand, for example a needle valve paddle; programmable: follows set profiles."
+        },
+        "preinfusion_control": {
+          "enum": [
+            "none",
+            "supported",
+            "fixed",
+            "adjustable",
+            "programmable"
+          ],
+          "description": "Wetting the coffee at low pressure before full pressure. none: no preinfusion; supported: possible by hand or by technique; fixed: built in with a fixed duration; adjustable: duration or pressure can be set; programmable: part of a programmable profile."
+        },
+        "steam_system": {
+          "enum": [
+            "none",
+            "shared_heater",
+            "dedicated_heater"
+          ],
+          "description": "How milk steam is produced. none: no steam wand; shared_heater: the same heater as for brewing, so the machine switches between modes; dedicated_heater: a separate boiler or thermoblock for steam."
+        },
+        "simultaneous_brew_and_steam": {
+          "type": "boolean",
+          "description": "Whether you can pull a shot and steam milk at the same time. true: possible; false: confirmed not possible; absent: unknown."
+        },
+        "pump_type": {
+          "enum": [
+            "vibration",
+            "rotary",
+            "gear",
+            "peristaltic",
+            "manual",
+            "other"
+          ],
+          "description": "How pressure is made. vibration: small vibratory pump; rotary: quieter rotary vane pump; gear: gear pump, often used for flow profiling; peristaltic: squeezed-tube pump; manual: lever or hand pump, no motor."
+        },
+        "water_source_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "reservoir",
+              "plumbed"
+            ]
+          },
+          "description": "Where water comes from. reservoir: a tank you fill; plumbed: connected to the mains water supply."
+        },
+        "shot_stop_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "manual",
+              "weight",
+              "time",
+              "volume"
+            ]
+          },
+          "description": "How a shot can be stopped. manual: by the user; weight: automatically at a target weight with a scale; time: after a set time; volume: after a set volume (volumetric dosing)."
+        },
+        "group_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of brew groups (where portafilters lock in), for example 1 for most home machines."
+        },
+        "portafilter_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Inner diameter of the portafilter basket in millimetres, for example 58."
+        },
+        "brew_pressure_min_bar": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Lowest brew pressure the machine can deliver, in bar."
+        },
+        "brew_pressure_max_bar": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Highest brew pressure the machine can deliver, in bar."
+        },
+        "brew_temperature_min_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Lowest brew water temperature that can be set, in degrees Celsius."
+        },
+        "brew_temperature_max_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Highest brew water temperature that can be set, in degrees Celsius."
+        },
+        "reservoir_capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Size of the water tank in millilitres."
+        },
+        "power_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Rated electrical power in watts."
+        },
+        "group_type": {
+          "enum": [
+            "e61",
+            "saturated",
+            "semi_saturated",
+            "lever",
+            "integrated",
+            "other"
+          ],
+          "description": "Type of brew group. e61: the classic heated E61 group; saturated: group filled with boiler water and kept at its temperature; semi_saturated: group attached to the boiler but not fully filled; lever: piston group driven by a lever; integrated: group built into a thermoblock or the machine body; other: anything else."
+        },
+        "boiler_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of boilers, 0 for thermoblock or manual machines."
+        },
+        "connectivity": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bluetooth",
+              "wifi",
+              "usb"
+            ]
+          },
+          "description": "Wireless or wired connections for apps or updates: bluetooth, wifi or usb."
+        }
+      }
+    },
+    "grinder": {
+      "title": "Grinder details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "burr_mechanism": {
+          "enum": [
+            "conical",
+            "flat",
+            "ghost",
+            "roller",
+            "blade",
+            "other"
+          ],
+          "description": "Type of cutting parts. conical: cone-shaped burrs; flat: two flat discs; ghost: flat burrs in a design without a burr carrier contact, sold as \"ghost burrs\"; roller: industrial-style roller mill; blade: spinning blade that chops rather than grinds; other: anything else."
+        },
+        "burr_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Diameter of the burrs in millimetres, for example 64 for many flat-burr grinders."
+        },
+        "burr_material": {
+          "enum": [
+            "steel",
+            "ceramic",
+            "titanium_coated",
+            "other"
+          ],
+          "description": "What the burrs are made of. steel: hardened steel; ceramic: ceramic burrs; titanium_coated: steel with a titanium or similar hard coating; other: anything else."
+        },
+        "adjustment_type": {
+          "enum": [
+            "fixed",
+            "stepped",
+            "stepless"
+          ],
+          "description": "How grind size is changed. fixed: cannot be changed; stepped: clicks between set positions; stepless: any position in between."
+        },
+        "grind_setting_format": {
+          "enum": [
+            "whole_number",
+            "decimal",
+            "string"
+          ],
+          "description": "How the dial reads, so journals can store settings."
+        },
+        "grind_setting_min": {
+          "type": "number",
+          "description": "Lowest number on the grind dial, as printed by the maker."
+        },
+        "grind_setting_max": {
+          "type": "number",
+          "description": "Highest number on the grind dial, as printed by the maker."
+        },
+        "brew_range": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "espresso",
+              "filter",
+              "turkish"
+            ]
+          },
+          "description": "Brew styles the grinder can grind for, as stated by the maker: espresso, filter or turkish (extra fine)."
+        },
+        "bean_feed": {
+          "enum": [
+            "single_dose",
+            "hopper",
+            "both"
+          ],
+          "description": "How beans go in. single_dose: weighed dose for each brew; hopper: a container holding beans for many brews; both: works either way."
+        },
+        "dose_control_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "manual",
+              "time",
+              "weight"
+            ]
+          },
+          "description": "How the amount of ground coffee is controlled. manual: the user stops grinding; time: grinds for a set time; weight: stops at a target weight with a built-in scale."
+        },
+        "drive": {
+          "enum": [
+            "manual",
+            "electric"
+          ],
+          "description": "manual: turned by hand; electric: driven by a motor."
+        },
+        "motor_power_w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Rated motor power in watts."
+        },
+        "grind_setting_step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Smallest step between settings on a stepped dial."
+        },
+        "microns_per_step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Burr gap change per setting step, as stated by the maker or measured."
+        },
+        "retention_g": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Ground coffee left inside the grinder after grinding, in grams, as measured or stated by the maker."
+        },
+        "rpm_min": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Lowest motor speed in revolutions per minute."
+        },
+        "rpm_max": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Highest motor speed in revolutions per minute. Equal to rpm_min for fixed-speed grinders."
+        }
+      }
+    },
+    "brewer": {
+      "title": "Brewer details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanism": {
+          "enum": [
+            "percolation",
+            "immersion",
+            "hybrid",
+            "press",
+            "vacuum",
+            "boiling",
+            "other"
+          ],
+          "description": "How water and coffee meet; matches brew method categories."
+        },
+        "capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Largest amount of brewed coffee it holds or makes at once, in millilitres."
+        },
+        "cup_capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Nominal number of cups the maker states."
+        },
+        "material": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ceramic",
+              "glass",
+              "plastic",
+              "stainless_steel",
+              "copper",
+              "aluminium",
+              "porcelain",
+              "wood",
+              "silicone",
+              "other"
+            ]
+          },
+          "description": "What the brewer is made of; list every material sold under this model, such as ceramic and plastic."
+        },
+        "filter_format": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Filter shape or size, e.g. cone_02, flat_185, chemex_6cup, aeropress_round, metal_mesh."
+        },
+        "filter_shape": {
+          "enum": [
+            "cone",
+            "flat_bottom",
+            "basket",
+            "disc",
+            "none"
+          ],
+          "description": "Shape of the filter it uses. cone: pointed cone; flat_bottom: flat base, for example wave filters; basket: basket-shaped paper filter used in drip machines; disc: round disc, as in AeroPress; none: no separate filter."
+        },
+        "flow_control": {
+          "enum": [
+            "fixed",
+            "manual_valve",
+            "programmable"
+          ],
+          "description": "How fast water drains. fixed: set by the design; manual_valve: a valve or switch you open and close; programmable: controlled by the machine."
+        },
+        "drive": {
+          "enum": [
+            "manual",
+            "electric",
+            "stovetop"
+          ],
+          "description": "manual: you pour or press by hand; electric: a machine heats and pours the water; stovetop: heated on a hob, such as a moka pot."
+        }
+      }
+    },
+    "kettle": {
+      "title": "Kettle details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Largest amount of water it holds, in millilitres."
+        },
+        "spout_type": {
+          "enum": [
+            "gooseneck",
+            "standard",
+            "other"
+          ],
+          "description": "gooseneck: thin curved spout for a slow, precise pour; standard: ordinary spout; other: anything else."
+        },
+        "temperature_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ],
+          "description": "none: just boils; fixed: a few preset temperatures; adjustable: any temperature in a range can be set."
+        },
+        "temperature_min_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Lowest temperature that can be set, in degrees Celsius."
+        },
+        "temperature_max_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Highest temperature that can be set, in degrees Celsius."
+        },
+        "supports_temperature_hold": {
+          "type": "boolean",
+          "description": "Whether the kettle can keep water at the set temperature. true: can hold; false: confirmed cannot hold; absent: unknown."
+        },
+        "heat_source": {
+          "enum": [
+            "electric",
+            "stovetop",
+            "induction_compatible",
+            "other"
+          ],
+          "description": "electric: has its own heating base; stovetop: heated on a hob; induction_compatible: stovetop kettle that also works on induction hobs; other: anything else."
+        }
+      }
+    },
+    "scale": {
+      "title": "Scale details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resolution_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Smallest weight step the display shows, in grams, for example 0.1."
+        },
+        "capacity_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Largest weight the scale can measure, in grams."
+        },
+        "has_timer": {
+          "type": "boolean",
+          "description": "Built-in timer. true: has one; false: confirmed none; absent: unknown."
+        },
+        "supports_auto_tare": {
+          "type": "boolean",
+          "description": "Sets itself to zero when a cup or brewer is put on. true: supported; false: confirmed not supported; absent: unknown."
+        },
+        "supports_auto_timer": {
+          "type": "boolean",
+          "description": "Starts the timer by itself when liquid starts to flow or water is poured. true: supported; false: confirmed not supported; absent: unknown."
+        },
+        "has_flow_rate_display": {
+          "type": "boolean",
+          "description": "Shows how fast weight changes, in grams per second. true: shown; false: confirmed not shown; absent: unknown."
+        },
+        "connectivity": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bluetooth",
+              "wifi",
+              "usb"
+            ]
+          },
+          "description": "Wireless or wired connections to apps or machines: bluetooth, wifi or usb."
+        }
+      }
+    },
+    "tamper": {
+      "title": "Tamper details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Diameter of the tamper base in millimetres, for example 58."
+        },
+        "force_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ],
+          "description": "none: the user decides how hard to press; fixed: a spring gives a set force; adjustable: the spring force can be set."
+        },
+        "base_shape": {
+          "enum": [
+            "flat",
+            "convex",
+            "rippled",
+            "other"
+          ],
+          "description": "Shape of the pressing surface. flat; convex: slightly curved outward; rippled: grooved surface; other: anything else."
+        },
+        "self_leveling": {
+          "type": "boolean",
+          "description": "Whether the tamper sits on the basket rim so it always presses level. true: self-levelling; false: confirmed not self-levelling; absent: unknown."
+        }
+      }
+    },
+    "wdt": {
+      "title": "WDT tool details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "needle_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Thickness of each needle in millimetres, for example 0.3."
+        },
+        "needle_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of needles."
+        },
+        "depth_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ],
+          "description": "Whether you can limit how deep the needles reach. none: no limit; fixed: set depth; adjustable: depth can be set."
+        }
+      }
+    },
+    "basket": {
+      "title": "Portafilter basket details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "single",
+            "double",
+            "triple",
+            "other"
+          ],
+          "description": "single, double or triple: the shot size the basket is made for; other: anything else."
+        },
+        "diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Diameter of the basket in millimetres, for example 58."
+        },
+        "nominal_dose_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Dose of ground coffee the basket is designed for, in grams."
+        },
+        "dose_min_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Smallest recommended dose in grams."
+        },
+        "dose_max_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Largest recommended dose in grams."
+        },
+        "pressurized": {
+          "type": "boolean",
+          "description": "A pressurised basket has a single small exit hole that builds pressure even with a coarse grind. true: pressurised; false: standard unpressurised basket; absent: unknown."
+        },
+        "precision": {
+          "type": "boolean",
+          "description": "A precision basket has tightly controlled hole sizes, sold for consistent extraction. true: precision basket; false: ordinary basket; absent: unknown."
+        }
+      }
+    },
+    "item": {
+      "title": "Equipment model",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "type",
+        "manufacturer",
+        "checked_at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/id",
+          "description": "Stable readable slug of manufacturer and model, e.g. hario-v60-02. Never reused.",
+          "examples": [
+            "hario-v60-02"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Full display name, e.g. Hario V60 02."
+        },
+        "manufacturer": {
+          "title": "Manufacturer",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Brand or company name as printed on the product, for example Hario."
+            },
+            "manufacturer_id": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/id",
+              "description": "Reserved for a future manufacturers dataset."
+            },
+            "country_code": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/country_code"
+            },
+            "website": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/url"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Model name without the brand, for example V60."
+        },
+        "variants": {
+          "type": "array",
+          "description": "Sizes or materials sold under the same model, e.g. 01 and 02, ceramic and plastic.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "type": {
+          "$ref": "#/$defs/type"
+        },
+        "brew_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "Brew method ids from the Open Coffee brew methods dataset this equipment is made for.",
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/id"
+          }
+        },
+        "released_year": {
+          "type": "integer",
+          "minimum": 1800,
+          "maximum": 2100,
+          "description": "Year the model first went on sale."
+        },
+        "discontinued": {
+          "type": "boolean",
+          "description": "Whether the maker has stopped selling the model. true: discontinued; false: still sold; absent: unknown."
+        },
+        "links": {
+          "title": "Links",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "product": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/url"
+            },
+            "manual": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/url"
+            }
+          }
+        },
+        "image": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/image"
+        },
+        "xref": {
+          "title": "Identifiers elsewhere",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wikidata": {
+              "type": "string",
+              "pattern": "^Q[1-9][0-9]*$",
+              "description": "Wikidata item id of the model or product line, for example Q1234567."
+            },
+            "gtin": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9]{8,14}$"
+              },
+              "description": "Barcode numbers (GTIN, EAN or UPC; 8 to 14 digits) printed on the packaging, one per variant."
+            },
+            "google_product_category": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Google Product Taxonomy id (Wikidata P11302)."
+            },
+            "gs1_gpc_brick": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "GS1 Global Product Classification brick code (Wikidata P8957)."
+            }
+          }
+        },
+        "espresso_machine": {
+          "$ref": "#/$defs/espresso_machine"
+        },
+        "grinder": {
+          "$ref": "#/$defs/grinder"
+        },
+        "brewer": {
+          "$ref": "#/$defs/brewer"
+        },
+        "kettle": {
+          "$ref": "#/$defs/kettle"
+        },
+        "scale": {
+          "$ref": "#/$defs/scale"
+        },
+        "tamper": {
+          "$ref": "#/$defs/tamper"
+        },
+        "wdt": {
+          "$ref": "#/$defs/wdt"
+        },
+        "basket": {
+          "$ref": "#/$defs/basket"
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.2.0.json#/$defs/datetime"
+        },
+        "mpn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Manufacturer part number."
+        },
+        "weight_g": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Weight of the product without packaging, in grams."
+        },
+        "dimensions_mm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Width in millimetres, seen from the front."
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Depth in millimetres, from front to back."
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Height in millimetres."
+            }
+          },
+          "description": "Outside size of the product in millimetres."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "espresso_machine"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "espresso_machine_with_grinder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "grinder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "brewer"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "kettle"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "scale"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "tamper"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "wdt"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "basket"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "filter"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "roaster"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "milk_frother"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "accessory"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}
