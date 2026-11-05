@@ -17,6 +17,13 @@ Thank you for helping improve the standard. This repository holds the schemas, t
 - Coffee places: map every new field in a new version of the JSON-LD context (`coffee-places.context.vX.Y.Z.jsonld`). CI fails if a field is not mapped.
 - Run `bun scripts/generate.ts` to refresh the README numbers, then `scripts/validate.sh` and `scripts/build.sh`.
 
+## Maintainer notes
+
+- Releases run only from the Release workflow (Actions → Release). Never create tags, releases or package versions by hand.
+- `.github/workflows/` is generated from the templates in [Roastbook/workflows](https://github.com/Roastbook/workflows) by Orcastrate. Change the template there, not the file here.
+- The Schema Explorer's renderer (`lib/tree.ts`) fails on JSON Schema keywords it does not know. A schema that uses a new keyword needs renderer support first.
+- Field anchors (`#field-<dotted.path>` for record fields, `#file-<path>` for file-level fields) are linked from the Data Explorer. Keep that scheme stable.
+
 ## Local setup
 
 Bun (the version in `.bun-version`):
