@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.1.0.json",
+  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.3.0.json",
   "meta": {
     "licence": "MIT"
   },
@@ -23,7 +23,7 @@
       ],
       "typical_parameters": {
         "dose_g": {},
-        "ratio": {
+        "brew_ratio": {
           "min": 14,
           "max": 18,
           "typical": 16
@@ -46,7 +46,7 @@
       "recorded_parameters": [
         "dose_g",
         "brew_water_g",
-        "ratio",
+        "brew_ratio",
         "grind_setting",
         "water_temperature_celsius",
         "bloom_time_seconds",

@@ -18,11 +18,17 @@ export const FORMAT_HINTS: Record<string, string> = {
   date: "a date like 2026-11-05",
   "date-time": "a timestamp with time zone like 2026-11-05T14:00:00Z",
   uri: "a full web address",
+  iri: "a full web address",
 };
 
+const words = (c: Record<string, unknown>) => Object.entries(c).map(([k, v]) => WORDS[k]?.(v) ?? `${k}: ${JSON.stringify(v)}`).filter(Boolean);
+
 export function constraintWords(n: FieldNode): string[] {
-  const out = Object.entries(n.constraints).map(([k, v]) => WORDS[k]?.(v) ?? `${k}: ${JSON.stringify(v)}`).filter(Boolean);
-  if (n.format && FORMAT_HINTS[n.format]) out.push(FORMAT_HINTS[n.format]);
-  if (n.keyPattern) out.push(`keys match \`${n.keyPattern}\``);
+  const out = words(n.constraints);
+  const each = [...words(n.itemConstraints), ...(n.array ? uniqHints(n) : [])];
+  if (each.length) out.push(`each entry: ${each.join(", ")}`);
+  if (!n.array) out.push(...uniqHints(n));
+  for (const p of n.keyPatterns) out.push(`keys match \`${p}\``);
   return out;
 }
+const uniqHints = (n: FieldNode) => [...new Set(n.formats.map((f) => FORMAT_HINTS[f]).filter(Boolean))];

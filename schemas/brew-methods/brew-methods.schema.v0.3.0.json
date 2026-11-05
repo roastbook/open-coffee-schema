@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.3.0.json",
+  "title": "Open Coffee brew methods",
+  "description": "Ways of brewing coffee (espresso, pour-over, V60, AeroPress, cold brew…), their typical parameters and what a coffee journal should record for each. Methods form a tree: a device-specific method such as v60 has the general method pour-over as parent. Part of Roastbook Open Coffee.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "brew_methods"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/brew-methods/brew-methods\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "brew_methods": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/brew_method"
+      }
+    }
+  },
+  "$defs": {
+    "range": {
+      "title": "Range",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "min": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Lowest common value, in the unit named by the parameter (for example grams for dose_g, degrees Celsius for water_temperature_celsius)."
+        },
+        "max": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Highest common value, in the unit named by the parameter."
+        },
+        "typical": {
+          "type": "number",
+          "minimum": 0,
+          "description": "A good starting value, in the unit named by the parameter."
+        }
+      },
+      "description": "A starting range. When several values are given they must be ordered: min ≤ typical ≤ max. JSON Schema cannot compare two values, so this repository checks it in its examples and data repositories check it in their data."
+    },
+    "parameter": {
+      "title": "Brew parameter",
+      "enum": [
+        "dose_g",
+        "brew_water_g",
+        "yield_g",
+        "brew_ratio",
+        "yield_ratio",
+        "grind_setting",
+        "brew_time_seconds",
+        "target_time_seconds",
+        "water_temperature_celsius",
+        "bloom_time_seconds",
+        "bloom_water_g",
+        "preinfusion_time_seconds",
+        "preinfusion_pressure_bar",
+        "brew_pressure_bar",
+        "flow_rate_ml_per_second",
+        "tamp_force_kg",
+        "paper_filter_position",
+        "distribution_method",
+        "pour_count",
+        "steep_time_seconds"
+      ],
+      "description": "Parameter keys shared with coffee journals such as Roastbook. brew_ratio is grams of brew water per gram of coffee (16 means 1:16); yield_ratio is grams of drink in the cup per gram of coffee (2 means a 1:2 espresso)."
+    },
+    "grind_size": {
+      "title": "Grind size",
+      "enum": [
+        "extra_fine",
+        "fine",
+        "medium_fine",
+        "medium",
+        "medium_coarse",
+        "coarse",
+        "extra_coarse"
+      ],
+      "description": "Descriptive grind size; extra_fine is Turkish, fine espresso, medium filter, coarse French press and cold brew."
+    },
+    "brew_method": {
+      "title": "Brew method",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "category",
+        "extraction",
+        "description",
+        "checked_at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/id",
+          "description": "Stable readable slug, e.g. v60, french-press. Never reused.",
+          "examples": [
+            "v60"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Common English name of the method, for example Pour-over or French press."
+        },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Other names in any language, e.g. Filterkaffee, drip."
+        },
+        "parent": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/id",
+          "description": "The more general method, e.g. pour-over for v60."
+        },
+        "category": {
+          "enum": [
+            "espresso",
+            "filter",
+            "immersion",
+            "pressure",
+            "vacuum",
+            "boiling",
+            "cold"
+          ],
+          "description": "Family used for grouping: espresso (9-bar style pressure), filter (percolation through a filter), immersion (steep, then separate), pressure (non-espresso pressure such as AeroPress or moka pot), vacuum (siphon), boiling (cezve/ibrik), cold (cold water over hours)."
+        },
+        "extraction": {
+          "enum": [
+            "percolation",
+            "immersion",
+            "hybrid"
+          ],
+          "description": "Physical principle; matches equipment brewer.mechanism."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600,
+          "description": "Short neutral explanation in our own words."
+        },
+        "introduced_year": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 2100,
+          "description": "Year the method or device was invented or first sold."
+        },
+        "origin_country_code": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/country_code"
+        },
+        "equipment_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "Equipment types needed, from the equipment schema's type list.",
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.3.0.json#/$defs/type"
+          }
+        },
+        "typical_parameters": {
+          "title": "Typical parameters",
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Common starting ranges, not rules.",
+          "properties": {
+            "dose_g": {
+              "$ref": "#/$defs/range"
+            },
+            "brew_ratio": {
+              "$ref": "#/$defs/range",
+              "description": "Grams of brew water per gram of coffee, for example 16 for 1:16. Used for filter, immersion and cold brew."
+            },
+            "yield_ratio": {
+              "$ref": "#/$defs/range",
+              "description": "Grams of drink in the cup per gram of coffee, for example 2 for a 1:2 espresso. Used where the drink is weighed, mainly espresso."
+            },
+            "water_temperature_celsius": {
+              "$ref": "#/$defs/range"
+            },
+            "brew_time_seconds": {
+              "$ref": "#/$defs/range"
+            },
+            "brew_pressure_bar": {
+              "$ref": "#/$defs/range"
+            },
+            "grind_size": {
+              "type": "array",
+              "uniqueItems": true,
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/grind_size"
+              }
+            },
+            "grind_d50_microns": {
+              "$ref": "#/$defs/range",
+              "description": "Median particle size in micrometres, comparable across grinders."
+            }
+          }
+        },
+        "recorded_parameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/parameter"
+          },
+          "description": "Parameters a coffee journal should offer when logging a brew with this method."
+        },
+        "typical_drinks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Drinks usually made with this method, in plain lowercase English, for example espresso, cappuccino or flat white."
+        },
+        "xref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wikidata": {
+              "type": "string",
+              "pattern": "^Q[1-9][0-9]*$",
+              "description": "Wikidata item id of the method, for example Q180289 for espresso."
+            },
+            "beanconqueror": {
+              "type": "string",
+              "pattern": "^[A-Z0-9_]+$",
+              "description": "Beanconqueror PREPARATION_TYPES key, for app imports."
+            }
+          },
+          "description": "Identifiers of the method in other datasets and apps."
+        },
+        "image": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/image"
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/datetime"
+        },
+        "filter_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "paper",
+              "metal",
+              "cloth",
+              "none"
+            ]
+          },
+          "description": "Filters the method can use. paper: paper filters; metal: metal mesh or perforated metal; cloth: cloth filters; none: no filter (for example cezve or cold brew in a jar)."
+        }
+      }
+    }
+  }
+}

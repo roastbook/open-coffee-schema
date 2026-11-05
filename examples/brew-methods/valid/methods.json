@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.2.0.json",
+  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.3.0.json",
   "meta": {
     "licence": "MIT"
   },
@@ -27,7 +27,7 @@
           "max": 30,
           "typical": 15
         },
-        "ratio": {
+        "brew_ratio": {
           "min": 14,
           "max": 18,
           "typical": 16
@@ -50,7 +50,7 @@
       "recorded_parameters": [
         "dose_g",
         "brew_water_g",
-        "ratio",
+        "brew_ratio",
         "grind_setting",
         "water_temperature_celsius",
         "bloom_time_seconds",
@@ -73,13 +73,63 @@
         "kettle"
       ],
       "typical_parameters": {
-        "ratio": {
+        "brew_ratio": {
           "typical": 16
         },
         "grind_size": [
           "medium_fine"
         ]
       },
+      "checked_at": "2026-11-05T12:00:00Z"
+    },
+    {
+      "id": "espresso",
+      "name": "Espresso",
+      "category": "espresso",
+      "extraction": "percolation",
+      "description": "Hot water is pushed at about 9 bar through a compact puck of finely ground coffee, giving a small, concentrated drink.",
+      "equipment_types": [
+        "espresso_machine",
+        "grinder",
+        "tamper",
+        "scale"
+      ],
+      "typical_parameters": {
+        "dose_g": {
+          "min": 14,
+          "max": 22,
+          "typical": 18
+        },
+        "yield_ratio": {
+          "min": 1.5,
+          "max": 3,
+          "typical": 2
+        },
+        "water_temperature_celsius": {
+          "min": 90,
+          "max": 96,
+          "typical": 93
+        },
+        "brew_time_seconds": {
+          "min": 22,
+          "max": 35,
+          "typical": 28
+        },
+        "brew_pressure_bar": {
+          "typical": 9
+        },
+        "grind_size": [
+          "fine"
+        ]
+      },
+      "recorded_parameters": [
+        "dose_g",
+        "yield_g",
+        "yield_ratio",
+        "grind_setting",
+        "brew_time_seconds",
+        "water_temperature_celsius"
+      ],
       "checked_at": "2026-11-05T12:00:00Z"
     }
   ]

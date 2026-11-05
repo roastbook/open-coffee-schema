@@ -13,7 +13,7 @@ This repository is the Open Coffee standard: JSON Schemas (draft 2020-12) under 
 
 ## Adding a schema version
 
-Follow [docs/runbook.md#adding-a-schema-version](docs/runbook.md#adding-a-schema-version). In short: copy the newest `schemas/<family>/<family>.schema.vX.Y.Z.json` to the next version, update `$id`, edit the copy, describe every new field, add examples, add a new context version for coffee-places fields, then run the scripts below. Minor for optional additions, major for anything that removes or tightens.
+Follow [docs/runbook.md#adding-a-schema-version](docs/runbook.md#adding-a-schema-version). In short: copy the newest `schemas/<family>/<family>.schema.vX.Y.Z.json` to the next version, update `$id`, edit the copy, describe every new field, add examples, add a new context version for coffee-places fields, then run the scripts below. From 1.0.0: minor for optional additions, major for anything that removes or tightens. While the standard is 0.x: patch for optional additions, minor for anything that removes or tightens (CI enforces both, `lib/diff.ts` `checkBump`). A new `common` version means new versions of every family that references it.
 
 ## Scripts
 

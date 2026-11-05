@@ -9,7 +9,7 @@ export const KNOWN_KEYWORDS = new Set([
   "minLength", "maxLength", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
   "minItems", "maxItems", "uniqueItems", "minProperties", "maxProperties",
   "properties", "required", "additionalProperties", "unevaluatedProperties", "propertyNames",
-  "items", "allOf", "if", "then", "else",
+  "items", "allOf", "if", "then", "else", "dependentSchemas",
 ]);
 const CONSTRAINTS = ["minLength", "maxLength", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "minItems", "maxItems", "uniqueItems", "minProperties", "maxProperties"] as const;
 
@@ -19,7 +19,7 @@ export function assertKnownKeywords(schema: Json, where: string): void {
   if (!schema || typeof schema !== "object" || Array.isArray(schema)) throw new Error(`${where}: not a schema`);
   for (const [k, v] of Object.entries(schema)) {
     if (!KNOWN_KEYWORDS.has(k)) throw new Error(`Unknown JSON Schema keyword "${k}" at ${where}`);
-    if (k === "properties" || k === "$defs") for (const [p, s] of Object.entries(v as object)) assertKnownKeywords(s, `${where}/${k}/${p}`);
+    if (k === "properties" || k === "$defs" || k === "dependentSchemas") for (const [p, s] of Object.entries(v as object)) assertKnownKeywords(s, `${where}/${k}/${p}`);
     if (["items", "additionalProperties", "unevaluatedProperties", "propertyNames", "if", "then", "else"].includes(k)) assertKnownKeywords(v, `${where}/${k}`);
     if (k === "allOf") (v as Json[]).forEach((s, i) => assertKnownKeywords(s, `${where}/allOf/${i}`));
   }
@@ -39,16 +39,24 @@ export interface FieldNode {
   required: boolean;
   array: boolean;
   map: boolean;
+  /** Allowed values: the intersection of every enum that applies. */
   enum?: unknown[];
   const?: unknown;
-  format?: string;
-  pattern?: string;
-  keyPattern?: string;
+  /** Every format and pattern that applies, one entry per subschema (allOf, $ref and local keywords all count). */
+  formats: string[];
+  patterns: string[];
+  keyPatterns: string[];
+  /** Effective limits on the value itself (for a list: on the list). */
   constraints: Record<string, unknown>;
+  /** For a list: effective limits on each entry. */
+  itemConstraints: Record<string, unknown>;
   examples?: unknown[];
   closed: boolean;
   forbidden: boolean;
+  /** Rules in words that are compared as text. */
   rules: string[];
+  /** The field is only allowed while the sibling field `prop` has one of `values` (from if/then and dependentSchemas). */
+  allowedWhen?: { prop: string; values: unknown[] };
   /** Where the definition comes from, e.g. common.schema.v0.1.0.json#/$defs/address */
   ref?: string;
   /** Set on the file-level array that holds the records described in the record section. */
@@ -58,14 +66,31 @@ export interface FieldNode {
 
 interface Part { schema: Json; docId: string }
 interface Cond { text: string; prop?: string; values?: unknown[] }
+/** "forbidden": the field is not allowed under cond; "only": the field is allowed only under cond; "text": a value rule in words. */
+type FieldRule = { field: string; kind: "forbidden" | "only"; cond: Cond } | { field: string; kind: "text"; text: string };
+/** Everything collected for one value. Keywords that can appear in several subschemas are kept as lists, one entry each. */
 interface Shape {
-  title?: string; description?: string; types: Set<string>; enum?: unknown[]; const?: unknown; hasConst: boolean;
-  format?: string; pattern?: string; examples?: unknown[]; constraints: Record<string, unknown>;
-  properties: Map<string, Part[]>; required: Set<string>; closed: boolean; additional?: Part; keyPattern?: string;
-  items?: Part; forbidden: boolean; ref?: string; rules: string[];
-  fieldRules: { field: string; kind: "when" | "unless"; cond: Cond }[];
+  title?: string; description?: string; types: Set<string>; enums: unknown[][]; consts: unknown[];
+  formats: string[]; patterns: string[]; examples?: unknown[]; constraints: [string, unknown][];
+  properties: Map<string, Part[]>; required: Set<string>; closed: boolean; additional?: Part; keyPatterns: string[];
+  items?: Part; forbidden: boolean; ref?: string; rules: string[]; fieldRules: FieldRule[];
 }
-const emptyShape = (): Shape => ({ types: new Set(), constraints: {}, properties: new Map(), required: new Set(), closed: false, forbidden: false, rules: [], fieldRules: [], hasConst: false });
+const emptyShape = (): Shape => ({ types: new Set(), enums: [], consts: [], formats: [], patterns: [], constraints: [], properties: new Map(), required: new Set(), closed: false, keyPatterns: [], forbidden: false, rules: [], fieldRules: [] });
+
+const MIN_LIKE = new Set(["minLength", "minimum", "exclusiveMinimum", "minItems", "minProperties"]);
+/** The binding value of each limit: the largest minimum, the smallest maximum, uniqueItems if any subschema sets it. */
+function effective(list: [string, unknown][]): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of list) {
+    const o = out[k];
+    out[k] = o === undefined ? v : k === "uniqueItems" ? o || v : MIN_LIKE.has(k) ? Math.max(o as number, v as number) : Math.min(o as number, v as number);
+  }
+  return out;
+}
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+/** Values every enum allows (undefined when no enum applies). */
+const effectiveEnum = (s: Shape) => s.enums.length ? s.enums.reduce((acc, e) => acc.filter((v) => e.some((w) => same(v, w)))) : undefined;
+const uniq = (xs: string[]) => [...new Set(xs)];
 
 const fmt = (v: unknown) => (typeof v === "string" ? `"${v}"` : JSON.stringify(v));
 
@@ -97,15 +122,16 @@ class Builder {
       if (sub.if) this.rule(sub, docId, shape); else this.collect(sub, docId, shape, depth + 1);
     }
     if (schema.if) this.rule(schema, docId, shape);
+    for (const [field, dep] of Object.entries(schema.dependentSchemas ?? {})) this.dependent(field, dep, shape);
     if (schema.title !== undefined) shape.title = schema.title;
     if (schema.description !== undefined) shape.description = schema.description;
     for (const t of [schema.type ?? []].flat()) shape.types.add(t);
-    if (schema.enum) shape.enum = schema.enum;
-    if ("const" in schema) { shape.const = schema.const; shape.hasConst = true; }
-    if (schema.format) shape.format = schema.format;
-    if (schema.pattern) shape.pattern = schema.pattern;
+    if (schema.enum) shape.enums.push(schema.enum);
+    if ("const" in schema) shape.consts.push(schema.const);
+    if (schema.format) shape.formats.push(schema.format);
+    if (schema.pattern) shape.patterns.push(schema.pattern);
     if (schema.examples) shape.examples = schema.examples;
-    for (const c of CONSTRAINTS) if (c in schema) shape.constraints[c] = schema[c];
+    for (const c of CONSTRAINTS) if (c in schema) shape.constraints.push([c, schema[c]]);
     for (const [k, v] of Object.entries(schema.properties ?? {})) shape.properties.set(k, [...(shape.properties.get(k) ?? []), { schema: v, docId }]);
     for (const r of schema.required ?? []) shape.required.add(r);
     if (schema.additionalProperties === false || schema.unevaluatedProperties === false) shape.closed = true;
@@ -113,23 +139,34 @@ class Builder {
     if (schema.propertyNames) {
       const tmp = emptyShape();
       this.collect(schema.propertyNames, docId, tmp, depth + 1);
-      shape.keyPattern = tmp.pattern;
+      shape.keyPatterns.push(...tmp.patterns);
     }
     if (schema.items !== undefined) shape.items = { schema: schema.items, docId };
   }
 
   rule(s: Json, docId: string, shape: Shape) {
     const cond = describeCond(s.if);
-    for (const [kind, branch] of [["when", s.then], ["unless", s.else]] as const) {
+    for (const [branchKind, branch] of [["when", s.then], ["unless", s.else]] as const) {
       if (branch === undefined) continue;
       const rest = { ...branch, properties: { ...branch.properties } };
-      for (const [field, fs] of Object.entries(branch.properties ?? {})) {
-        if (fs === false) { shape.fieldRules.push({ field, kind, cond }); delete rest.properties[field]; }
+      for (const [field, fs] of Object.entries(branch.properties ?? {}) as [string, Json][]) {
+        if (fs === false) shape.fieldRules.push({ field, kind: branchKind === "when" ? "forbidden" : "only", cond });
+        else if (branchKind === "when" && fs && Object.keys(fs).length === 1 && "const" in fs) shape.fieldRules.push({ field, kind: "text", text: `Must be ${fmt(fs.const)} when ${cond.text}.` });
+        else if (branchKind === "when" && fs && Object.keys(fs).length === 1 && fs.enum) shape.fieldRules.push({ field, kind: "text", text: `Must be one of ${fs.enum.map(fmt).join(", ")} when ${cond.text}.` });
+        else continue;
+        delete rest.properties[field];
       }
       if (rest.properties && !Object.keys(rest.properties).length) delete rest.properties;
-      if (Object.keys(rest).length) shape.rules.push(`${kind === "when" ? "When" : "Unless"} ${cond.text}: must also match ${JSON.stringify(rest)}`);
+      if (Object.keys(rest).length) shape.rules.push(`${branchKind === "when" ? "When" : "Unless"} ${cond.text}: must also match ${JSON.stringify(rest)}`);
     }
     void docId;
+  }
+
+  /** dependentSchemas: `{ "<field>": { "properties": { "<prop>": { "enum": [...] } } } }` reads "field only allowed when prop is one of ...". */
+  dependent(field: string, dep: Json, shape: Shape) {
+    const cond = dep && typeof dep === "object" && Object.keys(dep).length === 1 ? describeCond(dep) : undefined;
+    if (cond?.prop) shape.fieldRules.push({ field, kind: "only", cond });
+    else shape.rules.push(`When ${field} is present: must also match ${JSON.stringify(dep)}`);
   }
 
   node(parts: Part[], key: string, path: string, prefix: string, required: boolean, depth = 0): FieldNode {
@@ -146,14 +183,12 @@ class Builder {
     }
     const children: FieldNode[] = [];
     const childPath = (k: string) => (path ? `${path}.${k}` : k);
-    for (const [k, ps] of target.properties) {
-      const child = this.node(ps, k, childPath(k), prefix, target.required.has(k), depth + 1);
-      child.rules.push(...ruleTexts(target.fieldRules.filter((r) => r.field === k)));
-      children.push(child);
-    }
+    for (const [k, ps] of target.properties) children.push(this.node(ps, k, childPath(k), prefix, target.required.has(k), depth + 1));
+    for (const child of children) applyFieldRules(child, target.fieldRules.filter((r) => r.field === child.key), children);
     if (target.additional) children.push(this.node([target.additional], "*", childPath("*"), prefix, false, depth + 1));
     const itemTypes = jsonTypes(target);
     const map = !!target.additional;
+    const enumValues = effectiveEnum(target);
     const label = shape.forbidden ? "not allowed" : array ? `list of ${typeLabel(target, map)}` : typeLabel(target, map);
     return {
       key, path, anchor: path ? `${prefix}-${path}` : prefix,
@@ -162,8 +197,9 @@ class Builder {
       label,
       types: shape.forbidden ? [] : array ? [`array<${itemTypes.join("|")}>`] : itemTypes,
       required, array, map,
-      enum: target.enum, const: target.const, format: target.format, pattern: target.pattern, keyPattern: target.keyPattern,
-      constraints: { ...(array ? target.constraints : {}), ...shape.constraints },
+      enum: enumValues, const: target.consts[0], formats: uniq(target.formats), patterns: uniq(target.patterns), keyPatterns: uniq(target.keyPatterns),
+      constraints: effective(shape.constraints),
+      itemConstraints: array ? effective(target.constraints) : {},
       examples: shape.examples ?? target.examples,
       closed: target.closed, forbidden: shape.forbidden,
       rules: [...target.rules],
@@ -175,34 +211,54 @@ class Builder {
 
 function jsonTypes(s: Shape): string[] {
   if (s.types.size) return [...s.types].sort();
-  const vals = s.enum ?? (s.hasConst ? [s.const] : null);
+  const vals = effectiveEnum(s) ?? (s.consts.length ? [s.consts[0]] : null);
   if (vals) return [...new Set(vals.map((v) => (v === null ? "null" : Number.isInteger(v) ? "integer" : typeof v)))].sort();
   if (s.properties.size || s.additional) return ["object"];
   return ["any"];
 }
 
 const PLAIN: Record<string, string> = { string: "text", boolean: "yes/no", number: "number", integer: "whole number", object: "object", array: "list", null: "empty", any: "any value" };
-const FORMATS: Record<string, string> = { date: "date", "date-time": "timestamp", uri: "URL" };
+const FORMATS: Record<string, string> = { date: "date", "date-time": "timestamp", uri: "URL", iri: "URL" };
 function typeLabel(s: Shape, map: boolean): string {
-  if (s.enum) return "one of a fixed set";
-  if (s.hasConst) return `exactly ${fmt(s.const)}`;
+  if (s.enums.length) return "one of a fixed set";
+  if (s.consts.length) return `exactly ${fmt(s.consts[0])}`;
   if (map) return "map of named entries";
-  if (s.format && FORMATS[s.format]) return FORMATS[s.format];
+  const format = s.formats.find((f) => FORMATS[f]);
+  if (format) return FORMATS[format];
   return jsonTypes(s).map((t) => PLAIN[t] ?? t).join(" or ");
 }
 
-function ruleTexts(rules: Shape["fieldRules"]): string[] {
-  const out: string[] = [];
-  for (const kind of ["when", "unless"] as const) {
-    const rs = rules.filter((r) => r.kind === kind);
-    if (!rs.length) continue;
-    const byProp = new Map<string, unknown[]>();
-    const loose: string[] = [];
-    for (const r of rs) r.cond.prop ? byProp.set(r.cond.prop, [...(byProp.get(r.cond.prop) ?? []), ...r.cond.values!]) : loose.push(r.cond.text);
-    const parts = [...[...byProp].map(([p, vs]) => (vs.length === 1 ? `${p} is ${fmt(vs[0])}` : `${p} is one of ${vs.map(fmt).join(", ")}`)), ...loose];
-    out.push(`${kind === "when" ? "Not allowed when" : "Only allowed when"} ${parts.join(" or ")}.`);
+/** The values of a sibling field that a field's rules refer to: its enum, its const, or true/false. */
+function domainOf(n: FieldNode | undefined): unknown[] | undefined {
+  if (!n) return undefined;
+  if (n.enum) return n.enum;
+  if (n.const !== undefined) return [n.const];
+  if (n.types.length === 1 && n.types[0] === "boolean") return [true, false];
+  return undefined;
+}
+
+/** Turns the if/then and dependentSchemas rules on one field into `allowedWhen` (when they all test one sibling with known values) or text. */
+function applyFieldRules(child: FieldNode, rules: FieldRule[], siblings: FieldNode[]) {
+  const presence = rules.filter((r) => r.kind !== "text") as Extract<FieldRule, { cond: Cond }>[];
+  const props = new Set(presence.map((r) => r.cond.prop));
+  const prop = props.size === 1 ? [...props][0] : undefined;
+  const domain = prop ? domainOf(siblings.find((s) => s.key === prop)) : undefined;
+  if (prop && domain) {
+    let allowed = domain;
+    for (const r of presence) allowed = allowed.filter((v) => r.cond.values!.some((w) => same(v, w)) === (r.kind === "only"));
+    child.allowedWhen = { prop, values: allowed };
+  } else {
+    for (const r of presence) child.rules.push(`${r.kind === "only" ? "Only allowed when" : "Not allowed when"} ${r.cond.text}.`);
   }
-  return out;
+  for (const r of rules) if (r.kind === "text") child.rules.push(r.text);
+}
+
+/** The allowedWhen rule in words, for the explorer. */
+export function allowedWhenText(n: FieldNode): string | undefined {
+  const a = n.allowedWhen;
+  if (!a) return undefined;
+  if (!a.values.length) return "Never allowed.";
+  return `Only allowed when ${a.prop} is ${a.values.length === 1 ? fmt(a.values[0]) : `one of ${a.values.map(fmt).join(", ")}`}.`;
 }
 
 export interface Section { id: string; title: string; description?: string; root: FieldNode }

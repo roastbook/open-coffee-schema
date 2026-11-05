@@ -1,0 +1,577 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.3.0.json",
+  "title": "Open Coffee places dataset",
+  "description": "One file per city listing cafés, coffee bars and other places that serve coffee. Part of Roastbook Open Coffee.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "places"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "Canonical URL of the schema version this file follows.",
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/coffee-places/coffee-places\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "places": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/place"
+      }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "title": "File metadata",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/dataset_meta"
+        }
+      ],
+      "required": [
+        "country_code",
+        "city"
+      ],
+      "properties": {
+        "country_code": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/country_code"
+        },
+        "city": {
+          "description": "City slug, matching the file name.",
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "city_name": {
+          "type": "string",
+          "description": "City name in the local language."
+        },
+        "licence": true
+      },
+      "unevaluatedProperties": false
+    },
+    "tier": {
+      "title": "Specialty tier",
+      "description": "A: coffee is the core product; the place roasts its own beans or serves named specialty roasters and usually offers filter coffee. B: food or something else leads, but the place serves a specialty roaster. none: not a specialty place (kept in the dataset). unknown: not yet assessed.",
+      "enum": [
+        "A",
+        "B",
+        "none",
+        "unknown"
+      ]
+    },
+    "serving": {
+      "title": "Serving",
+      "description": "Coffee preparation offered. true: offered; false: confirmed not offered; absent: unknown.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "espresso": {
+          "type": "boolean",
+          "description": "Espresso and espresso-based drinks."
+        },
+        "filter": {
+          "type": "boolean",
+          "description": "Any filter coffee."
+        },
+        "pour_over": {
+          "type": "boolean",
+          "description": "Hand-brewed filter (V60, Kalita, Chemex and similar)."
+        },
+        "batch_brew": {
+          "type": "boolean",
+          "description": "Filter coffee from a batch brewer."
+        },
+        "cold_brew": {
+          "type": "boolean",
+          "description": "Coffee brewed with cold water over many hours. true: offered; false: confirmed not offered; absent: unknown."
+        },
+        "decaf": {
+          "type": "boolean",
+          "description": "Decaffeinated coffee. true: offered; false: confirmed not offered; absent: unknown."
+        },
+        "plant_milk": {
+          "type": "boolean",
+          "description": "At least one plant-based milk."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "pour_over": {
+                "const": true
+              }
+            },
+            "required": [
+              "pour_over"
+            ]
+          },
+          "then": {
+            "properties": {
+              "filter": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "amenities": {
+      "title": "Amenities",
+      "description": "true: available; false: confirmed not available; absent: unknown.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wifi": {
+          "type": "boolean",
+          "description": "Wi-Fi for guests. true: available; false: confirmed not available; absent: unknown."
+        },
+        "laptop_friendly": {
+          "type": "boolean",
+          "description": "Laptops are welcome (no laptop ban, seats with sockets or tables)."
+        },
+        "kids_friendly": {
+          "type": "boolean",
+          "description": "Suitable for children, for example with high chairs, space for prams or a kids' menu. true: yes; false: confirmed not suitable; absent: unknown."
+        },
+        "vegan_options": {
+          "type": "boolean",
+          "description": "Vegan food beyond plant milk."
+        },
+        "dogs_allowed": {
+          "type": "boolean",
+          "description": "Dogs may come inside. true: allowed; false: confirmed not allowed; absent: unknown."
+        },
+        "outdoor_seating": {
+          "type": "boolean",
+          "description": "Seats outside, such as a terrace or tables on the pavement. true: available; false: confirmed none; absent: unknown."
+        },
+        "card_payment": {
+          "type": "boolean",
+          "description": "Payment by debit or credit card. true: accepted; false: confirmed not accepted; absent: unknown."
+        },
+        "cash_only": {
+          "type": "boolean",
+          "description": "Only cash is accepted. true: cash only; false: other payment methods are accepted; absent: unknown."
+        },
+        "wheelchair_accessible": {
+          "type": "boolean",
+          "description": "Step-free entrance."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "cash_only": {
+                "const": true
+              }
+            },
+            "required": [
+              "cash_only"
+            ]
+          },
+          "then": {
+            "properties": {
+              "card_payment": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "food": {
+      "title": "Food",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "focus": {
+          "description": "coffee_led: coffee is the main product; food_led: food or a restaurant concept leads; balanced: both matter equally.",
+          "enum": [
+            "coffee_led",
+            "food_led",
+            "balanced"
+          ]
+        },
+        "breakfast": {
+          "type": "boolean",
+          "description": "Breakfast is served. true: served; false: confirmed not served; absent: unknown."
+        },
+        "lunch": {
+          "type": "boolean",
+          "description": "Lunch dishes are served. true: served; false: confirmed not served; absent: unknown."
+        },
+        "cakes_baked_in_house": {
+          "type": "boolean",
+          "description": "Cakes or pastries are baked by the place itself. true: baked in house; false: confirmed bought in; absent: unknown."
+        }
+      }
+    },
+    "links": {
+      "title": "Links",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "website": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/url"
+        },
+        "instagram": {
+          "type": "string",
+          "pattern": "^https://(www\\.)?instagram\\.com/(?!(?:p|reel|reels|explore|stories|tv|accounts)(?:[/?]|$))[A-Za-z0-9_.]+/?(\\?[^#\\s]*)?$",
+          "description": "Address of the place's own Instagram profile. Write it as https://www.instagram.com/<handle>/ with the handle in lower case and no query string, for example https://www.instagram.com/example.coffee/. Posts, reels, stories and other non-profile pages are rejected."
+        },
+        "facebook": {
+          "type": "string",
+          "pattern": "^https://(www\\.|m\\.)?facebook\\.com/.+",
+          "description": "Address of the place's own Facebook page."
+        }
+      }
+    },
+    "xref": {
+      "title": "Identifiers in other datasets",
+      "description": "Crosswalk to other datasets. google_place_id is the only Google data we may store.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "overture": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Overture Maps place GERS id."
+        },
+        "foursquare": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Foursquare Open Source Places fsq_place_id."
+        },
+        "wikidata": {
+          "type": "string",
+          "pattern": "^Q[1-9][0-9]*$",
+          "description": "Wikidata item id of the place, for example Q42."
+        },
+        "google_place_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Google Maps place id, stored only so a known place can be matched. No other Google data is stored."
+        }
+      }
+    },
+    "roaster_ref": {
+      "title": "Roaster served",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the roastery whose coffee is served."
+        },
+        "roaster_id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/id",
+          "description": "Reserved for the future Open Coffee roasters dataset."
+        },
+        "url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/url"
+        },
+        "own": {
+          "type": "boolean",
+          "description": "The place roasts this coffee itself."
+        }
+      }
+    },
+    "award": {
+      "title": "Award",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the award or ranking, for example a national barista championship or a city guide's list."
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Year the award was given, for example 2025."
+        },
+        "url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/url"
+        }
+      }
+    },
+    "price": {
+      "title": "Observed price",
+      "type": "object",
+      "required": [
+        "amount",
+        "currency",
+        "observed_on"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Price paid for one standard drink, in the currency given by currency, for example 3.9."
+        },
+        "currency": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/currency"
+        },
+        "observed_on": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/date"
+        },
+        "source_url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/url"
+        }
+      }
+    },
+    "operator": {
+      "title": "Operator",
+      "description": "The legal entity running the place, taken from its Impressum or legal notice. Only companies and other legal entities; never the name of a natural person (sole traders are omitted).",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Registered name of the company that runs the place, as written in its legal notice."
+        },
+        "legal_form": {
+          "type": "string",
+          "description": "For example GmbH, UG (haftungsbeschränkt), KG, e.K."
+        },
+        "register_id": {
+          "type": "string",
+          "description": "Commercial register number, for example HRB 123456 (Amtsgericht München)."
+        }
+      }
+    },
+    "good_for": {
+      "title": "Good for",
+      "enum": [
+        "working",
+        "meetings",
+        "quick_espresso",
+        "takeaway",
+        "brunch",
+        "groups",
+        "reading",
+        "date",
+        "coffee_nerds",
+        "families"
+      ]
+    },
+    "place": {
+      "title": "Coffee place",
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "name",
+        "status",
+        "location",
+        "address",
+        "specialty_tier",
+        "checked_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/id"
+        },
+        "type": {
+          "description": "Kind of place, as a schema.org type. Every place is a CafeOrCoffeeShop for now; JSON-LD processors read it as the record's @type.",
+          "enum": [
+            "CafeOrCoffeeShop"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "The name the place uses on its sign or website."
+        },
+        "status": {
+          "description": "open; temporarily_closed (renovation, holiday longer than a month); closed (permanently); unverified (found but not yet confirmed to exist).",
+          "enum": [
+            "open",
+            "temporarily_closed",
+            "closed",
+            "unverified"
+          ]
+        },
+        "merged_into": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/id",
+          "description": "Set when this record turned out to be a duplicate: the id of the record that is kept. The record stays as a tombstone so its id is never reused or lost; its status must not be open."
+        },
+        "opened_on": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/date"
+        },
+        "closed_on": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/date"
+        },
+        "last_verified_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/datetime",
+          "description": "When a primary source last confirmed that the place exists with this status."
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/datetime",
+          "description": "When the record as a whole was last reviewed or enriched."
+        },
+        "address": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/address"
+        },
+        "location": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/location"
+        },
+        "opening_hours": {
+          "description": "Opening hours in OpenStreetMap opening_hours syntax (used as a format only; no OSM data), for example \"Mo-Fr 08:00-18:00; Sa,Su 09:00-17:00\".",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255
+        },
+        "description": {
+          "description": "Short English description written only from the facts stored in this record. Never copied from the place's own texts.",
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600
+        },
+        "specialty_tier": {
+          "$ref": "#/$defs/tier"
+        },
+        "roasts_own_beans": {
+          "type": "boolean",
+          "description": "Whether the place roasts coffee itself. true: roasts its own beans; false: confirmed not roasting; absent: unknown."
+        },
+        "roasters_served": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/roaster_ref"
+          }
+        },
+        "serving": {
+          "$ref": "#/$defs/serving"
+        },
+        "amenities": {
+          "$ref": "#/$defs/amenities"
+        },
+        "food": {
+          "$ref": "#/$defs/food"
+        },
+        "sells_beans": {
+          "type": "boolean",
+          "description": "Whether whole beans or ground coffee are sold to take home. true: sold; false: confirmed not sold; absent: unknown."
+        },
+        "sells_equipment": {
+          "type": "boolean",
+          "description": "Whether brewing equipment such as grinders, drippers or kettles is sold. true: sold; false: confirmed not sold; absent: unknown."
+        },
+        "offers_courses": {
+          "type": "boolean",
+          "description": "Barista courses, brewing classes or public cuppings."
+        },
+        "reusable_cup_systems": {
+          "description": "Deposit or reusable cup schemes accepted, for example recup, vytal, own_cup.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$"
+          }
+        },
+        "good_for": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/good_for"
+          }
+        },
+        "awards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/award"
+          }
+        },
+        "prices": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cappuccino": {
+              "$ref": "#/$defs/price"
+            }
+          },
+          "description": "Prices we observed, each with the date and page where we saw it. Currently only the cappuccino price, as a comparable reference."
+        },
+        "operator": {
+          "$ref": "#/$defs/operator"
+        },
+        "links": {
+          "$ref": "#/$defs/links"
+        },
+        "image": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/image"
+        },
+        "xref": {
+          "$ref": "#/$defs/xref"
+        },
+        "external_ratings": {
+          "description": "References to rating pages elsewhere. Rating values are never stored.",
+          "type": "array",
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.3.0.json#/$defs/external_ref"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "closed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "else": {
+            "properties": {
+              "closed_on": false
+            }
+          }
+        }
+      ],
+      "dependentSchemas": {
+        "merged_into": {
+          "properties": {
+            "status": {
+              "enum": [
+                "temporarily_closed",
+                "closed",
+                "unverified"
+              ]
+            }
+          }
+        }
+      },
+      "description": "One place that serves coffee. In JSON-LD it is a schema.org CafeOrCoffeeShop whose IRI is https://data.roastbook.coffee/places/<id>."
+    }
+  }
+}

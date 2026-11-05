@@ -8,6 +8,7 @@ import jsonld from "jsonld";
 import { BASE_URL, FILE_RE, cmpSemver, familyVersions, loadSchemas, Registry, type Json } from "../lib/schemas.ts";
 import { buildModel, flatten, type FieldNode } from "../lib/tree.ts";
 import { checkBump, diffModels } from "../lib/diff.ts";
+import { addOpenCoffeeFormats } from "../lib/formats.ts";
 import { generated } from "./generate.ts";
 
 const ROOT = join(import.meta.dirname, "..");
@@ -28,7 +29,7 @@ const git = (...args: string[]) => execFileSync("git", args, { cwd: ROOT, encodi
 const files = loadSchemas(ROOT);
 const reg = new Registry(files);
 const families = familyVersions(files);
-const newAjv = () => { const ajv = new Ajv2020({ strict: true, allErrors: true }); addFormats(ajv); for (const f of files) ajv.addSchema(f.json); return ajv; };
+const newAjv = () => { const ajv = new Ajv2020({ strict: true, allErrors: true }); addFormats(ajv); addOpenCoffeeFormats(ajv); for (const f of files) ajv.addSchema(f.json); return ajv; };
 
 await check("1. File names, versions and $id", () => {
   for (const family of readdirSync(join(ROOT, "schemas"), { withFileTypes: true })) {
@@ -66,7 +67,20 @@ await check("2. Schemas against the 2020-12 meta-schema (Ajv strict + ajv-format
   }
 });
 
+/**
+ * Ranges ({ min, typical, max }) must be ordered. JSON Schema cannot compare two values, so this runs on the examples;
+ * data repositories run the same check on their data.
+ */
+function rangeProblems(data: Json, path = ""): string[] {
+  if (!data || typeof data !== "object") return [];
+  const out = Object.entries(data).flatMap(([k, v]) => rangeProblems(v, `${path}/${k}`));
+  const nums = ["min", "typical", "max"].filter((k) => typeof data[k] === "number").map((k) => [k, data[k] as number] as const);
+  for (let i = 1; i < nums.length; i++) if (nums[i - 1][1] > nums[i][1]) out.push(`${path || "/"}: ${nums[i - 1][0]} ${nums[i - 1][1]} is greater than ${nums[i][0]} ${nums[i][1]}`);
+  return out;
+}
+
 await check("3. Examples: valid pass, invalid fail", () => {
+  if (rangeProblems({ r: { min: 3, typical: 2, max: 4 } }).length !== 1 || rangeProblems({ r: { min: 1, max: 1 } }).length) fail("rangeProblems self-check failed");
   const ajv = newAjv();
   for (const family of readdirSync(join(ROOT, "examples"), { withFileTypes: true }).filter((d) => d.isDirectory())) {
     if (!families.has(family.name)) fail(`examples/${family.name}: no schema family of that name`);
@@ -80,9 +94,10 @@ await check("3. Examples: valid pass, invalid fail", () => {
         const schemaId = typeof data.$schema === "string" && reg.byId.has(data.$schema) ? data.$schema : families.get(family.name)?.at(-1)?.json.$id;
         if (kind === "valid" && schemaId !== data.$schema) { fail(`${path}: $schema must name an existing schema file`); continue; }
         const validate = ajv.getSchema(schemaId)!;
-        const ok = validate(data);
+        const ok = validate(data), ranges = rangeProblems(data);
         if (kind === "valid" && !ok) fail(`${path}: ${ajv.errorsText(validate.errors, { dataVar: "" })}`);
-        if (kind === "invalid" && ok) fail(`${path}: passed validation but should fail`);
+        if (kind === "valid" && ranges.length) fail(`${path}: ${ranges.join("; ")}`);
+        if (kind === "invalid" && ok && !ranges.length) fail(`${path}: passed validation but should fail`);
         if (kind === "valid" && ok) { const key = buildModel(files.find((f) => f.json.$id === schemaId)!, reg).recordKey; recordsValidated += key ? data[key].length : 1; }
       }
     }
@@ -129,9 +144,9 @@ function sample(n: FieldNode): Json {
   else if (n.examples?.length) v = n.examples[0];
   else if (n.types.some((t) => t.includes("boolean"))) v = true;
   else if (n.types.some((t) => /number|integer/.test(t))) v = 1;
-  else if (n.format === "date") v = "2026-01-01";
-  else if (n.format === "date-time") v = "2026-01-01T00:00:00Z";
-  else if (n.format === "uri" || n.pattern?.startsWith("^https")) v = "https://example.com/sample";
+  else if (n.formats.includes("date")) v = "2026-01-01";
+  else if (n.formats.includes("date-time")) v = "2026-01-01T00:00:00Z";
+  else if (n.formats.some((f) => f === "uri" || f === "iri") || n.patterns.some((p) => /^\^https/i.test(p))) v = "https://example.com/sample";
   else v = "sample";
   return n.array ? [v] : v;
 }
@@ -156,6 +171,18 @@ await check("6. JSON-LD context: expands and compacts the valid examples lossles
       try {
         const expanded = await jsonld.expand({ ...doc, "@context": ctx["@context"] }, safe);
         await jsonld.compact(expanded, ctx, safe);
+        // Every record must come out as a typed node with an IRI, e.g. a schema.org CafeOrCoffeeShop.
+        const recordTerm = model.recordKey ? ctx["@context"][model.recordKey] : undefined;
+        const recordIri = typeof recordTerm === "string" ? recordTerm : recordTerm?.["@id"];
+        if (recordIri && family === "coffee-places") {
+          const full = recordIri.replace(/^schema:/, "https://schema.org/");
+          const records = expanded.flatMap((n: Json) => n[full] ?? []);
+          if (records.length !== (doc[model.recordKey!]?.length ?? 0)) fail(`${contexts.at(-1)} with ${label}: expected ${doc[model.recordKey!]?.length} records under ${full}, found ${records.length}`);
+          for (const r of records) {
+            if (!(r["@type"] ?? []).includes("https://schema.org/CafeOrCoffeeShop")) fail(`${contexts.at(-1)} with ${label}: a place is not typed schema:CafeOrCoffeeShop`);
+            if (typeof r["@id"] !== "string" || !/^https:\/\//.test(r["@id"])) fail(`${contexts.at(-1)} with ${label}: a place has no absolute IRI (@id)`);
+          }
+        }
       } catch (e) {
         const details = (e as Json).details?.event?.details;
         fail(`${contexts.at(-1)} with ${label}: ${(e as Error).message}${details ? ` ${JSON.stringify(details)}` : ""}`);

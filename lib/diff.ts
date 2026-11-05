@@ -57,19 +57,26 @@ export function diffModels(a: Model, b: Model): Change[] {
     } else if (!old.enum && node.enum) c("breaking", `Restricted to the values ${node.enum.map(show).join(", ")}.`);
     else if (old.enum && !node.enum) c("addition", "No longer restricted to a fixed set of values.");
 
-    for (const [key, label] of [["const", "Fixed value"], ["format", "Format"], ["pattern", "Pattern"], ["keyPattern", "Key pattern"]] as const) {
-      const o = (old as any)[key], n = (node as any)[key];
-      if (show(o) === show(n)) continue;
-      if (n === undefined) c("addition", `${label} ${show(o)} removed.`);
-      else c("breaking", o === undefined ? `${label} ${show(n)} added.` : `${label} changed from ${show(o)} to ${show(n)}.`);
+    if (show(old.const) !== show(node.const)) {
+      if (node.const === undefined) c("addition", `Fixed value ${show(old.const)} removed.`);
+      else c("breaking", old.const === undefined ? `Fixed value ${show(node.const)} added.` : `Fixed value changed from ${show(old.const)} to ${show(node.const)}.`);
+    }
+    // Every format and pattern applies on its own, so any new one tightens and any dropped one loosens.
+    for (const [key, label] of [["formats", "Format"], ["patterns", "Pattern"], ["keyPatterns", "Key pattern"]] as const) {
+      for (const v of node[key].filter((v) => !old[key].includes(v))) c("breaking", `${label} ${show(v)} added.`);
+      for (const v of old[key].filter((v) => !node[key].includes(v))) c("addition", `${label} ${show(v)} removed.`);
     }
 
-    for (const k of [...MIN_LIKE, ...MAX_LIKE, "uniqueItems"]) {
-      const o = old.constraints[k] as number | boolean | undefined, n = node.constraints[k] as number | boolean | undefined;
-      if (o === n) continue;
-      const tighter = k === "uniqueItems" ? n === true : n !== undefined && (o === undefined || (MIN_LIKE.includes(k) ? n > o! : n < o!));
-      c(tighter ? "breaking" : "addition", `${k} ${o === undefined ? "added" : n === undefined ? "removed" : "changed"}: ${show(o) ?? "none"} → ${show(n) ?? "none"}.`);
+    for (const [which, prefix] of [["constraints", ""], ["itemConstraints", "Each entry: "]] as const) {
+      for (const k of [...MIN_LIKE, ...MAX_LIKE, "uniqueItems"]) {
+        const o = old[which][k] as number | boolean | undefined, n = node[which][k] as number | boolean | undefined;
+        if (o === n) continue;
+        const tighter = k === "uniqueItems" ? n === true : n !== undefined && (o === undefined || (MIN_LIKE.includes(k) ? n > o! : n < o!));
+        c(tighter ? "breaking" : "addition", `${prefix}${k} ${o === undefined ? "added" : n === undefined ? "removed" : "changed"}: ${show(o) ?? "none"} → ${show(n) ?? "none"}.`);
+      }
     }
+
+    conditionChanges(old, node, A, B, c);
 
     if (!old.closed && node.closed) c("breaking", "No longer accepts unknown properties.");
     if (old.closed && !node.closed) c("addition", "Now accepts unknown properties.");
@@ -82,6 +89,34 @@ export function diffModels(a: Model, b: Model): Change[] {
     if (show(old.examples) !== show(node.examples)) c("patch", "Examples changed.");
   }
   return changes;
+}
+
+/** Values of the sibling field a condition tests: its enum, its const, or true/false. */
+function domain(index: Map<string, { node: FieldNode }>, anchor: string, prop: string): unknown[] | undefined {
+  const cut = anchor.includes(".") ? anchor.lastIndexOf(".") + 1 : anchor.indexOf("-") + 1;
+  const n = index.get(anchor.slice(0, cut) + prop)?.node;
+  if (!n) return undefined;
+  return n.enum ?? (n.const !== undefined ? [n.const] : n.types.length === 1 && n.types[0] === "boolean" ? [true, false] : undefined);
+}
+
+/**
+ * Compares the values of a sibling field for which a field is allowed. Only values that existed and allowed the field
+ * before count as breaking, so a new enum value that forbids every existing detail field is an addition.
+ */
+function conditionChanges(old: FieldNode, node: FieldNode, A: ReturnType<typeof index>, B: ReturnType<typeof index>, c: (s: Severity, t: string) => void) {
+  if (!old.allowedWhen && !node.allowedWhen) return;
+  const prop = (node.allowedWhen ?? old.allowedWhen)!.prop;
+  if (old.allowedWhen && node.allowedWhen && old.allowedWhen.prop !== node.allowedWhen.prop) {
+    c("breaking", `Condition changed from ${old.allowedWhen.prop} to ${node.allowedWhen.prop}.`);
+    return;
+  }
+  const before = old.allowedWhen?.values ?? domain(A, old.anchor, prop);
+  const after = node.allowedWhen?.values ?? domain(B, node.anchor, prop);
+  if (!before || !after) { c("breaking", `Condition on ${prop} changed.`); return; }
+  const has = (xs: unknown[], v: unknown) => xs.some((w) => show(w) === show(v));
+  const lost = before.filter((v) => !has(after, v)), gained = after.filter((v) => !has(before, v));
+  if (lost.length) c("breaking", `No longer allowed when ${prop} is ${lost.map(show).join(", ")}.`);
+  if (gained.length) c("addition", `Allowed when ${prop} is ${gained.map(show).join(", ")}.`);
 }
 
 export function requiredBump(changes: Change[]): "major" | "minor" | "patch" | "none" {

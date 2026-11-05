@@ -5,20 +5,20 @@ Operational procedures for `Roastbook/open-coffee-schema`. Every command runs fr
 ## Adding a schema version
 
 1. Agree on the change in an issue. For a major version, announce it in Discussions at least two weeks ahead ([GOVERNANCE.md](GOVERNANCE.md)).
-2. Pick the version: new optional fields or values → minor; removing a field or value, a new required field, a narrower type, pattern or range, or closing an object → major; wording only → patch.
+2. Pick the version. From 1.0.0: new optional fields or values → minor; removing a field or value, a new required field, a narrower type, pattern or range, or closing an object → major; wording only → patch. While the standard is 0.x (now), everything shifts down one place: breaking → minor (0.1.0 → 0.2.0), addition → patch, wording only → patch. CI enforces both rules.
 3. Copy the newest file and edit the copy. Never edit a published file.
    ```sh
-   cp schemas/coffee-places/coffee-places.schema.v0.1.0.json schemas/coffee-places/coffee-places.schema.v0.2.0.json
+   cp schemas/coffee-places/coffee-places.schema.v0.3.0.json schemas/coffee-places/coffee-places.schema.v0.4.0.json
    ```
-   Set `$id` to `https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.2.0.json`. If the change touches `common`, add a new `common` version first and point the new family file at it; existing files keep their old references.
+   Set `$id` to `https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.3.0.json`. If the change touches `common`, add a new `common` version first and point the new family files at it; existing files keep their old references. Families reference `common` (and brew methods reference `equipment`) by absolute `$id`, so a new `common` version means a new version of every family.
 4. Give every new field a plain-language `description`.
-5. Coffee places only: if fields were added or renamed, add `schemas/coffee-places/coffee-places.context.v0.2.0.jsonld` (copy, then map the new fields to schema.org or to `https://schema.roastbook.coffee/vocab#`).
+5. Coffee places only: if fields were added, renamed or removed, add `schemas/coffee-places/coffee-places.context.v0.3.0.jsonld` (copy, then map the new fields to schema.org or to `https://schema.roastbook.coffee/vocab#`).
 6. Update examples in `examples/<family>/valid/` (point `$schema` at the new version) and add invalid examples for new rules.
 7. Regenerate and check:
    ```sh
    bun scripts/generate.ts   # README stats block
    scripts/validate.sh        # fails if the bump is too small, a published file changed, or the context misses a field
-   scripts/build.sh           # the new version gets /coffee-places/v0.2.0/, latest moves, diff pages appear
+   scripts/build.sh           # the new version gets /coffee-places/v0.3.0/, latest moves, diff pages appear
    ```
 8. Open a pull request (Conventional Commit title, DCO sign-off). After merge, release it (below). The data repository gets a "bump schema" pull request automatically.
 
@@ -35,7 +35,7 @@ Nobody creates tags by hand.
    **Version rule:** the release version is the version of the whole standard. Every family's newest schema file must be at most the tag (a `coffee-places.schema.v2.0.0.json` cannot ship in `v1.4.0`); the script fails otherwise. Families keep their own versions below it.
 4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` and `release/npm-ui` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
 
-Try the asset build locally without publishing: `scripts/release-assets.sh v0.1.0`, then `(cd release/npm && bun pm pack --dry-run)` and `(cd release/npm-ui && bun pm pack --dry-run)`.
+Try the asset build locally without publishing: `scripts/release-assets.sh v0.3.0`, then `(cd release/npm && bun pm pack --dry-run)` and `(cd release/npm-ui && bun pm pack --dry-run)`.
 
 ### Publishing to GitHub Packages
 

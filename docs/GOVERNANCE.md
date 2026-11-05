@@ -1,6 +1,6 @@
 # Roastbook Open Coffee: design and governance
 
-Roastbook Open Coffee is an open standard (`open-coffee-schema`) and an open dataset (`open-coffee-data`) about coffee: places that serve it, brew methods and, later, equipment, roasters and beans. Roastbook, the self-hosted coffee journal, consumes both.
+Roastbook Open Coffee is an open standard (`open-coffee-schema`) and an open dataset (`open-coffee-data`) about coffee: places that serve it, brew methods and equipment, and later roasters and beans. Roastbook, the self-hosted coffee journal, consumes both.
 
 ## Goals
 

@@ -49,10 +49,11 @@ The types come from the newest version of each family. Rules that TypeScript can
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { schemas } from "@roastbook/open-coffee-schema/schemas";
-import { SCHEMA_IDS } from "@roastbook/open-coffee-schema";
+import { SCHEMA_IDS, isIri } from "@roastbook/open-coffee-schema";
 
 const ajv = new Ajv2020({ allErrors: true });
 addFormats(ajv);
+ajv.addFormat("iri", isIri); // URL fields use the "iri" format, which ajv-formats lacks
 for (const schema of Object.values(schemas)) ajv.addSchema(schema);
 
 const validate = ajv.getSchema(SCHEMA_IDS["brew-methods"].latest)!;
@@ -61,7 +62,7 @@ if (!validate(data)) console.error(validate.errors);
 
 Validate against the `$id` a file names in its `$schema` to keep old files valid after new versions come out: `ajv.getSchema(data.$schema)`.
 
-Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v0.1.0.json`, `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v0.1.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
+Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v0.3.0.json` (every published version stays included, for example `…/coffee-places/v0.1.0.json`), `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v0.2.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
 
 ## Allowed values
 

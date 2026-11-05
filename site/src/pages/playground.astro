@@ -52,6 +52,7 @@ const data = {
   import Ajv2020 from "ajv/dist/2020";
   import addFormats from "ajv-formats";
   import { explain, locate, type Target } from "../lib/explain";
+  import { addOpenCoffeeFormats } from "../../../lib/formats";
 
   const data = JSON.parse(document.getElementById("pg-data")!.textContent!);
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -61,13 +62,21 @@ const data = {
   const wanted = new URLSearchParams(location.search).get("schema");
   if (wanted && [...select.options].some((o) => o.value === wanted)) select.value = wanted;
 
-  let ajv: Ajv2020 | undefined;
-  async function getAjv() {
-    if (ajv) return ajv;
-    const a = new Ajv2020({ allErrors: true, strict: false });
-    addFormats(a);
-    for (const s of data.schemas) a.addSchema(await (await fetch(s.url)).json());
-    return (ajv = a);
+  let ajv: Promise<Ajv2020> | undefined;
+  // Fetches every schema version at once, on the first check only.
+  function getAjv() {
+    return (ajv ??= (async () => {
+      const a = new Ajv2020({ allErrors: true, strict: false });
+      addFormats(a);
+      addOpenCoffeeFormats(a);
+      const docs = await Promise.all(data.schemas.map(async (s: { url: string }) => {
+        const r = await fetch(s.url);
+        if (!r.ok) throw new Error(`Could not load ${s.url} (HTTP ${r.status})`);
+        return r.json();
+      }));
+      for (const d of docs) a.addSchema(d);
+      return a;
+    })().catch((e) => { ajv = undefined; throw e; }));
   }
 
   example.addEventListener("change", () => {
