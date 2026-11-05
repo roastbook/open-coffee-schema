@@ -79,7 +79,7 @@ TypeScript users can install the generated types, the schema files and the enum 
 | `examples/<family>/{valid,invalid}/` | Files that must pass and must fail validation. CI checks both. |
 | `docs/` | [governance](docs/GOVERNANCE.md), [decisions](docs/decisions/), [runbook](docs/runbook.md). |
 | `site/` | The Schema Explorer (Astro): property trees, diffs, playground. |
-| `packages/ui/` | `@roastbook/open-coffee-ui`, the header, footer and tokens shared with the Data Explorer. |
+| [`Roastbook/ui`](https://github.com/roastbook/ui) | `@roastbook/ui`, the shared components, layouts and theme used by Roastbook projects. |
 | `packages/schema/` | Source of the `@roastbook/open-coffee-schema` package (types, schemas, enum values). |
 | `lib/`, `scripts/` | The schema walker shared by checks, docs and site; `validate.sh`, `build.sh`, `release-assets.sh`. |
 

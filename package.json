@@ -4,7 +4,10 @@
   "description": "Open standard for describing coffee places: JSON Schema, JSON-LD context and docs. By Roastbook.",
   "license": "MIT",
   "type": "module",
-  "workspaces": ["packages/*", "site"],
+  "workspaces": [
+    "packages/schema",
+    "site"
+  ],
   "scripts": {
     "validate": "scripts/validate.sh",
     "build": "scripts/build.sh",

@@ -5,7 +5,7 @@
 #   node_setup: true
 #   assets_command: bash scripts/release-assets.sh "$TAG"
 #   npm_publish: true
-#   npm_package_dirs: release/npm release/npm-ui
+#   npm_package_dirs: release/npm
 #   dispatch_repository: open-coffee-data
 #   dispatch_event: schema-released
 # @end-orcastrate
@@ -38,7 +38,7 @@ jobs:
       node_setup: true
       assets_command: 'bash scripts/release-assets.sh "$TAG"'
       npm_publish: true
-      npm_package_dirs: 'release/npm release/npm-ui'
+      npm_package_dirs: 'release/npm'
       dispatch_repository: open-coffee-data
       dispatch_event: schema-released
     secrets:
