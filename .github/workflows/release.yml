@@ -31,14 +31,16 @@ jobs:
       contents: write
       actions: read
       packages: write
-    uses: Roastbook/workflows/.github/workflows/release.yml@04dec2345383aed39b464c059062713a05030705 # main
+    uses: Roastbook/workflows/.github/workflows/release.yml@7c22b2422f46e888ace66cddbef68401aeaadda7 # main
     with:
       bump_type: ${{ inputs.bump_type }}
       ci_workflow: ci.yml
       node_setup: true
-      assets_command: bash scripts/release-assets.sh "$TAG"
+      assets_command: 'bash scripts/release-assets.sh "$TAG"'
       npm_publish: true
-      npm_package_dirs: release/npm release/npm-ui
+      npm_package_dirs: 'release/npm release/npm-ui'
       dispatch_repository: open-coffee-data
       dispatch_event: schema-released
-    secrets: inherit
+    secrets:
+      RELEASER_APP_ID: ${{ secrets.RELEASER_APP_ID }}
+      RELEASER_APP_PRIVATE_KEY: ${{ secrets.RELEASER_APP_PRIVATE_KEY }}
