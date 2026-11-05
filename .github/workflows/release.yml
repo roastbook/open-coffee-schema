@@ -3,7 +3,7 @@
 # params:
 #   ci_workflow: cupping.yml
 #   node_setup: true
-#   assets_command: scripts/release-assets.sh "$TAG"
+#   assets_command: bash scripts/release-assets.sh "$TAG"
 #   npm_publish: true
 #   dispatch_repository: open-coffee-data
 #   dispatch_event: schema-released
@@ -30,12 +30,12 @@ jobs:
       contents: read
       actions: read
       id-token: write
-    uses: Roastbook/workflows/.github/workflows/release.yml@815757c2a70eaef9ce3cf8d4cf814c66ded83ca4 # main
+    uses: Roastbook/workflows/.github/workflows/release.yml@3fef09ed6f5c71c190a27ece5378697dbf76e8cb # main
     with:
       bump_type: ${{ inputs.bump_type }}
       ci_workflow: cupping.yml
       node_setup: true
-      assets_command: scripts/release-assets.sh "$TAG"
+      assets_command: bash scripts/release-assets.sh "$TAG"
       # Turn on with the NPM_PUBLISH_ENABLED variable once the npm trusted publisher exists.
       npm_publish: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
       dispatch_repository: open-coffee-data

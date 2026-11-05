@@ -23,4 +23,4 @@ jobs:
     name: Validate
     permissions:
       contents: read
-    uses: Roastbook/workflows/.github/workflows/schema-validate.yml@815757c2a70eaef9ce3cf8d4cf814c66ded83ca4 # main
+    uses: Roastbook/workflows/.github/workflows/schema-validate.yml@3fef09ed6f5c71c190a27ece5378697dbf76e8cb # main
