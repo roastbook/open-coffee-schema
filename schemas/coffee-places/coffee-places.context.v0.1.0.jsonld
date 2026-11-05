@@ -6,13 +6,18 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "dcterms": "http://purl.org/dc/terms/",
     "CafeOrCoffeeShop": "schema:CafeOrCoffeeShop",
-
-    "$schema": { "@id": "dcterms:conformsTo", "@type": "@id" },
+    "$schema": {
+      "@id": "dcterms:conformsTo",
+      "@type": "@id"
+    },
     "meta": {
       "@id": "oc:meta",
       "@context": {
         "version": "schema:version",
-        "generated_at": { "@id": "schema:dateModified", "@type": "xsd:dateTime" },
+        "generated_at": {
+          "@id": "schema:dateModified",
+          "@type": "xsd:dateTime"
+        },
         "licence": "schema:license",
         "attribution": "schema:creditText",
         "schema_version": "schema:schemaVersion",
@@ -21,16 +26,30 @@
         "city_name": "oc:cityName"
       }
     },
-    "places": { "@id": "schema:hasPart", "@container": "@set" },
-
+    "places": {
+      "@id": "schema:hasPart",
+      "@container": "@set"
+    },
     "id": "schema:identifier",
     "name": "schema:name",
     "status": "oc:status",
     "merged_into": "oc:mergedInto",
-    "opened_on": { "@id": "schema:foundingDate", "@type": "xsd:date" },
-    "closed_on": { "@id": "schema:dissolutionDate", "@type": "xsd:date" },
-    "last_verified_at": { "@id": "oc:lastVerifiedAt", "@type": "xsd:dateTime" },
-    "checked_at": { "@id": "oc:checkedAt", "@type": "xsd:dateTime" },
+    "opened_on": {
+      "@id": "schema:foundingDate",
+      "@type": "xsd:date"
+    },
+    "closed_on": {
+      "@id": "schema:dissolutionDate",
+      "@type": "xsd:date"
+    },
+    "last_verified_at": {
+      "@id": "oc:lastVerifiedAt",
+      "@type": "xsd:dateTime"
+    },
+    "checked_at": {
+      "@id": "oc:checkedAt",
+      "@type": "xsd:dateTime"
+    },
     "address": {
       "@id": "schema:address",
       "@context": {
@@ -44,29 +63,30 @@
     "location": {
       "@id": "schema:geo",
       "@context": {
-        "lat": { "@id": "schema:latitude", "@type": "xsd:double" },
-        "lon": { "@id": "schema:longitude", "@type": "xsd:double" }
+        "lat": {
+          "@id": "schema:latitude",
+          "@type": "xsd:double"
+        },
+        "lon": {
+          "@id": "schema:longitude",
+          "@type": "xsd:double"
+        }
       }
     },
     "opening_hours": "schema:openingHours",
     "open_sunday": "oc:openSunday",
     "description": "schema:description",
     "specialty_tier": "oc:specialtyTier",
-    "specialty_evidence": {
-      "@id": "oc:specialtyEvidence",
-      "@container": "@set",
-      "@context": {
-        "claim": "oc:claim",
-        "url": { "@id": "schema:url", "@type": "@id" }
-      }
-    },
     "roasts_own_beans": "oc:roastsOwnBeans",
     "roasters_served": {
       "@id": "oc:roastersServed",
       "@container": "@set",
       "@context": {
         "roaster_id": "schema:identifier",
-        "url": { "@id": "schema:url", "@type": "@id" },
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
         "own": "oc:ownRoast"
       }
     },
@@ -108,14 +128,26 @@
     "sells_beans": "oc:sellsBeans",
     "sells_equipment": "oc:sellsEquipment",
     "offers_courses": "oc:offersCourses",
-    "reusable_cup_systems": { "@id": "oc:reusableCupSystems", "@container": "@set" },
-    "good_for": { "@id": "oc:goodFor", "@container": "@set" },
+    "reusable_cup_systems": {
+      "@id": "oc:reusableCupSystems",
+      "@container": "@set"
+    },
+    "good_for": {
+      "@id": "oc:goodFor",
+      "@container": "@set"
+    },
     "awards": {
       "@id": "oc:awards",
       "@container": "@set",
       "@context": {
-        "year": { "@id": "oc:year", "@type": "xsd:gYear" },
-        "url": { "@id": "schema:url", "@type": "@id" }
+        "year": {
+          "@id": "oc:year",
+          "@type": "xsd:gYear"
+        },
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        }
       }
     },
     "prices": {
@@ -126,8 +158,14 @@
           "@context": {
             "amount": "schema:price",
             "currency": "schema:priceCurrency",
-            "observed_on": { "@id": "oc:observedOn", "@type": "xsd:date" },
-            "source_url": { "@id": "schema:url", "@type": "@id" }
+            "observed_on": {
+              "@id": "oc:observedOn",
+              "@type": "xsd:date"
+            },
+            "source_url": {
+              "@id": "schema:url",
+              "@type": "@id"
+            }
           }
         }
       }
@@ -141,50 +179,70 @@
       }
     },
     "links": "@nest",
-    "website": { "@id": "schema:url", "@type": "@id", "@nest": "links" },
-    "instagram": { "@id": "schema:sameAs", "@type": "@id", "@nest": "links" },
-    "facebook": { "@id": "schema:sameAs", "@type": "@id", "@nest": "links" },
+    "website": {
+      "@id": "schema:url",
+      "@type": "@id",
+      "@nest": "links"
+    },
+    "instagram": {
+      "@id": "schema:sameAs",
+      "@type": "@id",
+      "@nest": "links"
+    },
+    "facebook": {
+      "@id": "schema:sameAs",
+      "@type": "@id",
+      "@nest": "links"
+    },
     "image": {
       "@id": "schema:image",
       "@context": {
-        "url": { "@id": "schema:contentUrl", "@type": "@id" },
+        "url": {
+          "@id": "schema:contentUrl",
+          "@type": "@id"
+        },
         "licence": "schema:license",
         "author": "schema:creditText",
-        "source_url": { "@id": "schema:url", "@type": "@id" },
+        "source_url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
         "title": "schema:name",
         "width": "schema:width",
         "height": "schema:height"
       }
     },
     "xref": "@nest",
-    "overture": { "@id": "oc:overtureId", "@nest": "xref" },
-    "foursquare": { "@id": "oc:foursquareId", "@nest": "xref" },
+    "overture": {
+      "@id": "oc:overtureId",
+      "@nest": "xref"
+    },
+    "foursquare": {
+      "@id": "oc:foursquareId",
+      "@nest": "xref"
+    },
     "wikidata": {
       "@id": "schema:sameAs",
       "@type": "@vocab",
       "@nest": "xref",
-      "@context": { "@vocab": "http://www.wikidata.org/entity/" }
+      "@context": {
+        "@vocab": "http://www.wikidata.org/entity/"
+      }
     },
-    "google_place_id": { "@id": "oc:googlePlaceId", "@nest": "xref" },
+    "google_place_id": {
+      "@id": "oc:googlePlaceId",
+      "@nest": "xref"
+    },
     "external_ratings": {
       "@id": "oc:externalRatings",
       "@container": "@set",
       "@context": {
         "source": "oc:source",
-        "url": { "@id": "schema:url", "@type": "@id" }
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        }
       }
-    },
-    "method": "oc:method",
-    "confidence": { "@id": "oc:confidence", "@type": "xsd:double" },
-    "sources": {
-      "@id": "oc:sources",
-      "@container": "@set",
-      "@context": {
-        "source_id": "oc:sourceId",
-        "url": { "@id": "schema:url", "@type": "@id" },
-        "retrieved_at": { "@id": "oc:retrievedAt", "@type": "xsd:dateTime" }
-      }
-    },
-    "field_provenance": { "@id": "oc:fieldProvenance", "@type": "@json" }
+    }
   }
 }

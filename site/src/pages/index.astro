@@ -19,7 +19,6 @@ npx -y -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true
     <p class="actions">
       <a class="button" data-variant="primary" href="/coffee-places/latest/">Explore coffee places</a>
       <a class="button" href="/playground/">Check a file</a>
-      <a class="button" href="/fields/">Field guide</a>
     </p>
   </section>
 
@@ -49,6 +48,6 @@ npx -y -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true
     <h2 id="quick-start">Quick start</h2>
     <p>Each schema is served at its <code>$id</code>. Download the schema and the shared definitions it references, then validate a data file:</p>
     <pre><code>{quickStart}</code></pre>
-    <p>In JavaScript, <code>npm install @roastbook/open-coffee-schema</code> gives you TypeScript types, the schema files for Ajv and the allowed values of every list. To link to a field, use <code>{BASE_URL}coffee-places/latest/#field-serving.filter</code>; the path after <code>field-</code> is relative to one record.</p>
+    <p>In JavaScript, <code>@roastbook/open-coffee-schema</code> (GitHub Packages, <a href="https://github.com/Roastbook/open-coffee-schema/tree/main/packages/schema#install">install guide</a>) gives you TypeScript types, the schema files for Ajv and the allowed values of every list. To link to a field, use <code>{BASE_URL}coffee-places/latest/#field-serving.filter</code>; the path after <code>field-</code> is relative to one record.</p>
   </section>
 </Layout>

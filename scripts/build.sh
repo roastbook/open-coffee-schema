@@ -4,7 +4,7 @@
 source "$(dirname "$0")/lib.sh"
 install_deps
 rm -rf dist
-pnpm --filter @roastbook/open-coffee-schema-site build
+bun run --cwd site build
 
 for dir in schemas/*/; do
   family="$(basename "$dir")"
@@ -18,7 +18,7 @@ done
 test "$(cat dist/CNAME)" = "schema.roastbook.coffee"
 test -f dist/favicon.svg
 
-node -e '
+bun -e '
   const fs = require("node:fs"), path = require("node:path");
   let bytes = 0, files = 0;
   const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else { files++; bytes += fs.statSync(p).size; } } };

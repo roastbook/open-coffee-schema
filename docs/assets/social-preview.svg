@@ -19,8 +19,8 @@
     <rect x="614" y="430" width="120" height="44" rx="22" fill="#fbf5eb" stroke="#ead9bf"/>
     <text x="674" y="459" text-anchor="middle">JSON-LD</text>
     <rect x="748" y="430" width="160" height="44" rx="22" fill="#fbf5eb" stroke="#ead9bf"/>
-    <text x="828" y="459" text-anchor="middle">Field guide</text>
+    <text x="828" y="459" text-anchor="middle">TypeScript</text>
   </g>
   <text x="96" y="548" font-family="Hanken Grotesk Variable, sans-serif" font-size="26" font-weight="700" fill="#8a5a30">schema.roastbook.coffee</text>
-  <text x="1184" y="548" text-anchor="end" font-family="Hanken Grotesk Variable, sans-serif" font-size="22" fill="#796957">Apache-2.0 · CC BY 4.0 docs</text>
+  <text x="1184" y="548" text-anchor="end" font-family="Hanken Grotesk Variable, sans-serif" font-size="22" fill="#796957">MIT licensed</text>
 </svg>

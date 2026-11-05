@@ -1,11 +1,11 @@
 {
   "name": "@roastbook/open-coffee-schema-site",
   "private": true,
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build"
+    "dev": "bun --bun astro dev",
+    "build": "bun --bun astro build"
   },
   "dependencies": {
     "@roastbook/open-coffee-ui": "workspace:*",

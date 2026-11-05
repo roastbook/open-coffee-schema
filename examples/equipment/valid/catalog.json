@@ -1,39 +1,83 @@
 {
   "$schema": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.1.0.json",
-  "meta": { "version": "2026.11.05.1", "generated_at": "2026-11-05T12:00:00Z", "licence": "CC-BY-4.0", "attribution": "Roastbook Open Coffee" },
+  "meta": {
+    "version": "2026.11.05.1",
+    "generated_at": "2026-11-05T12:00:00Z",
+    "licence": "MIT",
+    "attribution": "Roastbook Open Coffee"
+  },
   "equipment": [
     {
       "id": "example-dripper-02",
       "name": "Example Dripper 02",
-      "manufacturer": { "name": "Example Coffee Tools", "country_code": "JP", "website": "https://tools.example.com/" },
+      "manufacturer": {
+        "name": "Example Coffee Tools",
+        "country_code": "JP",
+        "website": "https://tools.example.com/"
+      },
       "model": "Dripper",
-      "variants": ["01", "02", "03"],
+      "variants": [
+        "01",
+        "02",
+        "03"
+      ],
       "type": "brewer",
-      "brew_methods": ["pour-over"],
+      "brew_methods": [
+        "pour-over"
+      ],
       "released_year": 2004,
-      "brewer": { "mechanism": "percolation", "capacity_ml": 700, "material": ["ceramic", "plastic"], "filter_format": "cone_02", "filter_shape": "cone", "drive": "manual" },
-      "links": { "product": "https://tools.example.com/dripper" },
-      "method": "manual",
-      "confidence": 0.95,
-      "sources": [{ "source_id": "manufacturer-page", "url": "https://tools.example.com/dripper", "retrieved_at": "2026-11-05T12:00:00Z" }],
+      "brewer": {
+        "mechanism": "percolation",
+        "capacity_ml": 700,
+        "material": [
+          "ceramic",
+          "plastic"
+        ],
+        "filter_format": "cone_02",
+        "filter_shape": "cone",
+        "drive": "manual"
+      },
+      "links": {
+        "product": "https://tools.example.com/dripper"
+      },
       "checked_at": "2026-11-05T12:00:00Z"
     },
     {
       "id": "example-hand-grinder",
       "name": "Example Hand Grinder",
-      "manufacturer": { "name": "Example Grinders GmbH", "country_code": "DE" },
+      "manufacturer": {
+        "name": "Example Grinders GmbH",
+        "country_code": "DE"
+      },
       "type": "grinder",
-      "grinder": { "burr_mechanism": "conical", "burr_diameter_mm": 39, "adjustment_type": "stepped", "grind_setting_format": "whole_number", "grind_setting_min": 0, "grind_setting_max": 40, "brew_range": ["espresso", "filter"], "bean_feed": "single_dose", "drive": "manual" },
-      "sources": [{ "source_id": "manufacturer-page", "retrieved_at": "2026-11-05T12:00:00Z" }],
+      "grinder": {
+        "burr_mechanism": "conical",
+        "burr_diameter_mm": 39,
+        "adjustment_type": "stepped",
+        "grind_setting_format": "whole_number",
+        "grind_setting_min": 0,
+        "grind_setting_max": 40,
+        "brew_range": [
+          "espresso",
+          "filter"
+        ],
+        "bean_feed": "single_dose",
+        "drive": "manual"
+      },
       "checked_at": "2026-11-05T12:00:00Z"
     },
     {
       "id": "example-paper-filter-02",
       "name": "Example Paper Filter 02",
-      "manufacturer": { "name": "Example Coffee Tools" },
+      "manufacturer": {
+        "name": "Example Coffee Tools"
+      },
       "type": "filter",
-      "xref": { "gtin": ["4977642723801"] },
-      "sources": [{ "source_id": "manufacturer-page", "retrieved_at": "2026-11-05T12:00:00Z" }],
+      "xref": {
+        "gtin": [
+          "4977642723801"
+        ]
+      },
       "checked_at": "2026-11-05T12:00:00Z"
     }
   ]

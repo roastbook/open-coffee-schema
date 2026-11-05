@@ -3,7 +3,7 @@
   "version": "0.0.0-dev",
   "private": true,
   "description": "TypeScript types, JSON Schemas, JSON-LD context and allowed values of the Open Coffee standard (coffee places, equipment, brew methods). By Roastbook.",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "repository": {
@@ -26,7 +26,6 @@
     "typescript"
   ],
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "registry": "https://npm.pkg.github.com"
   }
 }

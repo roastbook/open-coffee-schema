@@ -1,9 +1,0 @@
----
-import Layout from "@roastbook/open-coffee-ui/Layout.astro";
-import { Content } from "../../../docs/fields.md";
-import { buildDate, latestOf } from "../lib/data.ts";
-import "../styles/site.css";
----
-<Layout title="Field guide" description="Every field of the Open Coffee standard explained in plain language." site="schema" version={latestOf("coffee-places").version} buildDate={buildDate}>
-  <article class="prose"><Content /></article>
-</Layout>

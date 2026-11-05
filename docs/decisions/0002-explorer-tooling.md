@@ -7,9 +7,9 @@ The Schema Explorer must render a property tree with types, required fields, enu
 | Option | Licence | Stack | 2020-12 | Theming and anchors | Verdict |
 |---|---|---|---|---|---|
 | json-schema-for-humans 1.5 | Apache-2.0 | Python CLI, Jinja templates, static HTML | Partial: no `unevaluatedProperties`, `$dynamicRef`; `if/then/else` shown as text | Own templates; anchors generated from internal ids | Rejected: second toolchain (Python) next to an Astro site, theming means forking its templates |
-| docusaurus-json-schema-plugin 1.15 | AGPL-3.0-or-later | Docusaurus (React) | Good | Docusaurus theme only | Rejected: AGPL conflicts with our Apache-2.0 site code, and it requires Docusaurus |
+| docusaurus-json-schema-plugin 1.15 | AGPL-3.0-or-later | Docusaurus (React) | Good | Docusaurus theme only | Rejected: AGPL conflicts with our MIT site code, and it requires Docusaurus |
 | @stoplight/json-schema-viewer 4.16 | Apache-2.0 | React component (Mosaic UI) | Partial (built for 4–2019-09; `$defs` ok, `unevaluatedProperties` ignored) | Mosaic styling; anchors not stable | Rejected: last release 2025-07, React runtime and Mosaic CSS in a static site |
-| **In-house renderer over Ajv** | Apache-2.0 | Astro components (~300 lines) | Full: Ajv 2020 does all validation; the renderer walks the resolved schema | Shared tokens; anchors are dotted field paths | **Chosen** |
+| **In-house renderer over Ajv** | MIT | Astro components (~300 lines) | Full: Ajv 2020 does all validation; the renderer walks the resolved schema | Shared tokens; anchors are dotted field paths | **Chosen** |
 
 ## Rationale
 

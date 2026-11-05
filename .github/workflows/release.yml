@@ -5,6 +5,7 @@
 #   node_setup: true
 #   assets_command: bash scripts/release-assets.sh "$TAG"
 #   npm_publish: true
+#   npm_package_dirs: release/npm release/npm-ui
 #   dispatch_repository: open-coffee-data
 #   dispatch_event: schema-released
 # @end-orcastrate
@@ -29,15 +30,15 @@ jobs:
     permissions:
       contents: read
       actions: read
-      id-token: write
-    uses: Roastbook/workflows/.github/workflows/release.yml@3fef09ed6f5c71c190a27ece5378697dbf76e8cb # main
+      packages: write
+    uses: Roastbook/workflows/.github/workflows/release.yml@baecffcb84dd5587b8cb91f64e09392e678704ae # main
     with:
       bump_type: ${{ inputs.bump_type }}
       ci_workflow: cupping.yml
       node_setup: true
       assets_command: bash scripts/release-assets.sh "$TAG"
-      # Turn on with the NPM_PUBLISH_ENABLED variable once the npm trusted publisher exists.
-      npm_publish: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+      npm_publish: true
+      npm_package_dirs: release/npm release/npm-ui
       dispatch_repository: open-coffee-data
       dispatch_event: schema-released
     secrets: inherit

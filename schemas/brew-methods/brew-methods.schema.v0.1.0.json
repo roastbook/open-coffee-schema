@@ -100,7 +100,6 @@
         "category",
         "extraction",
         "description",
-        "sources",
         "checked_at"
       ],
       "properties": {
@@ -176,7 +175,7 @@
           "title": "Typical parameters",
           "type": "object",
           "additionalProperties": false,
-          "description": "Common starting ranges, not rules. Each value cites its source in field_provenance.",
+          "description": "Common starting ranges, not rules.",
           "properties": {
             "dose_g": {
               "$ref": "#/$defs/range"
@@ -244,24 +243,8 @@
         "image": {
           "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/image"
         },
-        "method": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/method"
-        },
-        "confidence": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/confidence"
-        },
-        "sources": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/source_ref"
-          }
-        },
         "checked_at": {
           "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/datetime"
-        },
-        "field_provenance": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/field_provenance_map"
         },
         "filter_types": {
           "type": "array",

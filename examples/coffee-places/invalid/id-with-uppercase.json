@@ -3,7 +3,7 @@
   "meta": {
     "version": "2026.11.05.1",
     "generated_at": "2026-11-05T12:00:00Z",
-    "licence": "CC-BY-4.0",
+    "licence": "MIT",
     "attribution": "Roastbook Open Coffee",
     "schema_version": "0.1.0",
     "country_code": "DE",
@@ -32,12 +32,6 @@
       "open_sunday": true,
       "description": "Coffee-led espresso bar that roasts its own beans and serves pour-over and batch brew. Sells beans and brewing gear, and runs public cuppings.",
       "specialty_tier": "A",
-      "specialty_evidence": [
-        {
-          "claim": "Roasts its own coffee on site",
-          "url": "https://example.com/about"
-        }
-      ],
       "roasts_own_beans": true,
       "roasters_served": [
         {
@@ -108,38 +102,7 @@
           "id": "abc123",
           "url": "https://reviews.example.org/place/abc123"
         }
-      ],
-      "method": "llm_extraction",
-      "confidence": 0.9,
-      "sources": [
-        {
-          "source_id": "overture-places",
-          "retrieved_at": "2026-10-30T10:00:00Z"
-        },
-        {
-          "source_id": "place-website",
-          "url": "https://example.com/about",
-          "retrieved_at": "2026-11-01T09:00:00Z"
-        }
-      ],
-      "field_provenance": {
-        "opening_hours": {
-          "method": "crawl",
-          "confidence": 0.95,
-          "sources": [
-            {
-              "source_id": "place-website",
-              "url": "https://example.com/",
-              "retrieved_at": "2026-11-01T09:00:00Z"
-            }
-          ],
-          "checked_at": "2026-11-01T09:00:00Z"
-        },
-        "image": {
-          "method": "manual",
-          "confidence": 1
-        }
-      }
+      ]
     }
   ]
 }

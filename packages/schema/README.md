@@ -1,12 +1,35 @@
 # @roastbook/open-coffee-schema
 
-TypeScript types, JSON Schemas, the JSON-LD context and the allowed values of the [Open Coffee](https://schema.roastbook.coffee/) standard: coffee places, equipment, brew methods, sources and translations. By [Roastbook](https://roastbook.coffee/).
+TypeScript types, JSON Schemas, the JSON-LD context and the allowed values of the [Open Coffee](https://schema.roastbook.coffee/) standard: coffee places, equipment and brew methods. By [Roastbook](https://roastbook.coffee/).
 
 The package version is the release of the standard (`1.2.0` = tag `v1.2.0` of [Roastbook/open-coffee-schema](https://github.com/Roastbook/open-coffee-schema)). Each family keeps its own schema version inside it; see `SCHEMA_IDS`. No runtime dependencies.
 
-```sh
-npm install @roastbook/open-coffee-schema
+## Install
+
+The package is published to the GitHub npm registry, not npmjs.com. GitHub Packages needs a token even for public packages: a personal access token (classic) with `read:packages`, `gh auth token` (when `gh` has the `read:packages` scope: `gh auth refresh -s read:packages`), or `GITHUB_TOKEN` in GitHub Actions (job permission `packages: read`).
+
+Bun (`bunfig.toml` next to `package.json`):
+
+```toml
+[install.scopes]
+roastbook = { url = "https://npm.pkg.github.com/", token = "$NPM_GITHUB_TOKEN" }
 ```
+
+npm, pnpm or Yarn 1 (`.npmrc`):
+
+```ini
+@roastbook:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NPM_GITHUB_TOKEN}
+```
+
+Then:
+
+```sh
+export NPM_GITHUB_TOKEN="$(gh auth token)"
+bun add @roastbook/open-coffee-schema     # or: npm install @roastbook/open-coffee-schema
+```
+
+In GitHub Actions, pass `NPM_GITHUB_TOKEN: ${{ github.token }}` to the install step and grant the job `packages: read`. Workflows in any repository can install it this way while the package is public.
 
 ## Types
 
@@ -54,4 +77,4 @@ Names follow the type (`SpecialtyTier` → `SPECIALTY_TIER_VALUES`) or the famil
 
 ## Licence
 
-Apache-2.0. Field documentation: <https://schema.roastbook.coffee/fields/>. The data built on the standard is CC BY 4.0, attribution "Roastbook Open Coffee".
+MIT. Field documentation: <https://schema.roastbook.coffee/>.

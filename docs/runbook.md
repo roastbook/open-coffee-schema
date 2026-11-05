@@ -1,6 +1,6 @@
 # Runbook
 
-Operational procedures for `Roastbook/open-coffee-schema`. Every command runs from the repository root with Node 26 and pnpm.
+Operational procedures for `Roastbook/open-coffee-schema`. Every command runs from the repository root with Bun (`.bun-version`).
 
 ## Adding a schema version
 
@@ -16,7 +16,7 @@ Operational procedures for `Roastbook/open-coffee-schema`. Every command runs fr
 6. Update examples in `examples/<family>/valid/` (point `$schema` at the new version) and add invalid examples for new rules.
 7. Regenerate and check:
    ```sh
-   node scripts/generate.ts   # README stats block and docs/fields.md
+   bun scripts/generate.ts   # README stats block
    scripts/validate.sh        # fails if the bump is too small, a published file changed, or the context misses a field
    scripts/build.sh           # the new version gets /coffee-places/v0.2.0/, latest moves, diff pages appear
    ```
@@ -30,23 +30,41 @@ Nobody creates tags by hand.
 2. The shared workflow (`Roastbook/workflows`, `release.yml`) waits for a green `cupping.yml` run on the commit, computes `vX.Y.Z`, tags the commit, writes the release notes with git-cliff (`cliff.toml` is rendered from the shared preset by the workflows repository) and runs `scripts/release-assets.sh "$TAG"`.
 3. `scripts/release-assets.sh` builds only assets for the tag it receives:
    - `release/npm/`: the publishable `@roastbook/open-coffee-schema` package, version = tag without `v`;
-   - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
+   - `release/npm-ui/`: the publishable `@roastbook/open-coffee-ui` package (`packages/ui`), same version;
+   - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/roastbook-open-coffee-ui-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
    **Version rule:** the release version is the version of the whole standard. Every family's newest schema file must be at most the tag (a `coffee-places.schema.v2.0.0.json` cannot ship in `v1.4.0`); the script fails otherwise. Families keep their own versions below it.
-4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` to npm (when enabled) and sends `schema-released` to `open-coffee-data`. Pages redeploys from `serve.yml`.
+4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` and `release/npm-ui` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `serve.yml`.
 
-Try the asset build locally without publishing: `scripts/release-assets.sh v0.1.0`, then `cd release/npm && npm pack --dry-run`.
+Try the asset build locally without publishing: `scripts/release-assets.sh v0.1.0`, then `(cd release/npm && bun pm pack --dry-run)` and `(cd release/npm-ui && bun pm pack --dry-run)`.
 
-### npm publishing (trusted publishing)
+### Publishing to GitHub Packages
 
-The workflow publishes with npm trusted publishing: GitHub's OIDC token proves the run, so no npm token is stored. It runs `npm publish --provenance --access public` in `release/npm`. The package's `repository` (`https://github.com/Roastbook/open-coffee-schema`, directory `packages/schema`) must match for provenance.
+Both packages go to the GitHub npm registry (`https://npm.pkg.github.com`), not npmjs.com. Their `publishConfig.registry` points there and their `repository` field links them to `Roastbook/open-coffee-schema`. The publish job of the shared release workflow runs `npm publish` for each directory with the run's `GITHUB_TOKEN` (`packages: write` on that job only) and skips versions that already exist, so rerunning a release is safe. No npm account, token or repository variable is needed.
 
-One-time setup (an npm owner does this once):
+After the first release (one-time, an organisation owner):
 
-1. Create the npm organisation `roastbook` on npmjs.com.
-2. Publish the first version manually, because a trusted publisher can only be configured on an existing package: run the Release workflow with npm publishing off, download `roastbook-open-coffee-schema-X.Y.Z.tgz` from the GitHub Release and run `npm publish roastbook-open-coffee-schema-X.Y.Z.tgz --access public` while logged in to npm with 2FA. (Alternative: a short-lived granular access token limited to `@roastbook/open-coffee-schema`, used for the first release only, then deleted.)
-3. On npmjs.com → package → Settings → Trusted publishing, add GitHub Actions: organisation `Roastbook`, repository `open-coffee-schema`, workflow `release.yml`, no environment.
-4. Set the repository variable `NPM_PUBLISH_ENABLED=true` (Settings → Secrets and variables → Actions → Variables). Later releases publish automatically.
-5. Optionally, in the package settings, require 2FA and disallow tokens so only the trusted publisher can publish.
+1. Open each package (Roastbook organisation → Packages → `open-coffee-schema`, then `open-coffee-ui`) and check that it is linked to this repository.
+2. Package settings → Danger Zone → **Change visibility** → Public, unless it already inherited public visibility from the repository. A new package can start private.
+3. While a package is public, workflows in every repository can install it with their own `GITHUB_TOKEN`. If it stays private or internal: package settings → **Manage Actions access** → Add repository → `open-coffee-data`, role Read.
+4. Then refresh the data repository's lockfile once (`bun install` there, commit `bun.lock`); see its runbook.
+
+### Installing the packages
+
+Consumers map the `@roastbook` scope to GitHub Packages and pass a token with `read:packages` (GitHub Packages requires one even for public packages):
+
+```toml
+# bunfig.toml
+[install.scopes]
+roastbook = { url = "https://npm.pkg.github.com/", token = "$NPM_GITHUB_TOKEN" }
+```
+
+```ini
+# .npmrc (npm, pnpm, Yarn 1)
+@roastbook:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NPM_GITHUB_TOKEN}
+```
+
+Locally: `export NPM_GITHUB_TOKEN="$(gh auth token)"` (the token needs `read:packages`: `gh auth refresh -s read:packages`). In GitHub Actions: `NPM_GITHUB_TOKEN: ${{ github.token }}` and the job permission `packages: read`; the shared `setup` action does this.
 
 ## Rolling back a Pages deploy
 

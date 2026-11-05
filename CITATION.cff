@@ -8,7 +8,7 @@ authors:
     website: "https://roastbook.coffee/"
 repository-code: "https://github.com/Roastbook/open-coffee-schema"
 url: "https://schema.roastbook.coffee/"
-license: Apache-2.0
+license: MIT
 keywords:
   - open data
   - open standard

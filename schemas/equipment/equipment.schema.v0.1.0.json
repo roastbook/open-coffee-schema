@@ -633,7 +633,6 @@
         "name",
         "type",
         "manufacturer",
-        "sources",
         "checked_at"
       ],
       "properties": {
@@ -778,24 +777,8 @@
         "basket": {
           "$ref": "#/$defs/basket"
         },
-        "method": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/method"
-        },
-        "confidence": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/confidence"
-        },
-        "sources": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/source_ref"
-          }
-        },
         "checked_at": {
           "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/datetime"
-        },
-        "field_provenance": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/field_provenance_map"
         },
         "mpn": {
           "type": "string",

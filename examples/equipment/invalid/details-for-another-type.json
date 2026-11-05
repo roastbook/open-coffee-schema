@@ -3,7 +3,7 @@
   "meta": {
     "version": "2026.11.05.1",
     "generated_at": "2026-11-05T12:00:00Z",
-    "licence": "CC-BY-4.0",
+    "licence": "MIT",
     "attribution": "Roastbook Open Coffee"
   },
   "equipment": [
@@ -40,15 +40,6 @@
       "links": {
         "product": "https://tools.example.com/dripper"
       },
-      "method": "manual",
-      "confidence": 0.95,
-      "sources": [
-        {
-          "source_id": "manufacturer-page",
-          "url": "https://tools.example.com/dripper",
-          "retrieved_at": "2026-11-05T12:00:00Z"
-        }
-      ],
       "checked_at": "2026-11-05T12:00:00Z",
       "grinder": {
         "burr_mechanism": "flat"

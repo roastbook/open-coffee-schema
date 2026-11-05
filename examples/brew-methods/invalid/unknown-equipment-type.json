@@ -3,7 +3,7 @@
   "meta": {
     "version": "2026.11.05.1",
     "generated_at": "2026-11-05T12:00:00Z",
-    "licence": "CC-BY-4.0",
+    "licence": "MIT",
     "attribution": "Roastbook Open Coffee"
   },
   "brew_methods": [
@@ -57,14 +57,6 @@
         "bloom_water_g",
         "brew_time_seconds",
         "pour_count"
-      ],
-      "method": "manual",
-      "confidence": 0.9,
-      "sources": [
-        {
-          "source_id": "manual-review",
-          "retrieved_at": "2026-11-05T12:00:00Z"
-        }
       ],
       "checked_at": "2026-11-05T12:00:00Z"
     }

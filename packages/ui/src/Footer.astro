@@ -9,8 +9,8 @@ const { site, version, buildDate } = Astro.props;
     <p>
       <strong>Roastbook Open Coffee</strong>.{" "}
       {site === "data"
-        ? <>Data licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, attribution “Roastbook Open Coffee”. Images licensed per file. No Google Maps or OpenStreetMap data.</>
-        : <>Schemas and code licensed <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>, documentation <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</>}
+        ? <>Data licensed <a href="https://opensource.org/license/mit">MIT</a>. Images keep their own licence, credited on each place. No Google Maps or OpenStreetMap data.</>
+        : <>Licensed <a href="https://opensource.org/license/mit">MIT</a>.</>}
     </p>
     <p class="muted tabular">
       {version && <>{site === "data" ? "Dataset" : "Schema"} {version} · </>}

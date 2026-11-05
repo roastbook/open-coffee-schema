@@ -61,7 +61,7 @@ await check("2. Schemas against the 2020-12 meta-schema (Ajv strict + ajv-format
     try { ajv.getSchema(f.json.$id); } catch (e) { fail(`${f.path}: ${(e as Error).message}`); }
     try {
       const undocumented = buildModel(f, reg).sections.flatMap((s) => flatten(s.root)).filter((n) => n.path && !n.description && !n.title);
-      if (undocumented.length && f === families.get(f.family)?.at(-1)) warnings.push(`${f.path}: ${undocumented.length} fields without a description (field guide shows "—"): ${undocumented.slice(0, 8).map((n) => n.path).join(", ")}${undocumented.length > 8 ? ", …" : ""}`);
+      if (undocumented.length && f === families.get(f.family)?.at(-1)) warnings.push(`${f.path}: ${undocumented.length} fields without a description (the explorer shows "—"): ${undocumented.slice(0, 8).map((n) => n.path).join(", ")}${undocumented.length > 8 ? ", …" : ""}`);
     } catch (e) { fail(`${f.path}: ${(e as Error).message}`); }
   }
 });
@@ -164,9 +164,9 @@ await check("6. JSON-LD context: expands and compacts the valid examples lossles
   }
 });
 
-await check("7. Generated files are up to date (README stats, docs/fields.md)", () => {
+await check("7. Generated README stats block is up to date", () => {
   for (const [path, content] of generated(ROOT)) {
-    if (!existsSync(join(ROOT, path)) || readFileSync(join(ROOT, path), "utf8") !== content) fail(`${path} is stale: run node scripts/generate.ts and commit the result`);
+    if (!existsSync(join(ROOT, path)) || readFileSync(join(ROOT, path), "utf8") !== content) fail(`${path} is stale: run bun scripts/generate.ts and commit the result`);
   }
 });
 

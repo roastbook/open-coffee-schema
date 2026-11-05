@@ -7,7 +7,7 @@ install_deps
 
 work="$ROOT/.cache/social-preview"
 rm -rf "$work" && mkdir -p "$work"
-font() { find -L node_modules/.pnpm -path "*$1*/files/*latin-wght-normal.woff2" | head -n1; }
+font() { find -L packages/ui/node_modules -path "*$1*/files/*latin-wght-normal.woff2" | head -n1; }
 cp "$(font bricolage-grotesque)" "$work/display.woff2"
 cp "$(font hanken-grotesk)" "$work/body.woff2"
 {
@@ -22,7 +22,7 @@ port=9333
 docker run -d --rm --name oc-social-preview -p "127.0.0.1:$port:9222" -v "$work:/work:ro" chromedp/headless-shell:stable >/dev/null
 trap 'docker rm -f oc-social-preview >/dev/null 2>&1 || true' EXIT
 # Drive Chrome over the DevTools protocol: fixed 1280x640 viewport, wait for fonts, screenshot.
-node - "$port" "$work/out.png" <<'JS'
+bun run - "$port" "$work/out.png" <<'JS'
 const [port, out] = process.argv.slice(2);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let target;

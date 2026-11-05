@@ -12,6 +12,6 @@ import { fieldUrl } from "@roastbook/open-coffee-ui/sites";
 </Layout>
 ```
 
-`open-coffee-data` installs it from this repository at a pinned commit (`github:Roastbook/open-coffee-schema#<sha>&path:packages/ui`); Renovate bumps the commit.
+The release workflow publishes it to the GitHub npm registry (`https://npm.pkg.github.com`) with the same version as `@roastbook/open-coffee-schema`; `open-coffee-data` installs it from there. Configure the `@roastbook` scope as described in [`packages/schema/README.md`](../schema/README.md#install). Inside this repository the Schema Explorer uses it through the Bun workspace (`workspace:*`).
 
-Licences: code and tokens Apache-2.0; `assets/` (logo) all rights reserved, see `assets/LICENSE.md`.
+Licence: MIT.

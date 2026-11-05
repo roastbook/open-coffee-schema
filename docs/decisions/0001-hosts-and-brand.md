@@ -21,4 +21,4 @@ The open-coffee sites reuse the Roastbook app brand instead of inventing a secon
 - Type: Bricolage Grotesque (display) and Hanken Grotesk (body), both SIL OFL 1.1, self-hosted.
 - Logo: the three roast bars mark, redrawn as SVG in `packages/ui`.
 - Tokens, header, footer and theme switch live in `packages/ui` (`@roastbook/open-coffee-ui`) and are consumed by both sites as a package, not copied.
-- Brand assets are all rights reserved (see `packages/ui/assets/LICENSE.md`); code and tokens are Apache-2.0.
+- Everything, including the logo files, is MIT-licensed. MIT grants no trademark rights to the Roastbook name.

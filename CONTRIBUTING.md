@@ -1,6 +1,6 @@
 # Contributing to Open Coffee Schema
 
-Thank you for helping improve the standard. This repository holds the schemas, the JSON-LD context, the field guide and the Schema Explorer. To add or correct a café, a piece of equipment or a brew method, go to [Roastbook/open-coffee-data](https://github.com/Roastbook/open-coffee-data) instead.
+Thank you for helping improve the standard. This repository holds the schemas, the JSON-LD context and the Schema Explorer. To add or correct a café, a piece of equipment or a brew method, go to [Roastbook/open-coffee-data](https://github.com/Roastbook/open-coffee-data) instead.
 
 ## Proposing a change
 
@@ -12,18 +12,17 @@ Thank you for helping improve the standard. This repository holds the schemas, t
 
 - Never edit a published schema file. Copy the newest file to a new version (`coffee-places.schema.v1.1.0.json`), change its `$id`, and edit the copy. CI compares every file with every `v*` tag.
 - Additive optional fields: minor bump. Removing or tightening anything: major bump. Wording only: patch bump. CI computes the needed bump and fails when yours is too small. While the standard is a pre-release (0.x), everything shifts down one place: a breaking change needs a minor bump (0.1 → 0.2) and an addition a patch bump; 1.0.0 marks the first stable release.
-- Every new field needs a plain-language `description`; the [field guide](docs/fields.md) is generated from it.
+- Every new field needs a plain-language `description`; the Schema Explorer shows it on every version page.
 - Add or update examples in `examples/<family>/valid/` and `examples/<family>/invalid/`.
 - Coffee places: map every new field in a new version of the JSON-LD context (`coffee-places.context.vX.Y.Z.jsonld`). CI fails if a field is not mapped.
-- Run `node scripts/generate.ts` to refresh the README numbers and the field guide, then `scripts/validate.sh` and `scripts/build.sh`.
+- Run `bun scripts/generate.ts` to refresh the README numbers, then `scripts/validate.sh` and `scripts/build.sh`.
 
 ## Local setup
 
-Node 26 and pnpm (via corepack):
+Bun (the version in `.bun-version`):
 
 ```sh
-corepack enable    # or: COREPACK_HOME=$HOME/.cache/corepack corepack pnpm …
-pnpm install
+bun install
 scripts/validate.sh   # the same checks CI runs
 scripts/build.sh      # builds the Schema Explorer into dist/
 ```
@@ -40,7 +39,7 @@ Pull requests without a sign-off on every commit cannot be merged. To fix the la
 
 ## Licences of contributions
 
-Contributions to `schemas/`, `lib/`, `scripts/`, `site/` and `packages/` are licensed Apache-2.0, to `docs/` CC BY 4.0, and to `examples/` CC0 1.0. Do not contribute data or text copied from closed sources (Google Maps, review sites, closed coffee guides) or from OpenStreetMap.
+All contributions are licensed MIT, like the rest of the repository. Do not contribute data or text copied from closed sources (Google Maps, review sites, closed coffee guides) or from OpenStreetMap.
 
 ## Conduct
 

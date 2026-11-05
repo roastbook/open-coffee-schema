@@ -1,5 +1,5 @@
 // Assembles the npm package @roastbook/open-coffee-schema from packages/schema/ and the schema files.
-// Usage: node scripts/build-package.ts <version> <outDir>. Called by scripts/release-assets.sh.
+// Usage: bun scripts/build-package.ts <version> <outDir>. Called by scripts/release-assets.sh.
 import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { compile } from "json-schema-to-typescript";
@@ -9,7 +9,7 @@ import { buildModel, flatten } from "../lib/tree.ts";
 const ROOT = join(import.meta.dirname, "..");
 const [version, outDir] = process.argv.slice(2);
 if (!/^\d+\.\d+\.\d+$/.test(version ?? "") || !outDir) {
-  console.error("usage: node scripts/build-package.ts <X.Y.Z> <outDir>");
+  console.error("usage: bun scripts/build-package.ts <X.Y.Z> <outDir>");
   process.exit(2);
 }
 
@@ -25,12 +25,11 @@ if (ahead.length) {
 
 // ---- Type names --------------------------------------------------------------------------------
 const pascal = (s: string) => s.replace(/(^|[^a-zA-Z0-9]+)([a-zA-Z0-9])/g, (_, __, c: string) => c.toUpperCase());
-const PREFIX: Record<string, string> = { "coffee-places": "CoffeePlace", equipment: "Equipment", "brew-methods": "BrewMethod", sources: "Source", translations: "Translation", common: "" };
-const ROOT_NAME: Record<string, string> = { "coffee-places": "CoffeePlacesDataset", equipment: "EquipmentCatalog", "brew-methods": "BrewMethodsDataset", sources: "SourcesAllowList", translations: "TranslationsFile" };
+const PREFIX: Record<string, string> = { "coffee-places": "CoffeePlace", equipment: "Equipment", "brew-methods": "BrewMethod", common: "" };
+const ROOT_NAME: Record<string, string> = { "coffee-places": "CoffeePlacesDataset", equipment: "EquipmentCatalog", "brew-methods": "BrewMethodsDataset" };
 const DEF_NAME: Record<string, string> = {
   "coffee-places#place": "CoffeePlace", "coffee-places#tier": "SpecialtyTier",
   "brew-methods#brew_method": "BrewMethod", "brew-methods#parameter": "BrewParameter", "brew-methods#grind_size": "GrindSize",
-  "sources#source": "Source",
   // Avoid shadowing globals such as Date and URL.
   "common#id": "OpenCoffeeId", "common#date": "IsoDate", "common#datetime": "IsoDateTime", "common#url": "HttpUrl",
 };

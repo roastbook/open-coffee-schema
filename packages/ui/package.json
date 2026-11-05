@@ -1,9 +1,17 @@
 {
   "name": "@roastbook/open-coffee-ui",
-  "version": "0.1.0",
+  "version": "0.0.0-dev",
+  "private": true,
   "description": "Shared header, footer, layout and design tokens for the Roastbook Open Coffee sites.",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Roastbook/open-coffee-schema",
+    "directory": "packages/ui"
+  },
+  "homepage": "https://schema.roastbook.coffee/",
+  "bugs": "https://github.com/Roastbook/open-coffee-schema/issues",
   "exports": {
     "./Layout.astro": "./src/Layout.astro",
     "./tokens.css": "./src/tokens.css",
@@ -15,5 +23,8 @@
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.2.0",
     "@fontsource-variable/hanken-grotesk": "^5.2.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

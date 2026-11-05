@@ -3,7 +3,7 @@
 # JSON-LD context, generated docs. Writes .roast/report.json. Usage: scripts/validate.sh
 source "$(dirname "$0")/lib.sh"
 install_deps
-node scripts/validate.ts
+bun scripts/validate.ts
 
 if command -v actionlint >/dev/null 2>&1; then
   actionlint && echo "✓ actionlint"
