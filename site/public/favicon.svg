@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="96 124 334 246">
+  <style>.d{stroke:#3b1803;fill:#3b1803}@media (prefers-color-scheme:dark){.d{stroke:#ecdbc5;fill:#ecdbc5}}</style>
+  <path d="M141 168H319" stroke="#d28d43" stroke-width="44" stroke-linecap="round"/>
+  <path d="M141 247H285" stroke="#a95e1f" stroke-width="44" stroke-linecap="round"/>
+  <path class="d" d="M141 326H243" stroke-width="44" stroke-linecap="round"/>
+  <circle cx="385" cy="168" r="22" fill="#d28d43"/>
+  <circle cx="351" cy="247" r="22" fill="#a95e1f"/>
+  <circle class="d" cx="308" cy="326" r="22"/>
+</svg>

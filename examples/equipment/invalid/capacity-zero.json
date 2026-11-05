@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.roastbook.coffee/equipment/equipment.schema.v1.0.0.json",
+  "meta": {
+    "version": "2026.11.05.1",
+    "generated_at": "2026-11-05T12:00:00Z",
+    "licence": "CC-BY-4.0",
+    "attribution": "Roastbook Open Coffee"
+  },
+  "equipment": [
+    {
+      "id": "example-dripper-02",
+      "name": "Example Dripper 02",
+      "manufacturer": {
+        "name": "Example Coffee Tools",
+        "country_code": "JP",
+        "website": "https://tools.example.com/"
+      },
+      "model": "Dripper",
+      "variants": [
+        "01",
+        "02",
+        "03"
+      ],
+      "type": "brewer",
+      "brew_methods": [
+        "pour-over"
+      ],
+      "released_year": 2004,
+      "brewer": {
+        "mechanism": "percolation",
+        "capacity_ml": 0,
+        "material": [
+          "ceramic",
+          "plastic"
+        ],
+        "filter_format": "cone_02",
+        "filter_shape": "cone",
+        "drive": "manual"
+      },
+      "links": {
+        "product": "https://tools.example.com/dripper"
+      },
+      "method": "manual",
+      "confidence": 0.95,
+      "sources": [
+        {
+          "source_id": "manufacturer-page",
+          "url": "https://tools.example.com/dripper",
+          "retrieved_at": "2026-11-05T12:00:00Z"
+        }
+      ],
+      "checked_at": "2026-11-05T12:00:00Z"
+    }
+  ]
+}

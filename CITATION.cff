@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use the Open Coffee standard, please cite it as below."
+title: "Open Coffee Schema"
+abstract: "An open standard for describing coffee places, equipment and brew methods: JSON Schema, a JSON-LD context and plain-language docs."
+type: software
+authors:
+  - name: "Roastbook"
+    website: "https://roastbook.coffee/"
+repository-code: "https://github.com/Roastbook/open-coffee-schema"
+url: "https://schema.roastbook.coffee/"
+license: Apache-2.0
+keywords:
+  - open data
+  - open standard
+  - json schema
+  - json-ld
+  - schema.org
+  - coffee
+  - specialty coffee
+  - cafes

@@ -1,0 +1,20 @@
+{
+  "name": "open-coffee-schema",
+  "private": true,
+  "description": "Open standard for describing coffee places: JSON Schema, JSON-LD context and docs. By Roastbook.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": { "node": ">=26" },
+  "scripts": {
+    "validate": "scripts/validate.sh",
+    "build": "scripts/build.sh",
+    "generate": "node scripts/generate.ts"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "json-schema-to-typescript": "^16.0.0",
+    "jsonld": "^9.0.0"
+  }
+}

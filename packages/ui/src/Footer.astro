@@ -1,0 +1,26 @@
+---
+import { SITES } from "./sites";
+
+export interface Props { site: "schema" | "data"; version?: string; buildDate?: string }
+const { site, version, buildDate } = Astro.props;
+---
+<footer class="rb-footer">
+  <div class="rb-footer__inner">
+    <p>
+      <strong>Roastbook Open Coffee</strong>.{" "}
+      {site === "data"
+        ? <>Data licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, attribution “Roastbook Open Coffee”. Images licensed per file. No Google Maps or OpenStreetMap data.</>
+        : <>Schemas and code licensed <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>, documentation <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</>}
+    </p>
+    <p class="muted tabular">
+      {version && <>{site === "data" ? "Dataset" : "Schema"} {version} · </>}
+      {buildDate && <>Built {buildDate} · </>}
+      <a href={SITES.schemaRepo}>open-coffee-schema</a> · <a href={SITES.dataRepo}>open-coffee-data</a> · <a href={SITES.roastbook}>roastbook.coffee</a>
+    </p>
+  </div>
+</footer>
+<style>
+  .rb-footer { border-top: 1px solid var(--border); font-size: 0.875rem; }
+  .rb-footer__inner { max-width: var(--max-width); margin: 0 auto; padding: 1.25rem var(--gutter) 2rem; }
+  .rb-footer p { margin: 0.25rem 0; }
+</style>

@@ -1,0 +1,71 @@
+/* Schema Explorer styles on top of @roastbook/open-coffee-ui tokens. */
+.lead { font-size: 1.125rem; max-width: 46rem; }
+.eyebrow { margin: 0 0 0.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
+.eyebrow a { color: inherit; }
+.hero { padding: 1rem 0 0.5rem; }
+@media (min-width: 768px) { .hero h1 { font-size: 3rem; } }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.button { text-decoration: none; font-weight: 600; color: var(--foreground); }
+.button[data-variant="primary"] { color: var(--primary-foreground); }
+section { margin-top: 2rem; }
+h1 .badge { vertical-align: middle; font-family: var(--font-sans); letter-spacing: 0; }
+.badge--latest { color: var(--positive-text); }
+.badge--required { color: var(--destructive-text); border-color: currentColor; background: transparent; }
+
+.families { list-style: none; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
+@media (min-width: 640px) { .families { gap: 1rem; } }
+.families h3 { margin: 0 0 0.25rem; }
+.families p { margin: 0.4rem 0; }
+
+.versions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; margin: 1rem 0; }
+.versions a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.75rem; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; font-weight: 600; background: var(--card); }
+.versions a[aria-current="page"] { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+
+.facts { display: grid; grid-template-columns: 1fr; gap: 0.25rem 1rem; margin: 1rem 0; }
+.facts dt { font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.4rem; }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+@media (min-width: 768px) { .facts { grid-template-columns: max-content 1fr; } .facts dt { margin-top: 0; } }
+.toc ul { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0; list-style: none; }
+.toc a { display: inline-block; padding: 0.6rem 0; }
+
+.tree { list-style: none; margin: 0; padding: 0; }
+.tree .tree { margin: 0.5rem 0 0.25rem 0.4rem; padding-left: 0.9rem; border-left: 2px solid var(--border); }
+.field { padding: 0.6rem 0.75rem; margin: 0.25rem 0; border-radius: 0.75rem; scroll-margin-top: 1rem; }
+.field:target { background: var(--secondary); outline: 2px solid var(--primary); }
+.field__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem 0.5rem; }
+.field__name { font-weight: 700; text-decoration: none; }
+.field__name code { font-size: 0.95rem; background: none; padding: 0; color: var(--link); }
+.field__name:hover code { text-decoration: underline; }
+.field__path { font-family: var(--font-mono); font-size: 0.8125rem; overflow-wrap: anywhere; }
+.field p { margin: 0.25rem 0; max-width: 52rem; }
+.field__meta, .field__ref { font-size: 0.875rem; overflow-wrap: anywhere; }
+.field__meta code { margin-right: 0.15rem; }
+.field__rule { font-size: 0.875rem; color: var(--destructive-text); }
+.field__rule::before { content: "Rule: "; font-weight: 600; }
+
+details.card { margin: 0.5rem 0; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+details pre { max-height: 32rem; margin: 0.75rem 0 0; }
+
+.pairs, .changes { padding-left: 1.25rem; }
+.pairs a { display: inline-block; padding: 0.6rem 0; }
+.changes li { margin: 0.4rem 0; overflow-wrap: anywhere; }
+.breaking { color: var(--destructive-text); }
+.addition { color: var(--positive-text); }
+.patch { color: var(--muted-foreground); }
+
+.playground label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 600; }
+.playground .row { display: grid; gap: 0.75rem; grid-template-columns: 1fr; margin-bottom: 1rem; }
+@media (min-width: 768px) { .playground .row { grid-template-columns: 1fr 2fr; } }
+.playground select { width: 100%; }
+.playground textarea { width: 100%; margin-top: 0.3rem; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.45; resize: vertical; }
+.result:empty { display: none; }
+.result { margin-top: 1rem; }
+.result:focus { outline: none; }
+.errors { padding-left: 1.25rem; }
+.errors li { margin: 0.5rem 0; overflow-wrap: anywhere; }
+
+.prose { max-width: 64rem; overflow-wrap: anywhere; }
+.prose table { display: block; overflow-x: auto; font-size: 0.875rem; }
+.prose td:first-child { white-space: nowrap; }
+.prose td code { overflow-wrap: anywhere; }

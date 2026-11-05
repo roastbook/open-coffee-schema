@@ -1,0 +1,130 @@
+---
+import Layout from "@roastbook/open-coffee-ui/Layout.astro";
+import { anchorsOf } from "../../../lib/tree.ts";
+import { buildDate, examplesOf, families, familyNames, files, latestOf, modelOf } from "../lib/data.ts";
+import "../styles/site.css";
+
+const targets = familyNames.filter((f) => f !== "common").flatMap((family) =>
+  families.get(family)!.slice().reverse().map((file) => {
+    const m = modelOf(file);
+    return {
+      key: `${family}@${file.version}`, family, version: file.version, id: file.json.$id,
+      recordKey: m.recordKey ?? null, recordRef: m.recordKey ? file.json.properties[m.recordKey].items.$ref : null,
+      recordTitle: m.recordTitle ?? null, anchors: anchorsOf(m),
+    };
+  }));
+const data = {
+  schemas: files.map((f) => ({ id: f.json.$id, url: `/${f.family}/${f.fileName}` })),
+  targets,
+  examples: familyNames.flatMap(examplesOf),
+};
+---
+<Layout title="Playground" description="Validate a coffee place record or a whole data file in your browser." site="schema" version={latestOf("coffee-places").version} buildDate={buildDate}>
+  <h1>Playground</h1>
+  <p class="lead">Paste one record or a whole data file and check it against any schema version. Everything runs in your browser with <a href="https://ajv.js.org/">Ajv</a>, the same validator CI uses; nothing is uploaded.</p>
+
+  <form id="pg" class="playground card">
+    <div class="row">
+      <label>Schema
+        <select id="pg-schema" name="schema">
+          {targets.map((t) => <option value={t.key}>{t.family} v{t.version}</option>)}
+        </select>
+      </label>
+      <label>Load an example
+        <select id="pg-example" name="example">
+          <option value="">Choose…</option>
+          {data.examples.map((e, i) => <option value={i} data-family={e.family}>{e.kind === "valid" ? "Valid" : "Invalid"}: {e.family}/{e.name}</option>)}
+        </select>
+      </label>
+    </div>
+    <label for="pg-input">JSON (one record or a whole file)</label>
+    <textarea id="pg-input" name="input" rows="18" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder='{ "id": "cp-7k2m9x4qvd", "name": "Corner Café", … }'></textarea>
+    <p class="muted">A file with <code>$schema</code> is checked against the version it names. A single record is checked against the record definition of the selected version.</p>
+    <p><button type="submit" data-variant="primary">Validate</button></p>
+  </form>
+
+  <section id="pg-result" class="result" role="status" aria-live="polite" tabindex="-1"></section>
+
+  <script type="application/json" id="pg-data" set:html={JSON.stringify(data).replace(/</g, "\\u003c")} />
+</Layout>
+
+<script>
+  import Ajv2020 from "ajv/dist/2020";
+  import addFormats from "ajv-formats";
+  import { explain, locate, type Target } from "../lib/explain";
+
+  const data = JSON.parse(document.getElementById("pg-data")!.textContent!);
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const form = $<HTMLFormElement>("pg"), select = $<HTMLSelectElement>("pg-schema"), example = $<HTMLSelectElement>("pg-example");
+  const input = $<HTMLTextAreaElement>("pg-input"), result = $<HTMLElement>("pg-result");
+
+  const wanted = new URLSearchParams(location.search).get("schema");
+  if (wanted && [...select.options].some((o) => o.value === wanted)) select.value = wanted;
+
+  let ajv: Ajv2020 | undefined;
+  async function getAjv() {
+    if (ajv) return ajv;
+    const a = new Ajv2020({ allErrors: true, strict: false });
+    addFormats(a);
+    for (const s of data.schemas) a.addSchema(await (await fetch(s.url)).json());
+    return (ajv = a);
+  }
+
+  example.addEventListener("change", () => {
+    const e = data.examples[Number(example.value)];
+    if (!e) return;
+    input.value = e.text;
+    const t = data.targets.find((t: Target) => t.family === e.family);
+    if (t) select.value = t.key;
+  });
+
+  const el = (tag: string, props: Record<string, string> = {}, ...kids: (Node | string)[]) => {
+    const n = document.createElement(tag);
+    Object.assign(n, props);
+    n.append(...kids);
+    return n;
+  };
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    result.replaceChildren(el("p", {}, "Checking…"));
+    let doc: any;
+    try { doc = JSON.parse(input.value); } catch (e) {
+      result.replaceChildren(el("h2", { className: "breaking" }, "Not valid JSON"), el("p", {}, (e as Error).message));
+      result.focus();
+      return;
+    }
+    let target: Target = data.targets.find((t: Target) => t.key === select.value);
+    const named = typeof doc?.$schema === "string" ? data.targets.find((t: Target) => t.id === doc.$schema) : undefined;
+    if (named) { target = named; select.value = named.key; }
+    const asRecord = !named && target.recordRef && doc && typeof doc === "object" && !Array.isArray(doc) && !(target.recordKey! in doc) && !("meta" in doc);
+    try {
+      const a = await getAjv();
+      const validate = a.getSchema(asRecord ? `${target.id}${target.recordRef}` : target.id)!;
+      const ok = validate(doc);
+      const what = asRecord ? `one ${target.recordTitle} record` : target.recordKey && Array.isArray(doc?.[target.recordKey]) ? `a file with ${doc[target.recordKey].length} record(s)` : "a file";
+      const head = `${target.family} v${target.version}`;
+      if (ok) {
+        result.replaceChildren(el("h2", { className: "addition" }, "✓ Valid"), el("p", {}, `Checked ${what} against ${head}.`));
+      } else {
+        const seen = new Set<string>();
+        const items = (validate.errors ?? []).filter((e) => e.keyword !== "if").flatMap((e) => {
+          const loc = locate(e, doc, target, asRecord);
+          const msg = explain(e);
+          const k = `${loc.where}|${msg}`;
+          if (seen.has(k)) return [];
+          seen.add(k);
+          return [el("li", {}, el("strong", {}, loc.where), " ", msg, " ",
+            ...(loc.anchor ? [el("a", { href: `/${target.family}/v${target.version}/#${loc.anchor}` }, "What this field means")] : []))];
+        });
+        result.replaceChildren(
+          el("h2", { className: "breaking" }, `✗ ${items.length} problem${items.length === 1 ? "" : "s"} found`),
+          el("p", {}, `Checked ${what} against ${head}.`),
+          el("ul", { className: "errors" }, ...items));
+      }
+    } catch (e) {
+      result.replaceChildren(el("h2", { className: "breaking" }, "Could not run the check"), el("p", {}, (e as Error).message));
+    }
+    result.focus();
+  });
+</script>

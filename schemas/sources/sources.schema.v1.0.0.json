@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/sources/sources.schema.v1.0.0.json",
+  "title": "Open Coffee source allow-list",
+  "description": "Every source a record may cite. Adding or changing an entry is a human-reviewed pull request.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/sources/sources\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$"
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "licence",
+        "allowed_for",
+        "how_to_use",
+        "vetted",
+        "checked_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "open_dataset",
+            "roaster_page",
+            "primary_website",
+            "social_profile",
+            "web_search",
+            "open_knowledge",
+            "image_repository",
+            "community",
+            "verification_api",
+            "manufacturer_page",
+            "retailer_page",
+            "standards_body"
+          ]
+        },
+        "url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/url"
+        },
+        "licence": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SPDX identifier, or a short statement such as 'facts only, no copyright claimed'."
+        },
+        "attribution": {
+          "type": "string",
+          "description": "Attribution text that must accompany data derived from this source."
+        },
+        "allowed_for": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "discovery",
+              "facts",
+              "images",
+              "verification"
+            ]
+          }
+        },
+        "how_to_use": {
+          "type": "string",
+          "minLength": 10
+        },
+        "vetted": {
+          "type": "boolean",
+          "description": "A maintainer checked the licence and terms."
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/date"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Add or correct a place
+    url: https://github.com/Roastbook/open-coffee-data/issues/new/choose
+    about: Café owners and contributors: add, correct, claim or report a closed place in the dataset repository.
+  - name: Propose a source
+    url: https://github.com/Roastbook/open-coffee-data/issues/new/choose
+    about: New sources for the allow-list are reviewed in the dataset repository.
+  - name: Questions and ideas
+    url: https://github.com/Roastbook/open-coffee-schema/discussions
+    about: Ask questions or discuss ideas before proposing a change.
+  - name: Report a security issue
+    url: https://github.com/Roastbook/open-coffee-schema/security/advisories/new
+    about: Please report vulnerabilities privately.

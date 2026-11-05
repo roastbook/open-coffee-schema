@@ -1,0 +1,1059 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/equipment/equipment.schema.v1.0.0.json",
+  "title": "Open Coffee equipment catalog",
+  "description": "Coffee equipment models (machines, grinders, brewers, kettles, scales and accessories) as sold, not individual owned items. Measurements put the unit in the property name. Part of Roastbook Open Coffee; derived from the Roastbook journal gear model.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "equipment"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/equipment/equipment\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$"
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "type": {
+      "title": "Equipment type",
+      "enum": [
+        "espresso_machine",
+        "espresso_machine_with_grinder",
+        "grinder",
+        "brewer",
+        "kettle",
+        "scale",
+        "tamper",
+        "wdt",
+        "basket",
+        "filter",
+        "roaster",
+        "milk_frother",
+        "accessory"
+      ],
+      "description": "espresso_machine_with_grinder is an espresso machine with a built-in grinder; filter covers paper and metal filters; accessory covers everything without a dedicated type (puck screens, distribution tools, thermometers, dosing cups)."
+    },
+    "espresso_machine": {
+      "title": "Espresso machine details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "heating_architecture": {
+          "enum": [
+            "single_boiler",
+            "heat_exchanger",
+            "dual_boiler",
+            "multi_boiler",
+            "single_thermoblock",
+            "dual_thermoblock",
+            "hybrid",
+            "manual",
+            "other"
+          ]
+        },
+        "temperature_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable",
+            "programmable"
+          ]
+        },
+        "pressure_control": {
+          "enum": [
+            "fixed",
+            "adjustable_opv",
+            "manual",
+            "programmable"
+          ]
+        },
+        "flow_control": {
+          "enum": [
+            "none",
+            "manual",
+            "programmable"
+          ]
+        },
+        "preinfusion_control": {
+          "enum": [
+            "none",
+            "supported",
+            "fixed",
+            "adjustable",
+            "programmable"
+          ]
+        },
+        "steam_system": {
+          "enum": [
+            "none",
+            "shared_heater",
+            "dedicated_heater"
+          ]
+        },
+        "simultaneous_brew_and_steam": {
+          "type": "boolean"
+        },
+        "pump_type": {
+          "enum": [
+            "vibration",
+            "rotary",
+            "gear",
+            "peristaltic",
+            "manual",
+            "other"
+          ]
+        },
+        "water_source_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "reservoir",
+              "plumbed"
+            ]
+          }
+        },
+        "shot_stop_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "manual",
+              "weight",
+              "time",
+              "volume"
+            ]
+          }
+        },
+        "group_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "portafilter_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "brew_pressure_min_bar": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "brew_pressure_max_bar": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "brew_temperature_min_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "brew_temperature_max_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reservoir_capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "power_w": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "group_type": {
+          "enum": [
+            "e61",
+            "saturated",
+            "semi_saturated",
+            "lever",
+            "integrated",
+            "other"
+          ]
+        },
+        "boiler_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "connectivity": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bluetooth",
+              "wifi",
+              "usb"
+            ]
+          }
+        }
+      }
+    },
+    "grinder": {
+      "title": "Grinder details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "burr_mechanism": {
+          "enum": [
+            "conical",
+            "flat",
+            "ghost",
+            "roller",
+            "blade",
+            "other"
+          ]
+        },
+        "burr_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "burr_material": {
+          "enum": [
+            "steel",
+            "ceramic",
+            "titanium_coated",
+            "other"
+          ]
+        },
+        "adjustment_type": {
+          "enum": [
+            "fixed",
+            "stepped",
+            "stepless"
+          ]
+        },
+        "grind_setting_format": {
+          "enum": [
+            "whole_number",
+            "decimal",
+            "string"
+          ],
+          "description": "How the dial reads, so journals can store settings."
+        },
+        "grind_setting_min": {
+          "type": "number"
+        },
+        "grind_setting_max": {
+          "type": "number"
+        },
+        "brew_range": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "espresso",
+              "filter",
+              "turkish"
+            ]
+          }
+        },
+        "bean_feed": {
+          "enum": [
+            "single_dose",
+            "hopper",
+            "both"
+          ]
+        },
+        "dose_control_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "manual",
+              "time",
+              "weight"
+            ]
+          }
+        },
+        "drive": {
+          "enum": [
+            "manual",
+            "electric"
+          ]
+        },
+        "motor_power_w": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "grind_setting_step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Smallest step between settings on a stepped dial."
+        },
+        "microns_per_step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Burr gap change per setting step, as stated by the maker or measured."
+        },
+        "retention_g": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rpm_min": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "rpm_max": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "brewer": {
+      "title": "Brewer details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanism": {
+          "enum": [
+            "percolation",
+            "immersion",
+            "hybrid",
+            "press",
+            "vacuum",
+            "boiling",
+            "other"
+          ],
+          "description": "How water and coffee meet; matches brew method categories."
+        },
+        "capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cup_capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Nominal number of cups the maker states."
+        },
+        "material": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ceramic",
+              "glass",
+              "plastic",
+              "stainless_steel",
+              "copper",
+              "aluminium",
+              "porcelain",
+              "wood",
+              "silicone",
+              "other"
+            ]
+          }
+        },
+        "filter_format": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Filter shape or size, e.g. cone_02, flat_185, chemex_6cup, aeropress_round, metal_mesh."
+        },
+        "filter_shape": {
+          "enum": [
+            "cone",
+            "flat_bottom",
+            "basket",
+            "disc",
+            "none"
+          ]
+        },
+        "flow_control": {
+          "enum": [
+            "fixed",
+            "manual_valve",
+            "programmable"
+          ]
+        },
+        "drive": {
+          "enum": [
+            "manual",
+            "electric",
+            "stovetop"
+          ]
+        }
+      }
+    },
+    "kettle": {
+      "title": "Kettle details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capacity_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "spout_type": {
+          "enum": [
+            "gooseneck",
+            "standard",
+            "other"
+          ]
+        },
+        "temperature_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ]
+        },
+        "temperature_min_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "temperature_max_celsius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "supports_temperature_hold": {
+          "type": "boolean"
+        },
+        "heat_source": {
+          "enum": [
+            "electric",
+            "stovetop",
+            "induction_compatible",
+            "other"
+          ]
+        }
+      }
+    },
+    "scale": {
+      "title": "Scale details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resolution_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "capacity_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "has_timer": {
+          "type": "boolean"
+        },
+        "supports_auto_tare": {
+          "type": "boolean"
+        },
+        "supports_auto_timer": {
+          "type": "boolean"
+        },
+        "has_flow_rate_display": {
+          "type": "boolean"
+        },
+        "connectivity": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bluetooth",
+              "wifi",
+              "usb"
+            ]
+          }
+        }
+      }
+    },
+    "tamper": {
+      "title": "Tamper details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "force_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ]
+        },
+        "base_shape": {
+          "enum": [
+            "flat",
+            "convex",
+            "rippled",
+            "other"
+          ]
+        },
+        "self_leveling": {
+          "type": "boolean"
+        }
+      }
+    },
+    "wdt": {
+      "title": "WDT tool details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "needle_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "needle_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "depth_control": {
+          "enum": [
+            "none",
+            "fixed",
+            "adjustable"
+          ]
+        }
+      }
+    },
+    "basket": {
+      "title": "Portafilter basket details",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "single",
+            "double",
+            "triple",
+            "other"
+          ]
+        },
+        "diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "nominal_dose_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "dose_min_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "dose_max_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "pressurized": {
+          "type": "boolean"
+        },
+        "precision": {
+          "type": "boolean"
+        }
+      }
+    },
+    "item": {
+      "title": "Equipment model",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "type",
+        "manufacturer",
+        "sources",
+        "checked_at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id",
+          "description": "Stable readable slug of manufacturer and model, e.g. hario-v60-02. Never reused.",
+          "examples": [
+            "hario-v60-02"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Full display name, e.g. Hario V60 02."
+        },
+        "manufacturer": {
+          "title": "Manufacturer",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "manufacturer_id": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id",
+              "description": "Reserved for a future manufacturers dataset."
+            },
+            "country_code": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/country_code"
+            },
+            "website": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/url"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variants": {
+          "type": "array",
+          "description": "Sizes or materials sold under the same model, e.g. 01 and 02, ceramic and plastic.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "type": {
+          "$ref": "#/$defs/type"
+        },
+        "brew_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "Brew method ids from the Open Coffee brew methods dataset this equipment is made for.",
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id"
+          }
+        },
+        "released_year": {
+          "type": "integer",
+          "minimum": 1800,
+          "maximum": 2100
+        },
+        "discontinued": {
+          "type": "boolean"
+        },
+        "links": {
+          "title": "Links",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "product": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/url"
+            },
+            "manual": {
+              "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/url"
+            }
+          }
+        },
+        "image": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/image"
+        },
+        "xref": {
+          "title": "Identifiers elsewhere",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wikidata": {
+              "type": "string",
+              "pattern": "^Q[1-9][0-9]*$"
+            },
+            "gtin": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9]{8,14}$"
+              }
+            },
+            "google_product_category": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Google Product Taxonomy id (Wikidata P11302)."
+            },
+            "gs1_gpc_brick": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "GS1 Global Product Classification brick code (Wikidata P8957)."
+            }
+          }
+        },
+        "espresso_machine": {
+          "$ref": "#/$defs/espresso_machine"
+        },
+        "grinder": {
+          "$ref": "#/$defs/grinder"
+        },
+        "brewer": {
+          "$ref": "#/$defs/brewer"
+        },
+        "kettle": {
+          "$ref": "#/$defs/kettle"
+        },
+        "scale": {
+          "$ref": "#/$defs/scale"
+        },
+        "tamper": {
+          "$ref": "#/$defs/tamper"
+        },
+        "wdt": {
+          "$ref": "#/$defs/wdt"
+        },
+        "basket": {
+          "$ref": "#/$defs/basket"
+        },
+        "method": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/method"
+        },
+        "confidence": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/confidence"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/source_ref"
+          }
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/datetime"
+        },
+        "field_provenance": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/field_provenance_map"
+        },
+        "mpn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Manufacturer part number."
+        },
+        "weight_g": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "dimensions_mm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "espresso_machine"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "espresso_machine_with_grinder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "grinder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "brewer"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "kettle"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "scale"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "tamper"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "wdt"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "basket"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "filter"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "roaster"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "milk_frother"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "accessory"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "espresso_machine": false,
+              "grinder": false,
+              "brewer": false,
+              "kettle": false,
+              "scale": false,
+              "tamper": false,
+              "wdt": false,
+              "basket": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

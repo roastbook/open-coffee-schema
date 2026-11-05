@@ -1,0 +1,13 @@
+---
+import { families } from "../lib/data.ts";
+
+export interface Props { family: string; current?: string }
+const { family, current } = Astro.props;
+const versions = families.get(family)!.map((f) => f.version).reverse();
+---
+<nav class="versions" aria-label="Versions">
+  <span class="muted">Version</span>
+  <a href={`/${family}/latest/`} aria-current={current === "latest" ? "page" : undefined}>latest</a>
+  {versions.map((v) => <a href={`/${family}/v${v}/`} aria-current={current === v ? "page" : undefined}>v{v}</a>)}
+  <a href={`/${family}/diff/`} aria-current={current === "diff" ? "page" : undefined}>Compare versions</a>
+</nav>

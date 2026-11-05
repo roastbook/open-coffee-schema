@@ -1,0 +1,76 @@
+---
+import Layout from "@roastbook/open-coffee-ui/Layout.astro";
+import FieldTree from "../../../components/FieldTree.astro";
+import FamilyNav from "../../../components/FamilyNav.astro";
+import { buildDate, contextsOf, examplesOf, families, latestOf, modelOf } from "../../../lib/data.ts";
+import { BASE_URL } from "../../../../../lib/schemas.ts";
+import "../../../styles/site.css";
+
+export function getStaticPaths() {
+  return [...families].flatMap(([family, versions]) => [
+    ...versions.map((file) => ({ params: { family, version: `v${file.version}` }, props: { file, alias: false } })),
+    { params: { family, version: "latest" }, props: { file: versions.at(-1)!, alias: true } },
+  ]);
+}
+
+const { file, alias } = Astro.props;
+const { family } = Astro.params;
+const model = modelOf(file);
+const isLatest = latestOf(family).version === file.version;
+const examples = examplesOf(family).filter((e) => e.kind === "valid" && JSON.parse(e.text).$schema === file.json.$id);
+const contexts = contextsOf(family);
+const canonical = `${BASE_URL}${family}/v${file.version}/`;
+const hasRecords = model.sections.some((s) => s.id === "field") && model.recordKey;
+---
+<Layout title={`${family} v${file.version}`} description={model.description} site="schema" version={file.version} buildDate={buildDate} canonical={canonical}>
+  <p class="eyebrow"><a href="/">Schemas</a> / {family}</p>
+  <h1>{model.title ?? family} <span class="badge tabular">v{file.version}</span> {isLatest && <span class="badge badge--latest">latest</span>}</h1>
+  {alias && <p class="muted">This page always shows the newest version. Link to <a href={canonical}>v{file.version}</a> for a stable reference.</p>}
+  {model.description && <p class="lead">{model.description}</p>}
+  <FamilyNav family={family} current={alias ? "latest" : file.version} />
+
+  <dl class="facts card">
+    <dt>$id</dt><dd><a href={`/${family}/${file.fileName}`}><code>{file.json.$id}</code></a></dd>
+    {isLatest && <><dt>Latest alias</dt><dd><a href={`/${family}/${family}.schema.latest.json`}><code>{`${BASE_URL}${family}/${family}.schema.latest.json`}</code></a></dd></>}
+    {contexts.length > 0 && <><dt>JSON-LD context</dt><dd>{contexts.map((c) => <a href={`/${family}/${c}`}><code>{`${BASE_URL}${family}/${c}`}</code></a>)}</dd></>}
+    {hasRecords && <><dt>Records</dt><dd>Listed under <a href={`#file-${model.recordKey}`}><code>{model.recordKey}</code></a>. Field links such as <code>#field-…</code> are relative to one record.</dd></>}
+    {family !== "common" && <><dt>Check a file</dt><dd><a href={`/playground/?schema=${family}@${file.version}`}>Open in the Playground</a></dd></>}
+  </dl>
+
+  <nav class="toc" aria-label="On this page">
+    <ul>
+      {model.sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      {examples.length > 0 && <li><a href="#examples">Examples</a></li>}
+      <li><a href="#raw">Raw JSON</a></li>
+    </ul>
+  </nav>
+
+  {model.sections.map((s) => (
+    <section class="schema-section" aria-labelledby={s.id}>
+      <h2 id={s.id}>{s.title}</h2>
+      {s.description && <p>{s.description}</p>}
+      {s.root.rules.map((r) => <p class="field__rule">{r}</p>)}
+      <FieldTree nodes={s.root.children.length ? s.root.children : [s.root]} recordHref="#field" />
+    </section>
+  ))}
+
+  {examples.length > 0 && (
+    <section aria-labelledby="examples">
+      <h2 id="examples">Examples</h2>
+      {examples.map((e) => (
+        <details class="card example">
+          <summary><code>examples/{family}/valid/{e.name}</code></summary>
+          <pre><code>{e.text}</code></pre>
+        </details>
+      ))}
+    </section>
+  )}
+
+  <section aria-labelledby="raw">
+    <h2 id="raw">Raw JSON</h2>
+    <details class="card">
+      <summary>Show <code>{file.fileName}</code></summary>
+      <pre><code>{file.raw}</code></pre>
+    </details>
+  </section>
+</Layout>

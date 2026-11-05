@@ -1,0 +1,67 @@
+// Self-test for the breaking-change rules (lib/diff.ts), the unknown-keyword guard (lib/tree.ts) and the playground's
+// error wording and field links (site/src/lib/explain.ts). Run by validate.sh.
+import assert from "node:assert/strict";
+import { Registry, type SchemaFile } from "../lib/schemas.ts";
+import { buildModel } from "../lib/tree.ts";
+import { checkBump, diffModels, requiredBump } from "../lib/diff.ts";
+import { explain, locate, type Target } from "../site/src/lib/explain.ts";
+
+const file = (version: string, place: object): SchemaFile => {
+  const json = {
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $id: `https://schema.roastbook.coffee/test/test.schema.v${version}.json`,
+    type: "object",
+    properties: { items: { type: "array", items: { $ref: "#/$defs/rec" } } },
+    $defs: { rec: { type: "object", ...place } },
+  };
+  return { family: "test", version, path: "", fileName: "", expectedId: json.$id, raw: "", json };
+};
+const base = {
+  required: ["id"],
+  properties: { id: { type: "string" }, kind: { enum: ["a", "b"] }, n: { type: "integer", maximum: 10 }, tags: { type: "array", items: { type: "string" } } },
+};
+const bump = (next: object) => {
+  const a = file("1.0.0", base), b = file("1.1.0", next);
+  const reg = new Registry([a, b]);
+  return requiredBump(diffModels(buildModel(a, reg), buildModel(b, reg)));
+};
+const withProps = (p: object, extra: object = {}) => ({ ...base, ...extra, properties: { ...base.properties, ...p } });
+
+assert.equal(bump(base), "none");
+assert.equal(bump(withProps({ note: { type: "string" } })), "minor", "new optional field");
+assert.equal(bump({ ...withProps({ note: { type: "string" } }), required: ["id", "note"] }), "major", "new required field");
+assert.equal(bump({ ...base, properties: { id: base.properties.id, kind: base.properties.kind, n: base.properties.n } }), "major", "removed field");
+assert.equal(bump(withProps({ kind: { enum: ["a"] } })), "major", "narrowed enum");
+assert.equal(bump(withProps({ kind: { enum: ["a", "b", "c"] } })), "minor", "widened enum");
+assert.equal(bump(withProps({ n: { type: "integer", maximum: 5 } })), "major", "tightened maximum");
+assert.equal(bump(withProps({ n: { type: "integer", maximum: 20 } })), "minor", "loosened maximum");
+assert.equal(bump(withProps({ n: { type: "integer", maximum: 10, minimum: 1 } })), "major", "added minimum");
+assert.equal(bump(withProps({ id: { type: "string", pattern: "^x" } })), "major", "added pattern");
+assert.equal(bump(withProps({ id: { type: ["string", "integer"] } })), "minor", "widened type");
+assert.equal(bump(withProps({ n: { type: "number", maximum: 10 } })), "minor", "integer to number widens");
+assert.equal(bump(withProps({ id: { type: "integer" } })), "major", "changed type");
+assert.equal(bump(withProps({}, { additionalProperties: false })), "major", "closed object");
+assert.equal(bump(withProps({ tags: { type: "array", items: { type: "string" }, uniqueItems: true } })), "major", "uniqueItems added");
+assert.equal(bump(withProps({ id: { type: "string", description: "x" } })), "patch", "description only");
+assert.equal(bump(withProps({}, { allOf: [{ if: { properties: { kind: { const: "a" } } }, then: { properties: { n: false } } }] })), "major", "new conditional rule");
+
+assert.match(checkBump("1.0.0", "1.1.0", [{ anchor: "", path: "x", section: "", severity: "breaking", text: "" }]) ?? "", /major bump/);
+assert.equal(checkBump("1.0.0", "2.0.0", [{ anchor: "", path: "x", section: "", severity: "breaking", text: "" }]), null);
+assert.match(checkBump("1.1.0", "1.0.0", []) ?? "", /not newer/);
+assert.equal(checkBump("1.0.0", "1.0.1", [{ anchor: "", path: "x", section: "", severity: "patch", text: "" }]), null);
+
+assert.throws(() => { const f = file("1.0.0", { ...base, oneOf: [] }); buildModel(f, new Registry([f])); }, /Unknown JSON Schema keyword "oneOf"/);
+
+const t: Target = { key: "", family: "coffee-places", version: "1.0.0", id: "", recordKey: "places", recordRef: "#/$defs/place", recordTitle: "Coffee place",
+  anchors: ["field", "field-serving", "field-serving.filter", "field-field_provenance", "field-field_provenance.*", "field-field_provenance.*.confidence", "field-sources", "field-sources.url", "file", "file-meta", "file-meta.version"] };
+const doc = { places: [{ name: "Corner Café" }] };
+const err = (instancePath: string, keyword: string, params: object) => ({ instancePath, keyword, params, schemaPath: "" });
+assert.deepEqual(locate(err("/places/0/serving/filter", "type", { type: "boolean" }), doc, t, false), { where: "Coffee place 1 (“Corner Café”) → serving.filter", anchor: "field-serving.filter" });
+assert.deepEqual(locate(err("/places/0/field_provenance/opening_hours/confidence", "maximum", {}), doc, t, false).anchor, "field-field_provenance.*.confidence");
+assert.deepEqual(locate(err("/places/0/sources/1/url", "format", {}), doc, t, false).where, "Coffee place 1 (“Corner Café”) → sources #2.url");
+assert.deepEqual(locate(err("/meta/version", "pattern", {}), doc, t, false), { where: "meta.version", anchor: "file-meta.version" });
+assert.deepEqual(locate(err("/serving", "required", { missingProperty: "filter" }), {}, t, true), { where: "serving", anchor: "field-serving.filter" });
+assert.equal(locate(err("/serving", "additionalProperties", { additionalProperty: "drip" }), {}, t, true).anchor, "field-serving");
+assert.equal(explain(err("", "type", { type: "boolean" }) as any), "Must be true or false.");
+assert.equal(explain(err("", "maximum", { comparison: "<=", limit: 1 }) as any), "Must be at most 1.");
+console.log("self-test: ok");

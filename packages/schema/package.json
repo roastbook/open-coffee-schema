@@ -1,0 +1,32 @@
+{
+  "name": "@roastbook/open-coffee-schema",
+  "version": "0.0.0-dev",
+  "private": true,
+  "description": "TypeScript types, JSON Schemas, JSON-LD context and allowed values of the Open Coffee standard (coffee places, equipment, brew methods). By Roastbook.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Roastbook/open-coffee-schema",
+    "directory": "packages/schema"
+  },
+  "homepage": "https://schema.roastbook.coffee/",
+  "bugs": "https://github.com/Roastbook/open-coffee-schema/issues",
+  "keywords": [
+    "open-coffee",
+    "roastbook",
+    "json-schema",
+    "json-ld",
+    "schema-org",
+    "coffee",
+    "specialty-coffee",
+    "cafes",
+    "open-data",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

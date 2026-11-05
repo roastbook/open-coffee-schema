@@ -1,0 +1,41 @@
+{
+  "$comment": "Draft entry for https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json. Not submitted yet; submit after v1.0.0 is published and the URLs resolve.",
+  "entries": [
+    {
+      "name": "Open Coffee places",
+      "description": "Roastbook Open Coffee dataset file listing coffee places of one city",
+      "fileMatch": ["**/datasets/coffee-places/**/*.json"],
+      "url": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.latest.json",
+      "versions": {
+        "1.0.0": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v1.0.0.json"
+      }
+    },
+    {
+      "name": "Open Coffee equipment",
+      "description": "Roastbook Open Coffee catalog of coffee equipment models",
+      "fileMatch": ["**/datasets/equipment/**/*.json"],
+      "url": "https://schema.roastbook.coffee/equipment/equipment.schema.latest.json",
+      "versions": {
+        "1.0.0": "https://schema.roastbook.coffee/equipment/equipment.schema.v1.0.0.json"
+      }
+    },
+    {
+      "name": "Open Coffee brew methods",
+      "description": "Roastbook Open Coffee list of coffee brew methods",
+      "fileMatch": ["**/datasets/brew-methods/**/*.json"],
+      "url": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.latest.json",
+      "versions": {
+        "1.0.0": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v1.0.0.json"
+      }
+    },
+    {
+      "name": "Open Coffee sources",
+      "description": "Roastbook Open Coffee source allow-list",
+      "fileMatch": ["**/open-coffee-data/datasets/sources.json"],
+      "url": "https://schema.roastbook.coffee/sources/sources.schema.latest.json",
+      "versions": {
+        "1.0.0": "https://schema.roastbook.coffee/sources/sources.schema.v1.0.0.json"
+      }
+    }
+  ]
+}

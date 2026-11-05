@@ -1,0 +1,19 @@
+{
+  "name": "@roastbook/open-coffee-ui",
+  "version": "0.1.0",
+  "description": "Shared header, footer, layout and design tokens for the Roastbook Open Coffee sites.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    "./Layout.astro": "./src/Layout.astro",
+    "./tokens.css": "./src/tokens.css",
+    "./sites": "./src/sites.ts",
+    "./mark.svg": "./assets/mark.svg"
+  },
+  "files": ["src", "assets"],
+  "peerDependencies": { "astro": "^5.0.0 || ^6.0.0 || ^7.0.0" },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.2.0",
+    "@fontsource-variable/hanken-grotesk": "^5.2.0"
+  }
+}

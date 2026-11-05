@@ -1,0 +1,54 @@
+---
+import Layout from "@roastbook/open-coffee-ui/Layout.astro";
+import { buildDate, contextsOf, familyNames, families, latestOf, modelOf } from "../lib/data.ts";
+import { BASE_URL } from "../../../lib/schemas.ts";
+import "../styles/site.css";
+
+const cp = latestOf("coffee-places");
+const quickStart = `curl -sSO ${cp.expectedId}
+curl -sSO ${BASE_URL}common/common.schema.v${latestOf("common").version}.json
+curl -sSO https://data.roastbook.coffee/datasets/coffee-places/de/munich.json
+
+npx -y -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true -c ajv-formats \\
+  -s ${cp.fileName} -r common.schema.v${latestOf("common").version}.json -d munich.json`;
+---
+<Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment and brew methods." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL}>
+  <section class="hero">
+    <h1>Open Coffee Schema</h1>
+    <p class="lead">An open standard for describing coffee places, equipment and brew methods. Every fact carries its source, every version has a permanent address, and anyone may reuse it.</p>
+    <p class="actions">
+      <a class="button" data-variant="primary" href="/coffee-places/latest/">Explore coffee places</a>
+      <a class="button" href="/playground/">Check a file</a>
+      <a class="button" href="/fields/">Field guide</a>
+    </p>
+  </section>
+
+  <section aria-labelledby="what">
+    <h2 id="what">What the standard is</h2>
+    <p>Open Coffee is a set of <a href="https://json-schema.org/">JSON Schema</a> (draft 2020-12) files. A data file names the exact schema version it follows in <code>$schema</code>, so any program can check it. Coffee places also have a <a href={`/coffee-places/${contextsOf("coffee-places").at(-1)}`}>JSON-LD context</a> that maps them to schema.org <code>CafeOrCoffeeShop</code>. Published versions never change; new fields arrive in new versions, and the <a href="/coffee-places/diff/">comparison pages</a> show what changed. The data built on this standard is the <a href="https://data.roastbook.coffee/">Open Coffee dataset</a>.</p>
+  </section>
+
+  <section aria-labelledby="families">
+    <h2 id="families">Schema families</h2>
+    <ul class="families">
+      {familyNames.map((family) => {
+        const latest = latestOf(family), m = modelOf(latest);
+        return (
+          <li class="card">
+            <h3><a href={`/${family}/latest/`}>{m.title ?? family}</a></h3>
+            <p class="muted tabular"><code>{family}</code> · v{latest.version} · {families.get(family)!.length} version{families.get(family)!.length === 1 ? "" : "s"}</p>
+            <p>{m.description}</p>
+            <p class="links"><a href={`/${family}/${latest.fileName}`}>JSON</a> · <a href={`/${family}/diff/`}>Compare versions</a>{family !== "common" && <> · <a href={`/playground/?schema=${family}@${latest.version}`}>Playground</a></>}</p>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  <section aria-labelledby="quick-start">
+    <h2 id="quick-start">Quick start</h2>
+    <p>Each schema is served at its <code>$id</code>. Download the schema and the shared definitions it references, then validate a data file:</p>
+    <pre><code>{quickStart}</code></pre>
+    <p>In JavaScript, <code>npm install @roastbook/open-coffee-schema</code> gives you TypeScript types, the schema files for Ajv and the allowed values of every list. To link to a field, use <code>{BASE_URL}coffee-places/latest/#field-serving.filter</code>; the path after <code>field-</code> is relative to one record.</p>
+  </section>
+</Layout>

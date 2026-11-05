@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <rect width="1280" height="640" fill="#f6eddf"/>
+  <rect x="40" y="40" width="1200" height="560" rx="32" fill="#ffffff" stroke="#ead9bf" stroke-width="2"/>
+  <g transform="translate(96 150) scale(0.9)">
+    <path d="M45 44H223" stroke="#d28d43" stroke-width="44" stroke-linecap="round"/>
+    <path d="M45 123H189" stroke="#a95e1f" stroke-width="44" stroke-linecap="round"/>
+    <path d="M45 202H147" stroke="#3b1803" stroke-width="44" stroke-linecap="round"/>
+    <circle cx="289" cy="44" r="22" fill="#d28d43"/>
+    <circle cx="255" cy="123" r="22" fill="#a95e1f"/>
+    <circle cx="212" cy="202" r="22" fill="#3b1803"/>
+  </g>
+  <text x="440" y="200" font-family="Hanken Grotesk Variable, sans-serif" font-size="34" font-weight="700" fill="#796957">Roastbook</text>
+  <text x="436" y="282" font-family="Bricolage Grotesque Variable, sans-serif" font-size="70" font-weight="800" letter-spacing="-2" fill="#3a2a1e">Open Coffee Schema</text>
+  <text x="440" y="346" font-family="Hanken Grotesk Variable, sans-serif" font-size="30" fill="#3a2a1e">An open standard for coffee places,</text>
+  <text x="440" y="386" font-family="Hanken Grotesk Variable, sans-serif" font-size="30" fill="#3a2a1e">equipment and brew methods.</text>
+  <g font-family="Hanken Grotesk Variable, sans-serif" font-size="22" font-weight="600" fill="#6f4e37">
+    <rect x="440" y="430" width="160" height="44" rx="22" fill="#fbf5eb" stroke="#ead9bf"/>
+    <text x="520" y="459" text-anchor="middle">JSON Schema</text>
+    <rect x="614" y="430" width="120" height="44" rx="22" fill="#fbf5eb" stroke="#ead9bf"/>
+    <text x="674" y="459" text-anchor="middle">JSON-LD</text>
+    <rect x="748" y="430" width="160" height="44" rx="22" fill="#fbf5eb" stroke="#ead9bf"/>
+    <text x="828" y="459" text-anchor="middle">Field guide</text>
+  </g>
+  <text x="96" y="548" font-family="Hanken Grotesk Variable, sans-serif" font-size="26" font-weight="700" fill="#8a5a30">schema.roastbook.coffee</text>
+  <text x="1184" y="548" text-anchor="end" font-family="Hanken Grotesk Variable, sans-serif" font-size="22" fill="#796957">Apache-2.0 · CC BY 4.0 docs</text>
+</svg>

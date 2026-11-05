@@ -1,0 +1,38 @@
+---
+import Layout from "@roastbook/open-coffee-ui/Layout.astro";
+import FamilyNav from "../../../../components/FamilyNav.astro";
+import { buildDate, families, modelOf } from "../../../../lib/data.ts";
+import { diffModels, requiredBump, checkBump, type Severity } from "../../../../../../lib/diff.ts";
+import "../../../../styles/site.css";
+
+export function getStaticPaths() {
+  return [...families].flatMap(([family, vs]) =>
+    vs.flatMap((a, i) => vs.slice(i + 1).map((b) => ({ params: { family, pair: `v${a.version}...v${b.version}` }, props: { a, b } }))));
+}
+const { a, b } = Astro.props;
+const { family } = Astro.params;
+const changes = diffModels(modelOf(a), modelOf(b));
+const need = requiredBump(changes);
+const problem = checkBump(a.version, b.version, changes);
+const groups: [Severity, string][] = [["breaking", "Breaking changes"], ["addition", "Additions and relaxed rules"], ["patch", "Wording and examples"]];
+---
+<Layout title={`${family} v${a.version} → v${b.version}`} site="schema" version={b.version} buildDate={buildDate}>
+  <p class="eyebrow"><a href="/">Schemas</a> / <a href={`/${family}/latest/`}>{family}</a> / <a href={`/${family}/diff/`}>compare</a></p>
+  <h1>{family}: v{a.version} → v{b.version}</h1>
+  <FamilyNav family={family} current="diff" />
+  <p class="card">{changes.length} change{changes.length === 1 ? "" : "s"}. The changes need a <strong>{need}</strong> version bump. {problem ? <span class="breaking">{problem.split("\n")[0]}</span> : "The version number reflects that."}</p>
+  {groups.map(([sev, title]) => {
+    const list = changes.filter((c) => c.severity === sev);
+    return list.length > 0 && (
+      <section>
+        <h2 class={sev}>{title} ({list.length})</h2>
+        <ul class="changes">
+          {list.map((c) => {
+            const removed = c.text === "Field removed.";
+            return <li><a href={`/${family}/v${removed ? a.version : b.version}/#${c.anchor}`}><code>{c.path || c.section}</code></a> <span class="muted">({c.section})</span> {c.text}</li>;
+          })}
+        </ul>
+      </section>
+    );
+  })}
+</Layout>

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.roastbook.coffee/sources/sources.schema.v1.0.0.json",
+  "meta": {
+    "version": "2026.11.05.1",
+    "generated_at": "2026-11-05T12:00:00Z",
+    "licence": "CC-BY-4.0",
+    "attribution": "Roastbook Open Coffee"
+  },
+  "sources": [
+    {
+      "id": "overture-places",
+      "name": "Overture Maps Foundation, places theme",
+      "kind": "open_dataset",
+      "url": "https://docs.overturemaps.org/guides/places/",
+      "licence": "CDLA-Permissive-2.0",
+      "attribution": "Overture Maps Foundation",
+      "allowed_for": [
+        "discovery",
+        "facts"
+      ],
+      "how_to_use": "Query the GeoParquet release for coffee categories inside the city boundary. Keep only records whose every sources[].dataset is CDLA-Permissive-2.0 or Apache-2.0 licensed; drop any record carrying OpenStreetMap data. Store the GERS id in xref.overture and keep the attribution.",
+      "checked_at": "2026-11-05"
+    }
+  ]
+}
