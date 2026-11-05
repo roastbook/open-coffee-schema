@@ -49,7 +49,7 @@ export interface FieldNode {
   closed: boolean;
   forbidden: boolean;
   rules: string[];
-  /** Where the definition comes from, e.g. common.schema.v1.0.0.json#/$defs/address */
+  /** Where the definition comes from, e.g. common.schema.v0.1.0.json#/$defs/address */
   ref?: string;
   /** Set on the file-level array that holds the records described in the record section. */
   recordOf?: string;

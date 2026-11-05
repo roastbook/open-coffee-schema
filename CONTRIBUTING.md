@@ -4,14 +4,14 @@ Thank you for helping improve the standard. This repository holds the schemas, t
 
 ## Proposing a change
 
-1. Open a ["Propose a schema change"](https://github.com/Roastbook/open-coffee-schema/issues/new?template=schema-change.yml) issue. Describe the real-world fact you want to record, an example value and a source that would provide it. Maintainers agree on the shape and the version bump before anyone writes code.
+1. Open an [issue](https://github.com/Roastbook/open-coffee-schema/issues/new) proposing the change. Describe the real-world fact you want to record, an example value and a source that would provide it. Maintainers agree on the shape and the version bump before anyone writes code.
 2. Major versions (anything that breaks existing data) are announced in Discussions at least two weeks before release; see [GOVERNANCE.md](docs/GOVERNANCE.md).
 3. Open a pull request. Follow [docs/runbook.md#adding-a-schema-version](docs/runbook.md#adding-a-schema-version).
 
 ## Rules for schema changes
 
 - Never edit a published schema file. Copy the newest file to a new version (`coffee-places.schema.v1.1.0.json`), change its `$id`, and edit the copy. CI compares every file with every `v*` tag.
-- Additive optional fields: minor bump. Removing or tightening anything: major bump. Wording only: patch bump. CI computes the needed bump and fails when yours is too small.
+- Additive optional fields: minor bump. Removing or tightening anything: major bump. Wording only: patch bump. CI computes the needed bump and fails when yours is too small. While the standard is a pre-release (0.x), everything shifts down one place: a breaking change needs a minor bump (0.1 → 0.2) and an addition a patch bump; 1.0.0 marks the first stable release.
 - Every new field needs a plain-language `description`; the [field guide](docs/fields.md) is generated from it.
 - Add or update examples in `examples/<family>/valid/` and `examples/<family>/invalid/`.
 - Coffee places: map every new field in a new version of the JSON-LD context (`coffee-places.context.vX.Y.Z.jsonld`). CI fails if a field is not mapped.

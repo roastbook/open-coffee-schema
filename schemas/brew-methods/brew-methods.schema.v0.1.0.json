@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v1.0.0.json",
+  "$id": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.1.0.json",
   "title": "Open Coffee brew methods",
   "description": "Ways of brewing coffee (espresso, pour-over, V60, AeroPress, cold brew…), their typical parameters and what a coffee journal should record for each. Methods form a tree: a device-specific method such as v60 has the general method pour-over as parent. Part of Roastbook Open Coffee.",
   "type": "object",
@@ -13,11 +13,12 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "pattern": "^https://schema\\.roastbook\\.coffee/brew-methods/brew-methods\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$"
+      "pattern": "^https://schema\\.roastbook\\.coffee/brew-methods/brew-methods\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
     },
     "meta": {
       "type": "object",
-      "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/dataset_meta",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/dataset_meta",
       "unevaluatedProperties": false
     },
     "brew_methods": {
@@ -36,15 +37,18 @@
       "properties": {
         "min": {
           "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Lowest common value, in the unit named by the parameter (for example grams for dose_g, degrees Celsius for water_temperature_celsius)."
         },
         "max": {
           "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Highest common value, in the unit named by the parameter."
         },
         "typical": {
           "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "description": "A good starting value, in the unit named by the parameter."
         }
       }
     },
@@ -101,7 +105,7 @@
       ],
       "properties": {
         "id": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id",
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/id",
           "description": "Stable readable slug, e.g. v60, french-press. Never reused.",
           "examples": [
             "v60"
@@ -109,7 +113,8 @@
         },
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Common English name of the method, for example Pour-over or French press."
         },
         "aliases": {
           "type": "array",
@@ -121,7 +126,7 @@
           "description": "Other names in any language, e.g. Filterkaffee, drip."
         },
         "parent": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id",
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/id",
           "description": "The more general method, e.g. pour-over for v60."
         },
         "category": {
@@ -153,17 +158,18 @@
         "introduced_year": {
           "type": "integer",
           "minimum": 1000,
-          "maximum": 2100
+          "maximum": 2100,
+          "description": "Year the method or device was invented or first sold."
         },
         "origin_country_code": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/country_code"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/country_code"
         },
         "equipment_types": {
           "type": "array",
           "uniqueItems": true,
           "description": "Equipment types needed, from the equipment schema's type list.",
           "items": {
-            "$ref": "https://schema.roastbook.coffee/equipment/equipment.schema.v1.0.0.json#/$defs/type"
+            "$ref": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.1.0.json#/$defs/type"
           }
         },
         "typical_parameters": {
@@ -215,7 +221,8 @@
           "items": {
             "type": "string",
             "minLength": 1
-          }
+          },
+          "description": "Drinks usually made with this method, in plain lowercase English, for example espresso, cappuccino or flat white."
         },
         "xref": {
           "type": "object",
@@ -223,36 +230,38 @@
           "properties": {
             "wikidata": {
               "type": "string",
-              "pattern": "^Q[1-9][0-9]*$"
+              "pattern": "^Q[1-9][0-9]*$",
+              "description": "Wikidata item id of the method, for example Q180289 for espresso."
             },
             "beanconqueror": {
               "type": "string",
               "pattern": "^[A-Z0-9_]+$",
               "description": "Beanconqueror PREPARATION_TYPES key, for app imports."
             }
-          }
+          },
+          "description": "Identifiers of the method in other datasets and apps."
         },
         "image": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/image"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/image"
         },
         "method": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/method"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/method"
         },
         "confidence": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/confidence"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/confidence"
         },
         "sources": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/source_ref"
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/source_ref"
           }
         },
         "checked_at": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/datetime"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/datetime"
         },
         "field_provenance": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/field_provenance_map"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/field_provenance_map"
         },
         "filter_types": {
           "type": "array",
@@ -264,7 +273,8 @@
               "cloth",
               "none"
             ]
-          }
+          },
+          "description": "Filters the method can use. paper: paper filters; metal: metal mesh or perforated metal; cloth: cloth filters; none: no filter (for example cezve or cold brew in a jar)."
         }
       }
     }

@@ -2,7 +2,7 @@
 
 Status: accepted (2026-11-05)
 
-The Schema Explorer must render a property tree with types, required fields, enums and examples for every published version. It needs full JSON Schema draft 2020-12 support, the shared Roastbook theme, and stable per-field anchors that the Data Explorer can deep-link to (`/coffee-places/v1.0.0/#field-serving.filter`).
+The Schema Explorer must render a property tree with types, required fields, enums and examples for every published version. It needs full JSON Schema draft 2020-12 support, the shared Roastbook theme, and stable per-field anchors that the Data Explorer can deep-link to (`/coffee-places/v0.1.0/#field-serving.filter`).
 
 | Option | Licence | Stack | 2020-12 | Theming and anchors | Verdict |
 |---|---|---|---|---|---|

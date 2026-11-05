@@ -93,7 +93,9 @@ export function requiredBump(changes: Change[]): "major" | "minor" | "patch" | "
 /** Returns an error message when going from version `from` to `to` does not bump enough for `changes`. */
 export function checkBump(from: string, to: string, changes: Change[]): string | null {
   const [a, b] = [parseSemver(from), parseSemver(to)];
-  const actual = b[0] !== a[0] ? "major" : b[1] !== a[1] ? "minor" : b[2] !== a[2] ? "patch" : "none";
+  let actual = b[0] !== a[0] ? "major" : b[1] !== a[1] ? "minor" : b[2] !== a[2] ? "patch" : "none";
+  // Pre-releases (0.x): a minor bump may break, a patch bump may add.
+  if (a[0] === 0 && b[0] === 0) actual = actual === "minor" ? "major" : actual === "patch" ? "minor" : actual;
   const order = ["none", "patch", "minor", "major"];
   if (b[0] < a[0] || (b[0] === a[0] && (b[1] < a[1] || (b[1] === a[1] && b[2] <= a[2])))) return `v${to} is not newer than v${from}`;
   const need = requiredBump(changes);

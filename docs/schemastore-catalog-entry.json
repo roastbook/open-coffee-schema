@@ -1,5 +1,5 @@
 {
-  "$comment": "Draft entry for https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json. Not submitted yet; submit after v1.0.0 is published and the URLs resolve.",
+  "$comment": "Draft entry for https://github.com/SchemaStore/schemastore/blob/master/src/api/json/catalog.json. Not submitted yet; submit after v0.1.0 is published and the URLs resolve.",
   "entries": [
     {
       "name": "Open Coffee places",
@@ -7,7 +7,7 @@
       "fileMatch": ["**/datasets/coffee-places/**/*.json"],
       "url": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.latest.json",
       "versions": {
-        "1.0.0": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v1.0.0.json"
+        "0.1.0": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.1.0.json"
       }
     },
     {
@@ -16,7 +16,7 @@
       "fileMatch": ["**/datasets/equipment/**/*.json"],
       "url": "https://schema.roastbook.coffee/equipment/equipment.schema.latest.json",
       "versions": {
-        "1.0.0": "https://schema.roastbook.coffee/equipment/equipment.schema.v1.0.0.json"
+        "0.1.0": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.1.0.json"
       }
     },
     {
@@ -25,7 +25,7 @@
       "fileMatch": ["**/datasets/brew-methods/**/*.json"],
       "url": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.latest.json",
       "versions": {
-        "1.0.0": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v1.0.0.json"
+        "0.1.0": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.1.0.json"
       }
     },
     {
@@ -34,7 +34,7 @@
       "fileMatch": ["**/open-coffee-data/datasets/sources.json"],
       "url": "https://schema.roastbook.coffee/sources/sources.schema.latest.json",
       "versions": {
-        "1.0.0": "https://schema.roastbook.coffee/sources/sources.schema.v1.0.0.json"
+        "0.1.0": "https://schema.roastbook.coffee/sources/sources.schema.v0.1.0.json"
       }
     }
   ]

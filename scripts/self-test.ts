@@ -48,6 +48,11 @@ assert.equal(bump(withProps({}, { allOf: [{ if: { properties: { kind: { const: "
 assert.match(checkBump("1.0.0", "1.1.0", [{ anchor: "", path: "x", section: "", severity: "breaking", text: "" }]) ?? "", /major bump/);
 assert.equal(checkBump("1.0.0", "2.0.0", [{ anchor: "", path: "x", section: "", severity: "breaking", text: "" }]), null);
 assert.match(checkBump("1.1.0", "1.0.0", []) ?? "", /not newer/);
+const breaking = [{ anchor: "", path: "x", section: "", severity: "breaking" as const, text: "" }];
+const addition = [{ anchor: "", path: "x", section: "", severity: "addition" as const, text: "" }];
+assert.equal(checkBump("0.1.0", "0.2.0", breaking), null, "0.x: a minor bump may break");
+assert.match(checkBump("0.1.0", "0.1.1", breaking) ?? "", /bump/, "0.x: a patch bump may not break");
+assert.equal(checkBump("0.1.0", "0.1.1", addition), null, "0.x: a patch bump may add");
 assert.equal(checkBump("1.0.0", "1.0.1", [{ anchor: "", path: "x", section: "", severity: "patch", text: "" }]), null);
 
 assert.throws(() => { const f = file("1.0.0", { ...base, oneOf: [] }); buildModel(f, new Registry([f])); }, /Unknown JSON Schema keyword "oneOf"/);

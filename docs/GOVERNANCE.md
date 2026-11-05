@@ -35,7 +35,7 @@ Brand assets (logo, wordmark) are all rights reserved. Attribution for the data:
 
 ## Versioning
 
-- Schemas: semantic versions. A published file (`*.schema.vX.Y.Z.json`) is never edited. Additive optional fields are a minor bump; removing or tightening anything is a major bump. CI enforces both.
+- Schemas: semantic versions. A published file (`*.schema.vX.Y.Z.json`) is never edited. Additive optional fields are a minor bump; removing or tightening anything is a major bump. CI enforces both. While the standard is a pre-release (0.x), everything shifts down one place: a breaking change needs a minor bump (0.1 → 0.2) and an addition a patch bump; 1.0.0 marks the first stable release.
 - Data: date tags `YYYY.MM.DD.N`. Each data release pins one schema version in `schema-version.txt`.
 - A schema release publishes a GitHub Release with changelog and TypeScript types and dispatches a "bump schema" PR to the data repository.
 
@@ -48,7 +48,7 @@ Brand assets (logo, wordmark) are all rights reserved. Attribution for the data:
 | Schemas, `sources.json`, scripts, `.github/` | Maintainers | One maintainer via `CODEOWNERS`; the agent cannot touch them |
 | New schema major version | Maintainers | Announced in Discussions at least two weeks before release |
 
-All contributions require DCO sign-off (`git commit -s`). Owners claim a place by opening the "Add or correct a place" issue from an address on the place's website domain, or by linking the issue from the place's website or Instagram bio.
+All contributions require DCO sign-off (`git commit -s`). Owners claim a place by opening an issue from an address on the place's website domain, or by linking the issue from the place's website or Instagram bio.
 
 ## The Sourcing agent
 

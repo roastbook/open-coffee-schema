@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schema.roastbook.coffee/sources/sources.schema.v1.0.0.json",
+  "$id": "https://schema.roastbook.coffee/sources/sources.schema.v0.1.0.json",
   "title": "Open Coffee source allow-list",
   "description": "Every source a record may cite. Adding or changing an entry is a human-reviewed pull request.",
   "type": "object",
@@ -13,11 +13,12 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "pattern": "^https://schema\\.roastbook\\.coffee/sources/sources\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$"
+      "pattern": "^https://schema\\.roastbook\\.coffee/sources/sources\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
     },
     "meta": {
       "type": "object",
-      "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/dataset_meta",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/dataset_meta",
       "unevaluatedProperties": false
     },
     "sources": {
@@ -25,7 +26,8 @@
       "minItems": 1,
       "items": {
         "$ref": "#/$defs/source"
-      }
+      },
+      "description": "The allow-listed sources. A record may only cite a source_id listed here."
     }
   },
   "$defs": {
@@ -44,11 +46,12 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/id"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/id"
         },
         "name": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Full name of the source, for example Foursquare Open Source Places."
         },
         "kind": {
           "enum": [
@@ -64,10 +67,11 @@
             "manufacturer_page",
             "retailer_page",
             "standards_body"
-          ]
+          ],
+          "description": "What sort of source it is. open_dataset: openly licensed bulk data; roaster_page: a roaster's list of cafés serving its coffee; primary_website: the place's or company's own website; social_profile: its own social media profile; web_search: a search engine, for finding pages only; open_knowledge: Wikidata and similar; image_repository: openly licensed images such as Wikimedia Commons; community: submissions from owners and contributors; verification_api: an API used only to confirm a known place; manufacturer_page: an equipment maker's own pages; retailer_page: a shop's product pages; standards_body: a standards organisation or association."
         },
         "url": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/url"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/url"
         },
         "licence": {
           "type": "string",
@@ -89,18 +93,20 @@
               "images",
               "verification"
             ]
-          }
+          },
+          "description": "What the source may be used for. discovery: finding candidates; facts: values we store; images: photos with their licence; verification: confirming a place exists, without storing its data."
         },
         "how_to_use": {
           "type": "string",
-          "minLength": 10
+          "minLength": 10,
+          "description": "Instructions for people and the data agent: what to take from the source, what to leave out and which licence conditions to follow."
         },
         "vetted": {
           "type": "boolean",
           "description": "A maintainer checked the licence and terms."
         },
         "checked_at": {
-          "$ref": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json#/$defs/date"
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json#/$defs/date"
         }
       }
     }

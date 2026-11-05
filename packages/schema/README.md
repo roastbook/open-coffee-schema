@@ -38,7 +38,7 @@ if (!validate(data)) console.error(validate.errors);
 
 Validate against the `$id` a file names in its `$schema` to keep old files valid after new versions come out: `ajv.getSchema(data.$schema)`.
 
-Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v1.0.0.json`, `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v1.0.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
+Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v0.1.0.json`, `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v0.1.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
 
 ## Allowed values
 

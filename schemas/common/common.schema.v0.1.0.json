@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schema.roastbook.coffee/common/common.schema.v1.0.0.json",
+  "$id": "https://schema.roastbook.coffee/common/common.schema.v0.1.0.json",
   "title": "Open Coffee common definitions",
   "description": "Building blocks shared by every Open Coffee dataset (coffee places now; roasters, beans and gear later). Reference them by absolute $id plus a JSON pointer.",
   "$defs": {
@@ -111,7 +111,7 @@
       "additionalProperties": false,
       "properties": {
         "street_address": { "type": "string", "minLength": 1, "description": "Street and house number." },
-        "postal_code": { "type": "string", "minLength": 1 },
+        "postal_code": { "type": "string", "minLength": 1, "description": "Postal code as used locally, for example 80331." },
         "locality": { "type": "string", "minLength": 1, "description": "City or town." },
         "region": { "type": "string", "minLength": 1, "description": "State or region." },
         "country_code": { "$ref": "#/$defs/country_code" }
@@ -124,8 +124,8 @@
       "required": ["lat", "lon"],
       "additionalProperties": false,
       "properties": {
-        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
-        "lon": { "type": "number", "minimum": -180, "maximum": 180 }
+        "lat": { "type": "number", "minimum": -90, "maximum": 90, "description": "Latitude in decimal degrees (WGS 84); positive is north of the equator, for example 48.1371." },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180, "description": "Longitude in decimal degrees (WGS 84); positive is east of Greenwich, for example 11.5754." }
       }
     },
     "image": {
@@ -137,11 +137,11 @@
       "properties": {
         "url": { "$ref": "#/$defs/url", "description": "Where the file is served from (our assets folder or the original host)." },
         "licence": { "type": "string", "minLength": 2, "description": "SPDX identifier, for example CC-BY-4.0, CC-BY-SA-4.0 or CC0-1.0." },
-        "author": { "type": "string", "minLength": 1 },
+        "author": { "type": "string", "minLength": 1, "description": "Name of the photographer or creator, as the licence requires it to be credited." },
         "source_url": { "$ref": "#/$defs/url", "description": "Page describing the original file and its licence." },
-        "title": { "type": "string" },
-        "width": { "type": "integer", "minimum": 1 },
-        "height": { "type": "integer", "minimum": 1 }
+        "title": { "type": "string", "description": "Short caption describing what the image shows." },
+        "width": { "type": "integer", "minimum": 1, "description": "Width of the image file in pixels." },
+        "height": { "type": "integer", "minimum": 1, "description": "Height of the image file in pixels." }
       }
     },
     "external_ref": {
@@ -151,8 +151,8 @@
       "required": ["source", "id"],
       "additionalProperties": false,
       "properties": {
-        "source": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
-        "id": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "pattern": "^[a-z0-9_.-]+$", "description": "Short name of the other service, for example tripadvisor or untappd. Lowercase letters, digits, dots, dashes and underscores." },
+        "id": { "type": "string", "minLength": 1, "description": "The record's identifier in the other service." },
         "url": { "$ref": "#/$defs/url" }
       }
     },
@@ -163,8 +163,8 @@
       "properties": {
         "version": { "$ref": "#/$defs/dataset_version" },
         "generated_at": { "$ref": "#/$defs/datetime" },
-        "licence": { "const": "CC-BY-4.0" },
-        "attribution": { "type": "string" }
+        "licence": { "const": "CC-BY-4.0", "description": "Licence of the data in this file. Always CC-BY-4.0." },
+        "attribution": { "type": "string", "description": "Text to show when you reuse the data, normally \"Roastbook Open Coffee\"." }
       }
     }
   }

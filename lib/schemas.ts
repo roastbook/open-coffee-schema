@@ -9,7 +9,7 @@ export type Json = any;
 export interface SchemaFile {
   family: string;
   version: string;
-  /** Repository path, e.g. schemas/coffee-places/coffee-places.schema.v1.0.0.json */
+  /** Repository path, e.g. schemas/coffee-places/coffee-places.schema.v0.1.0.json */
   path: string;
   fileName: string;
   /** Canonical $id the file should have. */
