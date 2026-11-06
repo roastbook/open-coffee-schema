@@ -493,3 +493,44 @@ details pre {
     align-items: flex-start;
   }
 }
+
+.field-search {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+.field-search label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.field-search-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.field-search-controls input {
+  flex: 1 1 16rem;
+}
+.field-search p {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+.field-children summary {
+  font-size: 0.875rem;
+  color: var(--link);
+}
+.field-children summary::before {
+  content: "+";
+  font-size: 1rem;
+}
+.field-children[open] > summary::before {
+  content: "−";
+}
+.field[hidden],
+.schema-section[hidden] {
+  display: none;
+}

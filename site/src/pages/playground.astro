@@ -79,13 +79,21 @@ const data = {
     })().catch((e) => { ajv = undefined; throw e; }));
   }
 
-  example.addEventListener("change", () => {
+  const loadExample = () => {
+    if (example.value === "") return;
     const e = data.examples[Number(example.value)];
     if (!e) return;
     input.value = e.text;
-    const t = data.targets.find((t: Target) => t.family === e.family);
-    if (t) select.value = t.key;
-  });
+    const target = data.targets.find((t: Target) => t.family === e.family && t.key === select.value)
+      ?? data.targets.find((t: Target) => t.family === e.family);
+    if (target) select.value = target.key;
+  };
+  example.addEventListener("change", loadExample);
+  const requestedExample = new URLSearchParams(location.search).get("example");
+  if (requestedExample) {
+    const index = data.examples.findIndex((e: { family: string; kind: string; name: string }) => `${e.family}/${e.kind}/${e.name}` === requestedExample);
+    if (index >= 0) { example.value = String(index); loadExample(); }
+  }
 
   const el = (tag: string, props: Record<string, string> = {}, ...kids: (Node | string)[]) => {
     const n = document.createElement(tag);

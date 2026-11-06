@@ -20,7 +20,7 @@
 
 Open Coffee is a shared way to write down facts about coffee: which cafés exist, where they are, when they open, what they brew, whether they roast their own beans. It also describes coffee equipment models and brew methods. The standard is a set of [JSON Schema](https://json-schema.org/) files (draft 2020-12) that any program can use to check a data file, a JSON-LD context that maps coffee places to schema.org's `CafeOrCoffeeShop`, and the [Schema Explorer](https://schema.roastbook.coffee/), which explains every field of every version without jargon.
 
-The data itself lives in [Roastbook/open-coffee-data](https://github.com/Roastbook/open-coffee-data). Browse every schema version, field by field, in the [Schema Explorer](https://schema.roastbook.coffee/), or paste a record into its [Playground](https://schema.roastbook.coffee/playground/) to check it.
+The data itself lives in [Roastbook/open-coffee-data](https://github.com/Roastbook/open-coffee-data). Browse every schema version, field by field, in the [Schema Explorer](https://schema.roastbook.coffee/), or paste a record into its [Playground](https://schema.roastbook.coffee/playground/) to check it. Search field names, dotted paths and descriptions, collapse nested groups, or open a documented example directly in the Playground. Code blocks offer copy buttons.
 
 <!-- stats:start -->
 | Family | Latest version | Versions | Explorer |

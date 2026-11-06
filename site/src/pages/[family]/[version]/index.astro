@@ -45,6 +45,16 @@ const hasRecords = model.sections.some((s) => s.id === "field") && model.recordK
     </ul>
   </nav>
 
+  <div class="field-search" role="search">
+    <label for="field-query">Find a field</label>
+    <div class="field-search-controls">
+      <input id="field-query" type="search" placeholder="Search names, paths or descriptions…" autocomplete="off" />
+      <button type="button" data-fields-expand>Expand all</button>
+      <button type="button" data-fields-collapse>Collapse all</button>
+    </div>
+    <p data-field-count role="status" aria-live="polite"></p>
+  </div>
+
   {model.sections.map((s) => (
     <section class="schema-section" aria-labelledby={s.id}>
       <h2 id={s.id}>{s.title}</h2>
@@ -60,6 +70,7 @@ const hasRecords = model.sections.some((s) => s.id === "field") && model.recordK
       {examples.map((e) => (
         <details class="card example">
           <summary><code>examples/{family}/valid/{e.name}</code></summary>
+          <p><a class="button" href={`/playground/?schema=${family}@${file.version}&example=${encodeURIComponent(`${e.family}/${e.kind}/${e.name}`)}`}>Open this example in Playground</a></p>
           <pre><code>{e.text}</code></pre>
         </details>
       ))}
@@ -74,3 +85,7 @@ const hasRecords = model.sections.some((s) => s.id === "field") && model.recordK
     </details>
   </section>
 </Layout>
+
+<script>
+  import "../../../scripts/field-search";
+</script>

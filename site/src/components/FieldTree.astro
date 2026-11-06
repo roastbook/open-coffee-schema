@@ -9,7 +9,7 @@ const show = (v: unknown) => (typeof v === "string" ? v : JSON.stringify(v));
 ---
 <ul class="tree">
   {nodes.map((n) => (
-    <li class="field" id={n.anchor}>
+    <li class="field" id={n.anchor} data-field-search={[n.path, n.key, n.title, n.description, ...(n.enum ?? []).map(show)].filter(Boolean).join(" ")}>
       <div class="field-head">
         <a class="field-name" href={`#${n.anchor}`} title={`Link to ${n.path}`}><code>{n.key}</code></a>
         <span class="badge">{n.label}</span>
@@ -29,7 +29,12 @@ const show = (v: unknown) => (typeof v === "string" ? v : JSON.stringify(v));
       {n.closed && n.children.length > 0 && <p class="field-meta muted">No other fields allowed.</p>}
       {n.recordOf && recordHref && <p class="field-meta">Each entry is one <a href={recordHref}>{n.recordOf} record</a>, described above.</p>}
       {n.ref && <p class="field-ref muted">Defined in <code>{n.ref}</code></p>}
-      {n.children.length > 0 && <Astro.self nodes={n.children} recordHref={recordHref} />}
+      {n.children.length > 0 && (
+        <details class="field-children" open>
+          <summary>{n.children.length} fields in <code>{n.key}</code></summary>
+          <Astro.self nodes={n.children} recordHref={recordHref} />
+        </details>
+      )}
     </li>
   ))}
 </ul>
