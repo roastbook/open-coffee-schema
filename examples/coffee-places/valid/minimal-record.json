@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.4.0.json",
+  "$schema": "https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.5.0.json",
   "meta": {
     "country_code": "DE",
     "city": "example-city",
@@ -19,7 +19,7 @@
         "lat": 48.14,
         "lon": 11.58
       },
-      "specialty_tier": "unknown"
+      "specialty_tier": "none"
     },
     {
       "id": "cp-example0003",
