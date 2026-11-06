@@ -132,6 +132,7 @@ h1 .badge {
   .facts {
     grid-template-columns: max-content 1fr;
   }
+
   .facts dt {
     margin-top: 0;
   }
