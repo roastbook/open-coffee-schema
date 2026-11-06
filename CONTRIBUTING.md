@@ -47,7 +47,3 @@ Pull requests without a sign-off on every commit cannot be merged. To fix the la
 ## Licences of contributions
 
 All contributions are licensed MIT, like the rest of the repository. Do not contribute data or text copied from closed sources (Google Maps, review sites, closed coffee guides) or from OpenStreetMap.
-
-## Conduct
-
-This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md).
