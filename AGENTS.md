@@ -22,7 +22,7 @@ Follow [docs/runbook.md#adding-a-schema-version](docs/runbook.md#adding-a-schema
 | `scripts/validate.sh` | All CI checks: meta-schema (Ajv strict), examples, file names and `$id`, breaking-change bump, immutability against tags, JSON-LD context, generated files, self-tests. Writes `.ci/report.json`. |
 | `scripts/build.sh` | Builds the Schema Explorer into `dist/` with every schema at its `$id` path, `latest` aliases, contexts, `CNAME`. |
 | `bun scripts/generate.ts` | Rewrites the README stats block from the schemas. |
-| `scripts/release-assets.sh vX.Y.Z` | Builds `release/` (packages in `release/npm` and `release/npm-ui`, types, schemas tarball). Run by the release workflow. |
+| `scripts/release-assets.sh vX.Y.Z` | Builds `release/` (package in `release/npm`, types, schemas tarball). Run by the release workflow. |
 
 Use Bun (`.bun-version`) for everything: `bun install`, `bun run`, `bunx`. No Node, npm or pnpm.
 
@@ -30,3 +30,8 @@ Use Bun (`.bun-version`) for everything: `bun install`, `bun run`, `bunx`. No No
 
 - `lib/schemas.ts`: discovers schema files and resolves `$ref`s. `lib/tree.ts`: turns a schema into the field tree used by the explorer, docs, diff and package; it throws on unknown keywords, so a new keyword must be added there and rendered. `lib/diff.ts`: breaking-change rules (tested in `scripts/self-test.ts`).
 - Field anchors are `#field-<dotted.path>` relative to one record (`places[]`, `equipment[]`, `brew_methods[]`); file-level fields use `#file-<path>`. The Data Explorer deep-links to them; do not change the scheme.
+
+## Shared UI
+
+Use `@roastbook/ui` from `Roastbook/ui` for shared layouts, branding and themes.
+Update the shared package instead of copying its implementation into this repo.

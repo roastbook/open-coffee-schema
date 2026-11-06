@@ -14,8 +14,9 @@ Non-goals: reviews, ratings, rankings, translations (everything is English) and 
 
 | Repository | Holds |
 |---|---|
-| `open-coffee-schema` | JSON Schemas, JSON-LD context, Schema Explorer, the `@roastbook/open-coffee-ui` and `@roastbook/open-coffee-schema` packages |
+| `open-coffee-schema` | JSON Schemas, JSON-LD context, Schema Explorer, the `@roastbook/open-coffee-schema` package |
 | `open-coffee-data` | Datasets, Data Explorer, Sourcing agent |
+| `ui` | Shared shadcn components, Astro layouts, branding and themes |
 | `workflows` | Reusable workflows, composite actions, Orcastrate templates |
 
 Everything is MIT-licensed: schemas, code, sites, docs and data. Images are never stored in the repositories: records link to openly licensed originals and state their licence, author and source. MIT grants no trademark rights to the Roastbook name. Tooling is Bun everywhere.

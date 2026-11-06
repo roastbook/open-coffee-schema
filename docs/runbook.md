@@ -30,20 +30,20 @@ Nobody creates tags by hand.
 2. The shared workflow (`Roastbook/workflows`, `release.yml`) waits for a green `ci.yml` run on the commit, computes `vX.Y.Z`, tags the commit, writes the release notes with git-cliff (`cliff.toml` is rendered from the shared preset by the workflows repository) and runs `scripts/release-assets.sh "$TAG"`.
 3. `scripts/release-assets.sh` builds only assets for the tag it receives:
    - `release/npm/`: the publishable `@roastbook/open-coffee-schema` package, version = tag without `v`;
-   - `release/npm-ui/`: the publishable `@roastbook/open-coffee-ui` package (`packages/ui`), same version;
-   - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/roastbook-open-coffee-ui-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
+   - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
    **Version rule:** the release version is the version of the whole standard. Every family's newest schema file must be at most the tag (a `coffee-places.schema.v2.0.0.json` cannot ship in `v1.4.0`); the script fails otherwise. Families keep their own versions below it.
-4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` and `release/npm-ui` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
+4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
 
-Try the asset build locally without publishing: `scripts/release-assets.sh v0.3.0`, then `(cd release/npm && bun pm pack --dry-run)` and `(cd release/npm-ui && bun pm pack --dry-run)`.
+Try the asset build locally without publishing: `scripts/release-assets.sh v0.3.0`, then `(cd release/npm && bun pm pack --dry-run)`.
+
 
 ### Publishing to GitHub Packages
 
-Both packages go to the GitHub npm registry (`https://npm.pkg.github.com`), not npmjs.com. Their `publishConfig.registry` points there and their `repository` field links them to `Roastbook/open-coffee-schema`. The publish job of the shared release workflow runs `npm publish` for each directory with the run's `GITHUB_TOKEN` (`packages: write` on that job only) and skips versions that already exist, so rerunning a release is safe. No npm account, token or repository variable is needed.
+The schema package goes to the GitHub npm registry (`https://npm.pkg.github.com`), not npmjs.com. Its `publishConfig.registry` points there and its `repository` field links it to `Roastbook/open-coffee-schema`. The publish job of the shared release workflow runs `npm publish` for each directory with the run's `GITHUB_TOKEN` (`packages: write` on that job only) and skips versions that already exist, so rerunning a release is safe. No npm account, token or repository variable is needed.
 
 After the first release (one-time, an organisation owner):
 
-1. Open each package (Roastbook organisation → Packages → `open-coffee-schema`, then `open-coffee-ui`) and check that it is linked to this repository.
+1. Open the schema package (Roastbook organisation → Packages → `open-coffee-schema`) and check that it is linked to this repository.
 2. Package settings → Danger Zone → **Change visibility** → Public, unless it already inherited public visibility from the repository. A new package can start private.
 3. While a package is public, workflows in every repository can install it with their own `GITHUB_TOKEN`. If it stays private or internal: package settings → **Manage Actions access** → Add repository → `open-coffee-data`, role Read.
 4. Then refresh the data repository's lockfile once (`bun install` there, commit `bun.lock`); see its runbook.
@@ -83,3 +83,12 @@ GitHub has no API for the social preview image; upload it by hand after it chang
 
 1. Regenerate if needed: `scripts/social-preview.sh` writes `docs/assets/social-preview.png` (1280×640) from `docs/assets/social-preview.svg`.
 2. GitHub → repository Settings → General → Social preview → Edit → Upload an image → choose `docs/assets/social-preview.png`.
+
+## Shared Roastbook UI
+
+The shared implementation lives in [Roastbook/ui](https://github.com/roastbook/ui).
+The site imports `@roastbook/ui/astro/Layout.astro` and `@roastbook/ui/sites`.
+Its dependency pins a public Git commit, so installing the UI needs no GitHub
+Packages token. Update the dependency and `bun.lock` together, then run the
+repository validation and build scripts. Layout, logo and theme changes belong
+in the UI repository.

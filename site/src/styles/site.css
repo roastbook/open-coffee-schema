@@ -1,4 +1,4 @@
-/* Schema Explorer styles on top of @roastbook/open-coffee-ui tokens. */
+/* Schema Explorer styles on top of @roastbook/ui tokens. */
 .lead { font-size: 1.125rem; max-width: 46rem; }
 .eyebrow { margin: 0 0 0.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
 .eyebrow a { color: inherit; }
