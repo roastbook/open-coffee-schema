@@ -25,4 +25,4 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: Roastbook/workflows/.github/workflows/schema-validate.yml@7c22b2422f46e888ace66cddbef68401aeaadda7 # main
+    uses: Roastbook/workflows/.github/workflows/schema-validate.yml@15adb52d8c9422ab24409caecc406fa265f81ce7 # main

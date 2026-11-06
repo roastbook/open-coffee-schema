@@ -8,17 +8,17 @@ Operational procedures for `Roastbook/open-coffee-schema`. Every command runs fr
 2. Pick the version. From 1.0.0: new optional fields or values → minor; removing a field or value, a new required field, a narrower type, pattern or range, or closing an object → major; wording only → patch. While the standard is 0.x (now), everything shifts down one place: breaking → minor (0.1.0 → 0.2.0), addition → patch, wording only → patch. CI enforces both rules.
 3. Copy the newest file and edit the copy. Never edit a published file.
    ```sh
-   cp schemas/coffee-places/coffee-places.schema.v0.3.0.json schemas/coffee-places/coffee-places.schema.v0.4.0.json
+   cp schemas/coffee-places/coffee-places.schema.v0.4.0.json schemas/coffee-places/coffee-places.schema.v0.5.0.json
    ```
-   Set `$id` to `https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.3.0.json`. If the change touches `common`, add a new `common` version first and point the new family files at it; existing files keep their old references. Families reference `common` (and brew methods reference `equipment`) by absolute `$id`, so a new `common` version means a new version of every family.
+   Set `$id` to `https://schema.roastbook.coffee/coffee-places/coffee-places.schema.v0.5.0.json`. If the change touches `common`, add a new `common` version first and point the new family files at it; existing files keep their old references. Families reference `common` (and brew methods reference `equipment`) by absolute `$id`, so a new `common` version means a new version of every family.
 4. Give every new field a plain-language `description`.
-5. Coffee places only: if fields were added, renamed or removed, add `schemas/coffee-places/coffee-places.context.v0.3.0.jsonld` (copy, then map the new fields to schema.org or to `https://schema.roastbook.coffee/vocab#`).
+5. Coffee places only: if fields were added, renamed or removed, add `schemas/coffee-places/coffee-places.context.v0.5.0.jsonld` (copy, then map the new fields to schema.org or to `https://schema.roastbook.coffee/vocab#`).
 6. Update examples in `examples/<family>/valid/` (point `$schema` at the new version) and add invalid examples for new rules.
 7. Regenerate and check:
    ```sh
    bun scripts/generate.ts   # README stats block
    scripts/validate.sh        # fails if the bump is too small, a published file changed, or the context misses a field
-   scripts/build.sh           # the new version gets /coffee-places/v0.3.0/, latest moves, diff pages appear
+   scripts/build.sh           # the new version gets /coffee-places/v0.5.0/, latest moves, diff pages appear
    ```
 8. Open a pull request (Conventional Commit title, DCO sign-off). After merge, release it (below). The data repository gets a "bump schema" pull request automatically.
 
@@ -32,39 +32,27 @@ Nobody creates tags by hand.
    - `release/npm/`: the publishable `@roastbook/open-coffee-schema` package, version = tag without `v`;
    - `release/roastbook-open-coffee-schema-X.Y.Z.tgz`, `release/open-coffee-schema-vX.Y.Z.d.ts`, `release/open-coffee-schema-vX.Y.Z-schemas.tar.gz`.
    **Version rule:** the release version is the version of the whole standard. Every family's newest schema file must be at most the tag (a `coffee-places.schema.v2.0.0.json` cannot ship in `v1.4.0`); the script fails otherwise. Families keep their own versions below it.
-4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` to GitHub Packages and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
+4. The workflow uploads the files in `release/` to the GitHub Release, publishes `release/npm` to npmjs.org with npm Trusted Publishing and sends `schema-released` to `open-coffee-data`. Pages redeploys from `deploy.yml`.
 
-Try the asset build locally without publishing: `scripts/release-assets.sh v0.3.0`, then `(cd release/npm && bun pm pack --dry-run)`.
+Try the asset build locally without publishing: `scripts/release-assets.sh v0.4.0`, then `(cd release/npm && bun pm pack --dry-run)`.
 
 
-### Publishing to GitHub Packages
+### Publishing to npm
 
-The schema package goes to the GitHub npm registry (`https://npm.pkg.github.com`), not npmjs.com. Its `publishConfig.registry` points there and its `repository` field links it to `Roastbook/open-coffee-schema`. The publish job of the shared release workflow runs `npm publish` for each directory with the run's `GITHUB_TOKEN` (`packages: write` on that job only) and skips versions that already exist, so rerunning a release is safe. No npm account, token or repository variable is needed.
+The schema package goes to the public npm registry (`https://registry.npmjs.org`). Its `publishConfig` sets that registry, public access and provenance, and its `repository` field points at `https://github.com/Roastbook/open-coffee-schema`, which provenance requires. The caller `.github/workflows/release.yml` passes `npm_registry: https://registry.npmjs.org` and grants `id-token: write`. The publish job of the shared release workflow then runs `npm publish --provenance --access public` with npm Trusted Publishing: npm accepts the workflow's OIDC identity, so no npm token or repository secret exists. Versions that already exist are skipped, so rerunning a release is safe.
 
-After the first release (one-time, an organisation owner):
+Versions 0.1.0 to 0.3.0 were published only to GitHub Packages (`https://npm.pkg.github.com`) and stay there; 0.4.0 is the first version on npmjs.org.
 
-1. Open the schema package (Roastbook organisation → Packages → `open-coffee-schema`) and check that it is linked to this repository.
-2. Package settings → Danger Zone → **Change visibility** → Public, unless it already inherited public visibility from the repository. A new package can start private.
-3. While a package is public, workflows in every repository can install it with their own `GITHUB_TOKEN`. If it stays private or internal: package settings → **Manage Actions access** → Add repository → `open-coffee-data`, role Read.
-4. Then refresh the data repository's lockfile once (`bun install` there, commit `bun.lock`); see its runbook.
+One-time setup (an npm owner of the `roastbook` organisation):
 
-### Installing the packages
+1. Create the npm organisation `roastbook`, so the `@roastbook` scope belongs to it.
+2. Publish the first version by hand, because a Trusted Publisher can only be added to a package that exists: `scripts/release-assets.sh vX.Y.Z` for the version the Release workflow will tag, then `(cd release/npm && npm publish --access public --provenance=false)` while logged in to npm (provenance only works from CI, so the first version has none). The release then skips that version and publishes the next ones itself.
+3. On npmjs.com: package `@roastbook/open-coffee-schema` → Settings → Trusted Publisher → GitHub Actions, organisation or user `Roastbook`, repository `open-coffee-schema`, workflow filename `release.yml`, no environment.
+4. Optionally, in the same settings, require two-factor authentication and disallow tokens, so only the workflow can publish.
 
-Consumers map the `@roastbook` scope to GitHub Packages and pass a token with `read:packages` (GitHub Packages requires one even for public packages):
+### Installing the package
 
-```toml
-# bunfig.toml
-[install.scopes]
-roastbook = { url = "https://npm.pkg.github.com/", token = "$NPM_GITHUB_TOKEN" }
-```
-
-```ini
-# .npmrc (npm, pnpm, Yarn 1)
-@roastbook:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NPM_GITHUB_TOKEN}
-```
-
-Locally: `export NPM_GITHUB_TOKEN="$(gh auth token)"` (the token needs `read:packages`: `gh auth refresh -s read:packages`). In GitHub Actions: `NPM_GITHUB_TOKEN: ${{ github.token }}` and the job permission `packages: read`; the shared `setup` action does this.
+`bun add @roastbook/open-coffee-schema` or `npm i @roastbook/open-coffee-schema`. No token, `.npmrc` or `bunfig.toml` scope is needed. Projects that still map `@roastbook` to `https://npm.pkg.github.com` must drop that mapping to get 0.4.0 and later.
 
 ## Rolling back a Pages deploy
 

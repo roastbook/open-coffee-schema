@@ -26,7 +26,7 @@ jobs:
     name: Link and smoke checks
     permissions:
       contents: read
-    uses: Roastbook/workflows/.github/workflows/link-check.yml@7c22b2422f46e888ace66cddbef68401aeaadda7 # main
+    uses: Roastbook/workflows/.github/workflows/link-check.yml@15adb52d8c9422ab24409caecc406fa265f81ce7 # main
     with:
       link_check: false
       smoke_urls: >-

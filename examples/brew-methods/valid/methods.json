@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.3.0.json",
+  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.4.0.json",
   "meta": {
     "licence": "MIT"
   },
@@ -32,7 +32,7 @@
           "max": 18,
           "typical": 16
         },
-        "water_temperature_celsius": {
+        "brew_temperature_celsius": {
           "min": 88,
           "max": 96,
           "typical": 93
@@ -52,7 +52,7 @@
         "brew_water_g",
         "brew_ratio",
         "grind_setting",
-        "water_temperature_celsius",
+        "brew_temperature_celsius",
         "bloom_time_seconds",
         "bloom_water_g",
         "brew_time_seconds",
@@ -105,7 +105,7 @@
           "max": 3,
           "typical": 2
         },
-        "water_temperature_celsius": {
+        "brew_temperature_celsius": {
           "min": 90,
           "max": 96,
           "typical": 93
@@ -120,6 +120,13 @@
         },
         "grind_size": [
           "fine"
+        ],
+        "paper_filter_position": [
+          "none",
+          "bottom"
+        ],
+        "distribution_method": [
+          "wdt"
         ]
       },
       "recorded_parameters": [
@@ -128,7 +135,10 @@
         "yield_ratio",
         "grind_setting",
         "brew_time_seconds",
-        "water_temperature_celsius"
+        "brew_temperature_celsius",
+        "uses_puck_screen",
+        "paper_filter_position",
+        "distribution_method"
       ],
       "checked_at": "2026-11-05T12:00:00Z"
     }

@@ -1,0 +1,246 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@base": "https://data.roastbook.coffee/places/",
+    "schema": "https://schema.org/",
+    "oc": "https://schema.roastbook.coffee/vocab#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "CafeOrCoffeeShop": "schema:CafeOrCoffeeShop",
+    "$schema": {
+      "@id": "dcterms:conformsTo",
+      "@type": "@id"
+    },
+    "meta": {
+      "@id": "oc:meta",
+      "@context": {
+        "licence": "schema:license",
+        "country_code": "schema:addressCountry",
+        "city": "oc:city",
+        "city_name": "oc:cityName"
+      }
+    },
+    "places": {
+      "@id": "schema:hasPart",
+      "@container": "@set"
+    },
+    "id": "@id",
+    "type": "@type",
+    "name": "schema:name",
+    "status": "oc:status",
+    "merged_into": {
+      "@id": "oc:mergedInto",
+      "@type": "@id"
+    },
+    "opened_on": {
+      "@id": "schema:foundingDate",
+      "@type": "xsd:date"
+    },
+    "closed_on": {
+      "@id": "schema:dissolutionDate",
+      "@type": "xsd:date"
+    },
+    "last_verified_at": {
+      "@id": "oc:lastVerifiedAt",
+      "@type": "xsd:dateTime"
+    },
+    "checked_at": {
+      "@id": "oc:checkedAt",
+      "@type": "xsd:dateTime"
+    },
+    "address": {
+      "@id": "schema:address",
+      "@context": {
+        "street_address": "schema:streetAddress",
+        "postal_code": "schema:postalCode",
+        "locality": "schema:addressLocality",
+        "region": "schema:addressRegion",
+        "country_code": "schema:addressCountry"
+      }
+    },
+    "location": {
+      "@id": "schema:geo",
+      "@context": {
+        "lat": {
+          "@id": "schema:latitude",
+          "@type": "xsd:double"
+        },
+        "lon": {
+          "@id": "schema:longitude",
+          "@type": "xsd:double"
+        }
+      }
+    },
+    "opening_hours": "schema:openingHours",
+    "description": "schema:description",
+    "specialty_tier": "oc:specialtyTier",
+    "roasts_own_beans": "oc:roastsOwnBeans",
+    "roasters_served": {
+      "@id": "oc:roastersServed",
+      "@container": "@set",
+      "@context": {
+        "roaster_id": "schema:identifier",
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "own": "oc:ownRoast"
+      }
+    },
+    "serving": {
+      "@id": "oc:serving",
+      "@context": {
+        "espresso": "oc:espresso",
+        "filter": "oc:filter",
+        "pour_over": "oc:pourOver",
+        "batch_brew": "oc:batchBrew",
+        "cold_brew": "oc:coldBrew",
+        "decaf": "oc:decaf",
+        "plant_milk": "oc:plantMilk"
+      }
+    },
+    "amenities": {
+      "@id": "oc:amenities",
+      "@context": {
+        "wifi": "oc:wifi",
+        "laptop_friendly": "oc:laptopFriendly",
+        "kids_friendly": "oc:kidsFriendly",
+        "vegan_options": "oc:veganOptions",
+        "dogs_allowed": "oc:dogsAllowed",
+        "outdoor_seating": "oc:outdoorSeating",
+        "card_payment": "oc:cardPayment",
+        "cash_only": "oc:cashOnly",
+        "wheelchair_accessible": "oc:wheelchairAccessible"
+      }
+    },
+    "food": {
+      "@id": "oc:food",
+      "@context": {
+        "focus": "oc:focus",
+        "breakfast": "oc:breakfast",
+        "lunch": "oc:lunch",
+        "cakes_baked_in_house": "oc:cakesBakedInHouse"
+      }
+    },
+    "sells_beans": "oc:sellsBeans",
+    "sells_equipment": "oc:sellsEquipment",
+    "offers_courses": "oc:offersCourses",
+    "reusable_cup_systems": {
+      "@id": "oc:reusableCupSystems",
+      "@container": "@set"
+    },
+    "good_for": {
+      "@id": "oc:goodFor",
+      "@container": "@set"
+    },
+    "awards": {
+      "@id": "oc:awards",
+      "@container": "@set",
+      "@context": {
+        "year": {
+          "@id": "oc:year",
+          "@type": "xsd:gYear"
+        },
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        }
+      }
+    },
+    "prices": {
+      "@id": "oc:prices",
+      "@context": {
+        "cappuccino": {
+          "@id": "oc:cappuccinoPrice",
+          "@context": {
+            "amount": "schema:price",
+            "currency": "schema:priceCurrency",
+            "observed_on": {
+              "@id": "oc:observedOn",
+              "@type": "xsd:date"
+            },
+            "source_url": {
+              "@id": "schema:url",
+              "@type": "@id"
+            }
+          }
+        }
+      }
+    },
+    "operator": {
+      "@id": "oc:operator",
+      "@context": {
+        "name": "schema:legalName",
+        "legal_form": "oc:legalForm",
+        "register_id": "oc:registerId"
+      }
+    },
+    "links": "@nest",
+    "website": {
+      "@id": "schema:url",
+      "@type": "@id",
+      "@nest": "links"
+    },
+    "instagram": {
+      "@id": "schema:sameAs",
+      "@type": "@id",
+      "@nest": "links"
+    },
+    "facebook": {
+      "@id": "schema:sameAs",
+      "@type": "@id",
+      "@nest": "links"
+    },
+    "image": {
+      "@id": "schema:image",
+      "@context": {
+        "url": {
+          "@id": "schema:contentUrl",
+          "@type": "@id"
+        },
+        "licence": "schema:license",
+        "author": "schema:creditText",
+        "source_url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "title": "schema:name",
+        "width": "schema:width",
+        "height": "schema:height"
+      }
+    },
+    "xref": "@nest",
+    "overture": {
+      "@id": "oc:overtureId",
+      "@nest": "xref"
+    },
+    "foursquare": {
+      "@id": "oc:foursquareId",
+      "@nest": "xref"
+    },
+    "wikidata": {
+      "@id": "schema:sameAs",
+      "@type": "@vocab",
+      "@nest": "xref",
+      "@context": {
+        "@vocab": "http://www.wikidata.org/entity/"
+      }
+    },
+    "google_place_id": {
+      "@id": "oc:googlePlaceId",
+      "@nest": "xref"
+    },
+    "external_ratings": {
+      "@id": "oc:externalRatings",
+      "@container": "@set",
+      "@context": {
+        "source": "oc:source",
+        "id": "schema:identifier",
+        "url": {
+          "@id": "schema:url",
+          "@type": "@id"
+        }
+      }
+    }
+  }
+}

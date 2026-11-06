@@ -6,30 +6,13 @@ The package version is the release of the standard (`1.2.0` = tag `v1.2.0` of [R
 
 ## Install
 
-The package is published to the GitHub npm registry, not npmjs.com. GitHub Packages needs a token even for public packages: a personal access token (classic) with `read:packages`, `gh auth token` (when `gh` has the `read:packages` scope: `gh auth refresh -s read:packages`), or `GITHUB_TOKEN` in GitHub Actions (job permission `packages: read`).
-
-Bun (`bunfig.toml` next to `package.json`):
-
-```toml
-[install.scopes]
-roastbook = { url = "https://npm.pkg.github.com/", token = "$NPM_GITHUB_TOKEN" }
-```
-
-npm, pnpm or Yarn 1 (`.npmrc`):
-
-```ini
-@roastbook:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NPM_GITHUB_TOKEN}
-```
-
-Then:
+The package is on the public npm registry. No token or registry setting is needed:
 
 ```sh
-export NPM_GITHUB_TOKEN="$(gh auth token)"
-bun add @roastbook/open-coffee-schema     # or: npm install @roastbook/open-coffee-schema
+bun add @roastbook/open-coffee-schema     # or: npm i @roastbook/open-coffee-schema
 ```
 
-In GitHub Actions, pass `NPM_GITHUB_TOKEN: ${{ github.token }}` to the install step and grant the job `packages: read`. Workflows in any repository can install it this way while the package is public.
+Releases are published from GitHub Actions with npm Trusted Publishing and carry provenance, which links each version to the release workflow run in [Roastbook/open-coffee-schema](https://github.com/Roastbook/open-coffee-schema). Versions 0.1.0 to 0.3.0 were published only to GitHub Packages (`npm.pkg.github.com`); from 0.4.0 the package is on npmjs.org.
 
 ## Types
 
@@ -62,7 +45,7 @@ if (!validate(data)) console.error(validate.errors);
 
 Validate against the `$id` a file names in its `$schema` to keep old files valid after new versions come out: `ajv.getSchema(data.$schema)`.
 
-Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v0.3.0.json` (every published version stays included, for example `…/coffee-places/v0.1.0.json`), `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v0.2.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
+Single schema files are exported too: `@roastbook/open-coffee-schema/coffee-places/v0.4.0.json` (every published version stays included, for example `…/coffee-places/v0.1.0.json`), `…/coffee-places/latest.json`, and the JSON-LD context `…/coffee-places/context.v0.4.0.json` (`context.latest.json`; `.json` so Node and bundlers can import it).
 
 ## Allowed values
 
@@ -75,6 +58,8 @@ for (const type of EQUIPMENT_TYPE_VALUES) console.log(type); // "espresso_machin
 ```
 
 Names follow the type (`SpecialtyTier` → `SPECIALTY_TIER_VALUES`) or the family and field path (`status` of a coffee place → `COFFEE_PLACE_STATUS_VALUES`).
+
+Coffee journals can take the values of recorded brew parameters from here too: `BREW_PARAMETER_VALUES` (the parameter keys), `PAPER_FILTER_POSITION_VALUES` and `DISTRIBUTION_METHOD_VALUES`. A journal that keeps one ratio plus a basis maps a ratio based on brew water to `brew_ratio` and a ratio based on the yield to `yield_ratio`.
 
 ## Licence
 

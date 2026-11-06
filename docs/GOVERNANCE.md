@@ -38,7 +38,7 @@ Facts come only from open datasets with permissive licences (Overture Maps, Four
 
 - Schemas: semantic versions, starting as pre-release `0.x`. A published file (`*.schema.vX.Y.Z.json`) is never edited. In `0.x`, breaking changes need a minor bump and additions a patch bump; from `1.0.0`, breaking changes need a major bump and additions a minor bump. CI enforces both.
 - Data: date tags `YYYY.MM.DD.N`; the dataset version is only the tag. Each data file names its schema version in its `$schema` URL, and all files of a family use the same version.
-- Releases run from the shared Release workflow: git-cliff picks the version from Conventional Commits, the workflow tags, publishes the GitHub Release and the npm packages to GitHub Packages, and asks `open-coffee-data` to bump its pinned schema.
+- Releases run from the shared Release workflow: git-cliff picks the version from Conventional Commits, the workflow tags, publishes the GitHub Release and the npm package to npmjs.org with npm Trusted Publishing, and asks `open-coffee-data` to bump its pinned schema.
 
 ## Change process
 

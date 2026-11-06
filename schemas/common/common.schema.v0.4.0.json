@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json",
+  "title": "Open Coffee common definitions",
+  "description": "Building blocks shared by every Open Coffee dataset (coffee places, brew methods and equipment; roasters and beans later). Reference them by absolute $id plus a JSON pointer.",
+  "$defs": {
+    "id": {
+      "title": "Identifier",
+      "description": "Permanent, opaque identifier. Never reused, never derived from a name, never deleted. Lowercase letters, digits, dots, dashes and underscores; starts and ends with a letter or digit.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*[a-z0-9]$",
+      "minLength": 3,
+      "maxLength": 64,
+      "examples": [
+        "cp-7k2m9x4qvd"
+      ]
+    },
+    "date": {
+      "title": "Date",
+      "description": "Calendar date, YYYY-MM-DD.",
+      "type": "string",
+      "format": "date"
+    },
+    "datetime": {
+      "title": "Timestamp",
+      "description": "RFC 3339 timestamp with time zone, for example 2026-11-05T14:00:00Z.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "url": {
+      "title": "URL",
+      "description": "Absolute http or https address. Letters outside ASCII, such as umlauts in the host or path, may be written as they are (an IRI, for example https://kaffee-münchen.de/über-uns). The scheme is not case-sensitive.",
+      "type": "string",
+      "format": "iri",
+      "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://"
+    },
+    "country_code": {
+      "title": "Country code",
+      "description": "ISO 3166-1 alpha-2 code in upper case.",
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "ISO 4217 currency code.",
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "address": {
+      "title": "Postal address",
+      "type": "object",
+      "required": [
+        "country_code"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "street_address": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Street and house number."
+        },
+        "postal_code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Postal code as used locally, for example 80331."
+        },
+        "locality": {
+          "type": "string",
+          "minLength": 1,
+          "description": "City or town."
+        },
+        "region": {
+          "type": "string",
+          "minLength": 1,
+          "description": "State or region."
+        },
+        "country_code": {
+          "$ref": "#/$defs/country_code"
+        }
+      }
+    },
+    "location": {
+      "title": "Coordinates",
+      "description": "WGS 84 coordinates of the entrance or building.",
+      "type": "object",
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Latitude in decimal degrees (WGS 84); positive is north of the equator, for example 48.1371."
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180,
+          "description": "Longitude in decimal degrees (WGS 84); positive is east of Greenwich, for example 11.5754."
+        }
+      }
+    },
+    "image": {
+      "title": "Image",
+      "description": "An openly licensed image. Each image carries its own licence, author and source.",
+      "type": "object",
+      "required": [
+        "url",
+        "licence",
+        "author",
+        "source_url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "$ref": "#/$defs/url",
+          "description": "Where the file is served from (our assets folder or the original host)."
+        },
+        "licence": {
+          "type": "string",
+          "minLength": 2,
+          "description": "SPDX identifier, for example CC-BY-4.0, CC-BY-SA-4.0 or CC0-1.0."
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the photographer or creator, as the licence requires it to be credited."
+        },
+        "source_url": {
+          "$ref": "#/$defs/url",
+          "description": "Page describing the original file and its licence."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short caption describing what the image shows."
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Width of the image file in pixels."
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Height of the image file in pixels."
+        }
+      }
+    },
+    "external_ref": {
+      "title": "External reference",
+      "description": "A pointer to a record in another service. Never stores the other service's values.",
+      "type": "object",
+      "required": [
+        "source",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$",
+          "description": "Short name of the other service, for example tripadvisor or untappd. Lowercase letters, digits, dots, dashes and underscores."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The record's identifier in the other service."
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        }
+      }
+    },
+    "dataset_meta": {
+      "title": "Dataset metadata",
+      "type": "object",
+      "required": [
+        "licence"
+      ],
+      "properties": {
+        "licence": {
+          "type": "string",
+          "pattern": "^\\(*[A-Za-z0-9][A-Za-z0-9.-]*\\+?(?: WITH [A-Za-z0-9][A-Za-z0-9.-]*\\+?)?\\)*(?: (?:AND|OR) \\(*[A-Za-z0-9][A-Za-z0-9.-]*\\+?(?: WITH [A-Za-z0-9][A-Za-z0-9.-]*\\+?)?\\)*)*$",
+          "description": "Licence of the file as an SPDX licence expression, for example MIT, CC0-1.0, CC-BY-4.0, ODbL-1.0 or \"MIT OR Apache-2.0\". Use identifiers from the SPDX licence list (https://spdx.org/licenses/) or LicenseRef-<name> for others.",
+          "examples": [
+            "MIT",
+            "CC-BY-4.0"
+          ]
+        }
+      },
+      "description": "File-level facts that are not records. The schema version is the $schema URL; the data version is the release tag."
+    }
+  }
+}

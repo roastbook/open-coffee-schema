@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.3.0.json",
+  "$schema": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.4.0.json",
   "meta": {
     "licence": "MIT"
   },

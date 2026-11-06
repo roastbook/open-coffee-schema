@@ -6,6 +6,7 @@
 #   assets_command: bash scripts/release-assets.sh "$TAG"
 #   npm_publish: true
 #   npm_package_dirs: release/npm
+#   npm_registry: https://registry.npmjs.org
 #   dispatch_repository: open-coffee-data
 #   dispatch_event: schema-released
 # @end-orcastrate
@@ -30,8 +31,9 @@ jobs:
     permissions:
       contents: write
       actions: read
+      id-token: write
       packages: write
-    uses: Roastbook/workflows/.github/workflows/release.yml@7c22b2422f46e888ace66cddbef68401aeaadda7 # main
+    uses: Roastbook/workflows/.github/workflows/release.yml@15adb52d8c9422ab24409caecc406fa265f81ce7 # main
     with:
       bump_type: ${{ inputs.bump_type }}
       ci_workflow: ci.yml
@@ -39,6 +41,7 @@ jobs:
       assets_command: 'bash scripts/release-assets.sh "$TAG"'
       npm_publish: true
       npm_package_dirs: 'release/npm'
+      npm_registry: 'https://registry.npmjs.org'
       dispatch_repository: open-coffee-data
       dispatch_event: schema-released
     secrets:

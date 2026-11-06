@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.4.0.json",
+  "meta": {
+    "licence": "MIT"
+  },
+  "brew_methods": [
+    {
+      "id": "espresso",
+      "name": "Espresso",
+      "category": "espresso",
+      "extraction": "percolation",
+      "description": "Hot water is pushed at about 9 bar through a compact puck of finely ground coffee, giving a small, concentrated drink.",
+      "equipment_types": [
+        "espresso_machine",
+        "grinder",
+        "tamper",
+        "scale"
+      ],
+      "typical_parameters": {
+        "dose_g": {
+          "min": 14,
+          "max": 22,
+          "typical": 18
+        },
+        "yield_ratio": {
+          "min": 1.5,
+          "max": 3,
+          "typical": 2
+        },
+        "brew_temperature_celsius": {
+          "min": 90,
+          "max": 96,
+          "typical": 93
+        },
+        "brew_time_seconds": {
+          "min": 22,
+          "max": 35,
+          "typical": 28
+        },
+        "brew_pressure_bar": {
+          "typical": 9
+        },
+        "grind_size": [
+          "fine"
+        ],
+        "paper_filter_position": [
+          "none",
+          "bottom"
+        ],
+        "distribution_method": [
+          "shaking"
+        ]
+      },
+      "recorded_parameters": [
+        "dose_g",
+        "yield_g",
+        "yield_ratio",
+        "grind_setting",
+        "brew_time_seconds",
+        "brew_temperature_celsius",
+        "uses_puck_screen",
+        "paper_filter_position",
+        "distribution_method"
+      ],
+      "checked_at": "2026-11-05T12:00:00Z"
+    }
+  ]
+}

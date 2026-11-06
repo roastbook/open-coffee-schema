@@ -31,6 +31,7 @@ const ROOT_NAME: Record<string, string> = { "coffee-places": "CoffeePlacesDatase
 const DEF_NAME: Record<string, string> = {
   "coffee-places#place": "CoffeePlace", "coffee-places#tier": "SpecialtyTier",
   "brew-methods#brew_method": "BrewMethod", "brew-methods#parameter": "BrewParameter", "brew-methods#grind_size": "GrindSize",
+  "brew-methods#paper_filter_position": "PaperFilterPosition", "brew-methods#distribution_method": "DistributionMethod",
   // Avoid shadowing globals such as Date and URL.
   "common#id": "OpenCoffeeId", "common#date": "IsoDate", "common#datetime": "IsoDateTime", "common#url": "HttpUrl",
 };

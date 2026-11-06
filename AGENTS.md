@@ -5,7 +5,7 @@ This repository is the Open Coffee standard: JSON Schemas (draft 2020-12) under 
 ## Hard rules
 
 - **Never edit a published schema file.** Any file under `schemas/` that exists at a `v*` tag is frozen; `scripts/validate.sh` fails on any byte change. Make a new version file instead.
-- Never create tags, releases or npm publishes. Releases run from the Release workflow ([docs/runbook.md](docs/runbook.md#releasing)).
+- Never create tags, releases or npm publishes. Releases run from the Release workflow ([docs/runbook.md](docs/runbook.md#releasing)), which publishes `@roastbook/open-coffee-schema` to npmjs.org with npm Trusted Publishing (no npm token exists; versions 0.1.0 to 0.3.0 are only on GitHub Packages).
 - Do not edit the README block between `<!-- stats:start -->` and `<!-- stats:end -->` by hand. Run `bun scripts/generate.ts`.
 - Do not change branch protection, org settings or `.github/workflows/` (generated from Roastbook/workflows templates by Orcastrate).
 - Do not add data from Google Maps, OpenStreetMap, review sites or closed coffee guides to examples or docs.
