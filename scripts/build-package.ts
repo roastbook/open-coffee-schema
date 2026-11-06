@@ -1,16 +1,17 @@
+/* eslint-disable security/detect-non-literal-fs-filename -- The local release command intentionally reads repository files and writes to its caller-selected output directory. */
 // Assembles the npm package @roastbook/open-coffee-schema from packages/schema/ and the schema files.
 // Usage: bun scripts/build-package.ts <version> <outDir>. Called by scripts/release-assets.sh.
 import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { compile } from "json-schema-to-typescript";
-import { BASE_URL, cmpSemver, familyOrder, familyVersions, loadSchemas, Registry, type Json } from "../lib/schemas.ts";
+import { BASE_URL, cmpSemver, familyOrder, familyVersions, latestSchema, versionsOf, loadSchemas, Registry, type Json } from "../lib/schemas.ts";
 import { buildModel, flatten } from "../lib/tree.ts";
 import { isIri } from "../lib/formats.ts";
 
 const ROOT = join(import.meta.dirname, "..");
-const [version, outDir] = process.argv.slice(2);
-if (!/^\d+\.\d+\.\d+$/.test(version ?? "") || !outDir) {
-  console.error("usage: bun scripts/build-package.ts <X.Y.Z> <outDir>");
+const [version = "", outDir] = process.argv.slice(2);
+if (!/^\d+\.\d+\.\d+$/.test(version) || !outDir) {
+  console.error("usage: bun scripts/build-package.ts VERSION OUTPUT_DIRECTORY");
   process.exit(2);
 }
 
@@ -18,7 +19,7 @@ const files = loadSchemas(ROOT), reg = new Registry(files), families = familyVer
 const names = familyOrder([...families.keys()]);
 
 // Release rule (docs/runbook.md): no family may be newer than the release.
-const ahead = names.map((f) => families.get(f)!.at(-1)!).filter((f) => cmpSemver(f.version, version) > 0);
+const ahead = names.map((f) => latestSchema(versionsOf(families, f))).filter((f) => cmpSemver(f.version, version) > 0);
 if (ahead.length) {
   console.error(`error: release v${version} is older than ${ahead.map((f) => `${f.family} v${f.version}`).join(", ")}. Every family's newest schema version must be <= the release version; choose a larger bump.`);
   process.exit(1);
@@ -35,6 +36,7 @@ const DEF_NAME: Record<string, string> = {
   // Avoid shadowing globals such as Date and URL.
   "common#id": "OpenCoffeeId", "common#date": "IsoDate", "common#datetime": "IsoDateTime", "common#url": "HttpUrl",
 };
+// eslint-disable-next-line security/detect-object-injection -- This only reads a fixed name dictionary using a discovered schema family.
 const prefixOf = (family: string) => PREFIX[family] ?? pascal(family);
 const defName = (family: string, def: string) => DEF_NAME[`${family}#${def}`] ?? prefixOf(family) + pascal(def);
 
@@ -44,24 +46,31 @@ function named(family: string, schema: Json): Json {
   const retitle = (node: Json, inDefs: boolean) => {
     if (!node || typeof node !== "object") return;
     // Annotations next to a $ref make json2ts emit a copy (Id1, Id2…); `true` properties only serve unevaluatedProperties.
-    if (node.$ref) for (const k of ["title", "description", "examples"]) delete node[k];
-    for (const [k, v] of Object.entries(node.properties ?? {})) if (v === true) delete node.properties[k];
+    if (node.$ref) { delete node.title; delete node.description; delete node.examples; }
+    if (node.properties) node.properties = Object.fromEntries(Object.entries(node.properties).filter(([, v]) => v !== true));
     if (!inDefs && typeof node.title === "string" && node !== s) node.title = prefixOf(family) + pascal(node.title);
     for (const [k, v] of Object.entries(node)) {
       if (k === "$defs") continue;
-      if (v && typeof v === "object") Array.isArray(v) ? v.forEach((x) => retitle(x, false)) : k === "properties" ? Object.values(v).forEach((x) => retitle(x, false)) : retitle(v, false);
+      visitChildren(k, v);
     }
   };
-  retitle(s, false);
-  for (const [k, d] of Object.entries((s.$defs ?? {}) as Record<string, Json>)) {
-    retitle(d, true);
-    if (d && typeof d === "object") d.title = defName(family, k);
+  function visitChildren(key: string, value: Json): void {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value)) { value.forEach((x) => { retitle(x, false); }); return; }
+    if (key === "properties") { Object.values(value).forEach((x) => { retitle(x, false); }); return; }
+    retitle(value, false);
   }
+  retitle(s, false);
+  for (const [k, d] of Object.entries(s.$defs ?? {})) {
+    retitle(d, true);
+    if (d && typeof d === "object") Object.assign(d, { title: defName(family, k) });
+  }
+  // eslint-disable-next-line security/detect-object-injection -- This only reads a fixed name dictionary using a discovered schema family.
   if (ROOT_NAME[family]) s.title = ROOT_NAME[family];
   return s;
 }
 
-const latest = names.map((f) => families.get(f)!.at(-1)!);
+const latest = names.map((f) => latestSchema(versionsOf(families, f)));
 const served = new Map(files.map((f) => [f.json.$id, named(f.family, f.json)]));
 const bundle = {
   title: "OpenCoffeeBundle",
@@ -115,7 +124,8 @@ for (const f of latest) {
   }
 }
 const ids: Record<string, { latest: string; versions: Record<string, string> }> = {};
-for (const f of names) ids[f] = { latest: families.get(f)!.at(-1)!.json.$id, versions: Object.fromEntries(families.get(f)!.map((v) => [v.version, v.json.$id])) };
+// eslint-disable-next-line security/detect-object-injection -- f comes from discovered repository schema families; the object is serialized, not executed.
+for (const f of names) ids[f] = { latest: latestSchema(versionsOf(families, f)).json.$id, versions: Object.fromEntries(versionsOf(families, f).map((v) => [v.version, v.json.$id])) };
 const contexts = names.flatMap((family) => readdirSync(join(ROOT, "schemas", family)).filter((n) => n.endsWith(".jsonld")).sort().map((n) => ({ family, name: n })));
 
 const js = [
@@ -147,15 +157,16 @@ const exportsMap: Record<string, Json> = {
 };
 for (const family of names) {
   mkdirSync(join(outDir, family));
-  for (const f of families.get(family)!) {
+  for (const f of versionsOf(families, family)) {
     cpSync(join(ROOT, f.path), join(outDir, family, `v${f.version}.json`));
     exportsMap[`./${family}/v${f.version}.json`] = `./${family}/v${f.version}.json`;
   }
-  cpSync(join(ROOT, families.get(family)!.at(-1)!.path), join(outDir, family, "latest.json"));
+  cpSync(join(ROOT, latestSchema(versionsOf(families, family)).path), join(outDir, family, "latest.json"));
   exportsMap[`./${family}/latest.json`] = `./${family}/latest.json`;
 }
 for (const c of contexts) {
-  const v = c.name.match(/\.v(\d+\.\d+\.\d+)\.jsonld$/)![1];
+  const v = c.name.match(/\.v(\d+\.\d+\.\d+)\.jsonld$/)?.[1];
+  if (!v) throw new Error(`Invalid context version in ${c.name}`);
   cpSync(join(ROOT, "schemas", c.family, c.name), join(outDir, c.family, `context.v${v}.json`));
   exportsMap[`./${c.family}/context.v${v}.json`] = `./${c.family}/context.v${v}.json`;
 }
@@ -173,6 +184,7 @@ writeFileSync(join(outDir, "schemas.js"), [
   "export default schemas;",
   "",
 ].join("\n"));
+// eslint-disable-next-line xss/no-mixed-html -- This produces TypeScript declarations on disk; generic type brackets are not HTML.
 writeFileSync(join(outDir, "schemas.d.ts"), [
   "// Generated by scripts/build-package.ts. Do not edit.",
   `export type SchemaId = ${files.map((f) => JSON.stringify(f.json.$id)).join(" | ")};`,

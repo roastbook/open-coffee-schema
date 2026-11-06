@@ -18,6 +18,8 @@ done
 test "$(cat dist/CNAME)" = "schema.roastbook.coffee"
 test -f dist/favicon.svg
 
+# The dollar interpolation below belongs to JavaScript template literals.
+# shellcheck disable=SC2016
 bun -e '
   const fs = require("node:fs"), path = require("node:path");
   let bytes = 0, files = 0;

@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename -- Paths come from the caller-selected repository root and directory entries, not HTTP input. */
 // Discovers the versioned schema files under schemas/<family>/ and resolves $refs between them.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -49,12 +50,26 @@ export function loadSchemas(root: string): SchemaFile[] {
   return out.sort((a, b) => a.family.localeCompare(b.family) || cmpSemver(a.version || "0.0.0", b.version || "0.0.0"));
 }
 
-/** family -> versions ascending */
-export function familyVersions(files: SchemaFile[]): Map<string, SchemaFile[]> {
-  const map = new Map<string, SchemaFile[]>();
-  for (const f of files.filter((f) => f.version)) map.set(f.family, [...(map.get(f.family) ?? []), f]);
+export type SchemaVersions = [SchemaFile, ...SchemaFile[]];
+
+/** family -> non-empty versions ascending */
+export function familyVersions(files: SchemaFile[]): Map<string, SchemaVersions> {
+  const map = new Map<string, SchemaVersions>();
+  for (const f of files.filter((f) => f.version)) {
+    const versions = map.get(f.family);
+    if (versions) versions.push(f);
+    else map.set(f.family, [f]);
+  }
   return map;
 }
+
+export function versionsOf(families: Map<string, SchemaVersions>, family: string): SchemaVersions {
+  const versions = families.get(family);
+  if (!versions) throw new Error(`Unknown schema family ${family}`);
+  return versions;
+}
+
+export const latestSchema = (versions: SchemaVersions): SchemaFile => versions.at(-1) ?? versions[0];
 
 /** Families in reading order: coffee places first, the shared building blocks last. */
 export const familyOrder = (names: string[]) =>

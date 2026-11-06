@@ -24,7 +24,7 @@ const hasRecords = model.sections.some((s) => s.id === "field") && model.recordK
 ---
 <Layout title={`${family} v${file.version}`} description={model.description} site="schema" version={file.version} buildDate={buildDate} canonical={canonical}>
   <p class="eyebrow"><a href="/">Schemas</a> / {family}</p>
-  <h1>{model.title ?? family} <span class="badge tabular">v{file.version}</span> {isLatest && <span class="badge badge--latest">latest</span>}</h1>
+  <h1>{model.title ?? family} <span class="badge tabular">v{file.version}</span> {isLatest && <span class="badge badge-latest">latest</span>}</h1>
   {alias && <p class="muted">This page always shows the newest version. Link to <a href={canonical}>v{file.version}</a> for a stable reference.</p>}
   {model.description && <p class="lead">{model.description}</p>}
   <FamilyNav family={family} current={alias ? "latest" : file.version} />
@@ -49,7 +49,7 @@ const hasRecords = model.sections.some((s) => s.id === "field") && model.recordK
     <section class="schema-section" aria-labelledby={s.id}>
       <h2 id={s.id}>{s.title}</h2>
       {s.description && <p>{s.description}</p>}
-      {s.root.rules.map((r) => <p class="field__rule">{r}</p>)}
+      {s.root.rules.map((r) => <p class="field-rule">{r}</p>)}
       <FieldTree nodes={s.root.children.length ? s.root.children : [s.root]} recordHref="#field" />
     </section>
   ))}

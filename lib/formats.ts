@@ -6,6 +6,8 @@
  * (as Bun transpiles it), so it must not use imports or outer variables.
  */
 export function isIri(value: unknown): boolean {
+  // Control characters are deliberately excluded from IRIs.
+  // eslint-disable-next-line no-control-regex
   if (typeof value !== "string" || !/^[A-Za-z][A-Za-z0-9+.-]*:[^\s<>"{}|\\^`\u0000-\u001f\u007f]+$/.test(value)) return false;
   try { return Boolean(new URL(value)); } catch { return false; }
 }

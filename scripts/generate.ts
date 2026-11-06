@@ -1,14 +1,15 @@
+/* eslint-disable security/detect-non-literal-fs-filename -- The local generator reads and writes known files beneath the repository root. */
 // Regenerates the parts of the docs that come from the schemas: the README stats block.
 // `bun scripts/generate.ts` writes them; validate.ts fails when the committed files differ.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { BASE_URL, familyOrder, familyVersions, loadSchemas } from "../lib/schemas.ts";
+import { BASE_URL, familyOrder, familyVersions, latestSchema, versionsOf, loadSchemas } from "../lib/schemas.ts";
 
 function statsBlock(root: string): string {
   const families = familyVersions(loadSchemas(root));
   const total = [...families.values()].reduce((n, v) => n + v.length, 0);
   const rows = familyOrder([...families.keys()]).map((family) => {
-    const vs = families.get(family)!, latest = vs.at(-1)!;
+    const vs = versionsOf(families, family), latest = latestSchema(vs);
     return `| \`${family}\` | [v${latest.version}](${latest.expectedId}) | ${vs.length} | [explore](${BASE_URL}${family}/latest/) |`;
   });
   return [

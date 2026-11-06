@@ -19,10 +19,17 @@ export function assertKnownKeywords(schema: Json, where: string): void {
   if (!schema || typeof schema !== "object" || Array.isArray(schema)) throw new Error(`${where}: not a schema`);
   for (const [k, v] of Object.entries(schema)) {
     if (!KNOWN_KEYWORDS.has(k)) throw new Error(`Unknown JSON Schema keyword "${k}" at ${where}`);
-    if (k === "properties" || k === "$defs" || k === "dependentSchemas") for (const [p, s] of Object.entries(v as object)) assertKnownKeywords(s, `${where}/${k}/${p}`);
-    if (["items", "additionalProperties", "unevaluatedProperties", "propertyNames", "if", "then", "else"].includes(k)) assertKnownKeywords(v, `${where}/${k}`);
-    if (k === "allOf") (v as Json[]).forEach((s, i) => assertKnownKeywords(s, `${where}/allOf/${i}`));
+    assertKeywordSchemas(k, v, where);
+
   }
+}
+
+function assertKeywordSchemas(k: string, v: Json, where: string): void {
+  if (["properties", "$defs", "dependentSchemas"].includes(k)) {
+    for (const [p, schema] of Object.entries(v as object)) assertKnownKeywords(schema, `${where}/${k}/${p}`);
+  }
+  if (["items", "additionalProperties", "unevaluatedProperties", "propertyNames", "if", "then", "else"].includes(k)) assertKnownKeywords(v, `${where}/${k}`);
+  if (k === "allOf") (v as Json[]).forEach((schema, i) => assertKnownKeywords(schema, `${where}/allOf/${i}`));
 }
 
 export interface FieldNode {
@@ -82,7 +89,9 @@ const MIN_LIKE = new Set(["minLength", "minimum", "exclusiveMinimum", "minItems"
 function effective(list: [string, unknown][]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, v] of list) {
+    // eslint-disable-next-line security/detect-object-injection -- k comes from CONSTRAINTS; this accumulator never receives arbitrary property names.
     const o = out[k];
+    // eslint-disable-next-line security/detect-object-injection -- k comes from CONSTRAINTS; this accumulator never receives arbitrary property names.
     out[k] = o === undefined ? v : k === "uniqueItems" ? o || v : MIN_LIKE.has(k) ? Math.max(o as number, v as number) : Math.min(o as number, v as number);
   }
   return out;
@@ -113,28 +122,57 @@ class Builder {
     if (depth > 30) throw new Error("Schema nesting too deep (recursive $ref?)");
     if (schema === true) return;
     if (schema === false) { shape.forbidden = true; return; }
+    this.collectComposition(schema, docId, shape, depth);
+    this.collectValue(schema, shape);
+    this.collectObject(schema, docId, shape, depth);
+  }
+
+  collectReference(schema: Json, docId: string, shape: Shape, depth: number): void {
     if (schema.$ref) {
       const t = this.reg.resolve(schema.$ref, docId);
       shape.ref ??= `${t.docId.split("/").pop()}#${t.pointer}`;
       this.collect(t.schema, t.docId, shape, depth + 1);
     }
+  }
+
+  collectComposition(schema: Json, docId: string, shape: Shape, depth: number): void {
+    this.collectReference(schema, docId, shape, depth);
     for (const sub of schema.allOf ?? []) {
       if (sub.if) this.rule(sub, docId, shape); else this.collect(sub, docId, shape, depth + 1);
     }
     if (schema.if) this.rule(schema, docId, shape);
+    this.collectDependencies(schema, shape);
+  }
+
+  collectDependencies(schema: Json, shape: Shape): void {
     for (const [field, dep] of Object.entries(schema.dependentSchemas ?? {})) this.dependent(field, dep, shape);
+  }
+
+  collectAnnotations(schema: Json, shape: Shape): void {
     if (schema.title !== undefined) shape.title = schema.title;
     if (schema.description !== undefined) shape.description = schema.description;
+    if (schema.examples) shape.examples = schema.examples;
+  }
+
+  collectValue(schema: Json, shape: Shape): void {
+    this.collectAnnotations(schema, shape);
     for (const t of [schema.type ?? []].flat()) shape.types.add(t);
     if (schema.enum) shape.enums.push(schema.enum);
     if ("const" in schema) shape.consts.push(schema.const);
     if (schema.format) shape.formats.push(schema.format);
     if (schema.pattern) shape.patterns.push(schema.pattern);
-    if (schema.examples) shape.examples = schema.examples;
+    // eslint-disable-next-line security/detect-object-injection -- c comes from the fixed constraint keyword list.
     for (const c of CONSTRAINTS) if (c in schema) shape.constraints.push([c, schema[c]]);
+  }
+
+  collectProperties(schema: Json, docId: string, shape: Shape): void {
     for (const [k, v] of Object.entries(schema.properties ?? {})) shape.properties.set(k, [...(shape.properties.get(k) ?? []), { schema: v, docId }]);
     for (const r of schema.required ?? []) shape.required.add(r);
-    if (schema.additionalProperties === false || schema.unevaluatedProperties === false) shape.closed = true;
+  }
+
+  collectObject(schema: Json, docId: string, shape: Shape, depth: number): void {
+    this.collectProperties(schema, docId, shape);
+    shape.closed ||= [schema.additionalProperties, schema.unevaluatedProperties].includes(false);
     if (schema.additionalProperties && typeof schema.additionalProperties === "object") shape.additional = { schema: schema.additionalProperties, docId };
     if (schema.propertyNames) {
       const tmp = emptyShape();
@@ -150,13 +188,13 @@ class Builder {
       if (branch === undefined) continue;
       const rest = { ...branch, properties: { ...branch.properties } };
       for (const [field, fs] of Object.entries(branch.properties ?? {}) as [string, Json][]) {
-        if (fs === false) shape.fieldRules.push({ field, kind: branchKind === "when" ? "forbidden" : "only", cond });
-        else if (branchKind === "when" && fs && Object.keys(fs).length === 1 && "const" in fs) shape.fieldRules.push({ field, kind: "text", text: `Must be ${fmt(fs.const)} when ${cond.text}.` });
-        else if (branchKind === "when" && fs && Object.keys(fs).length === 1 && fs.enum) shape.fieldRules.push({ field, kind: "text", text: `Must be one of ${fs.enum.map(fmt).join(", ")} when ${cond.text}.` });
-        else continue;
+        const fieldRule = conditionalFieldRule(field, fs, branchKind, cond);
+        if (!fieldRule) continue;
+        shape.fieldRules.push(fieldRule);
+        // eslint-disable-next-line security/detect-object-injection -- field is an own entry of the repository schema; only the local clone is changed.
         delete rest.properties[field];
       }
-      if (rest.properties && !Object.keys(rest.properties).length) delete rest.properties;
+      if (!Object.keys(rest.properties).length) delete rest.properties;
       if (Object.keys(rest).length) shape.rules.push(`${branchKind === "when" ? "When" : "Unless"} ${cond.text}: must also match ${JSON.stringify(rest)}`);
     }
     void docId;
@@ -186,27 +224,57 @@ class Builder {
     for (const [k, ps] of target.properties) children.push(this.node(ps, k, childPath(k), prefix, target.required.has(k), depth + 1));
     for (const child of children) applyFieldRules(child, target.fieldRules.filter((r) => r.field === child.key), children);
     if (target.additional) children.push(this.node([target.additional], "*", childPath("*"), prefix, false, depth + 1));
-    const itemTypes = jsonTypes(target);
-    const map = !!target.additional;
-    const enumValues = effectiveEnum(target);
-    const label = shape.forbidden ? "not allowed" : array ? `list of ${typeLabel(target, map)}` : typeLabel(target, map);
     return {
       key, path, anchor: path ? `${prefix}-${path}` : prefix,
-      title: shape.title ?? (array ? target.title : undefined),
-      description: shape.description ?? (array ? target.description : undefined),
-      label,
-      types: shape.forbidden ? [] : array ? [`array<${itemTypes.join("|")}>`] : itemTypes,
-      required, array, map,
-      enum: enumValues, const: target.consts[0], formats: uniq(target.formats), patterns: uniq(target.patterns), keyPatterns: uniq(target.keyPatterns),
-      constraints: effective(shape.constraints),
-      itemConstraints: array ? effective(target.constraints) : {},
-      examples: shape.examples ?? target.examples,
-      closed: target.closed, forbidden: shape.forbidden,
-      rules: [...target.rules],
-      ref: shape.ref ?? target.ref,
-      children,
+      required, children,
+      ...valueFields(shape, target, array),
     };
   }
+}
+
+function conditionalFieldRule(field: string, schema: Json, branch: "when" | "unless", cond: Cond): FieldRule | undefined {
+  if (schema === false) return { field, kind: branch === "when" ? "forbidden" : "only", cond };
+  if (branch !== "when" || !schema || Object.keys(schema).length !== 1) return undefined;
+  if ("const" in schema) return { field, kind: "text", text: `Must be ${fmt(schema.const)} when ${cond.text}.` };
+  if (schema.enum) return { field, kind: "text", text: `Must be one of ${schema.enum.map(fmt).join(", ")} when ${cond.text}.` };
+  return undefined;
+}
+
+function valueLabel(shape: Shape, target: Shape, array: boolean): string {
+  if (shape.forbidden) return "not allowed";
+  const label = typeLabel(target, !!target.additional);
+  return array ? `list of ${label}` : label;
+}
+
+function valueTypes(shape: Shape, target: Shape, array: boolean): string[] {
+  if (shape.forbidden) return [];
+  const types = jsonTypes(target);
+  return array ? [`array<${types.join("|")}>`] : types;
+}
+
+function valueAnnotations(shape: Shape, target: Shape, array: boolean): Pick<FieldNode, "title" | "description" | "examples" | "ref"> {
+  const annotations = array ? target : shape;
+  return {
+    title: shape.title ?? annotations.title,
+    description: shape.description ?? annotations.description,
+    examples: shape.examples ?? target.examples,
+    ref: shape.ref ?? target.ref,
+  };
+}
+
+function valueFields(shape: Shape, target: Shape, array: boolean): Omit<FieldNode, "key" | "path" | "anchor" | "required" | "children"> {
+  return {
+    ...valueAnnotations(shape, target, array),
+    label: valueLabel(shape, target, array),
+    types: valueTypes(shape, target, array),
+    array, map: !!target.additional,
+    enum: effectiveEnum(target), const: target.consts[0],
+    formats: uniq(target.formats), patterns: uniq(target.patterns), keyPatterns: uniq(target.keyPatterns),
+    constraints: effective(shape.constraints),
+    itemConstraints: array ? effective(target.constraints) : {},
+    closed: target.closed, forbidden: shape.forbidden,
+    rules: [...target.rules],
+  };
 }
 
 function jsonTypes(s: Shape): string[] {
@@ -223,8 +291,11 @@ function typeLabel(s: Shape, map: boolean): string {
   if (s.enums.length) return "one of a fixed set";
   if (s.consts.length) return `exactly ${fmt(s.consts[0])}`;
   if (map) return "map of named entries";
+  // eslint-disable-next-line security/detect-object-injection -- This only reads the fixed display dictionary with schema format names.
   const format = s.formats.find((f) => FORMATS[f]);
+  // eslint-disable-next-line security/detect-object-injection -- This only reads the fixed display dictionary with schema format names.
   if (format) return FORMATS[format];
+  // eslint-disable-next-line security/detect-object-injection -- This only reads the fixed display dictionary with schema type names.
   return jsonTypes(s).map((t) => PLAIN[t] ?? t).join(" or ");
 }
 
@@ -258,7 +329,8 @@ export function allowedWhenText(n: FieldNode): string | undefined {
   const a = n.allowedWhen;
   if (!a) return undefined;
   if (!a.values.length) return "Never allowed.";
-  return `Only allowed when ${a.prop} is ${a.values.length === 1 ? fmt(a.values[0]) : `one of ${a.values.map(fmt).join(", ")}`}.`;
+  const values = a.values.length === 1 ? fmt(a.values[0]) : "one of " + a.values.map(fmt).join(", ");
+  return `Only allowed when ${a.prop} is ${values}.`;
 }
 
 export interface Section { id: string; title: string; description?: string; root: FieldNode }
@@ -282,12 +354,19 @@ export function buildModel(file: SchemaFile, reg: Registry): Model {
   const model: Model = { family: file.family, version: file.version, id: docId, title: s.title, description: s.description, sections: [] };
   const recordKey = recordKeyOf(s);
   if (recordKey) {
+    // eslint-disable-next-line security/detect-object-injection -- recordKey was selected from this schema's own properties by recordKeyOf.
     const defRef = s.properties[recordKey].items.$ref;
     const def = reg.resolve(defRef, docId).schema;
     model.recordKey = recordKey;
     model.recordTitle = def.title ?? recordKey;
     model.sections.push({ id: "field", title: `${model.recordTitle} record`, description: def.description, root: b.node([{ schema: { $ref: defRef }, docId }], "", "", "field", true) });
   }
+  addStructureSections(s, docId, b, model, recordKey);
+
+  return model;
+}
+
+function addStructureSections(s: Json, docId: string, b: Builder, model: Model, recordKey: string | undefined): void {
   if (s.properties) {
     const root = b.node([{ schema: { ...s, $defs: undefined }, docId }], "", "", recordKey ? "file" : "field", true);
     if (recordKey) {
@@ -298,10 +377,10 @@ export function buildModel(file: SchemaFile, reg: Registry): Model {
     model.sections.push({ id: recordKey ? "file" : "field", title: "File structure", root });
   } else {
     for (const name of Object.keys(s.$defs ?? {})) {
+      // eslint-disable-next-line security/detect-object-injection -- name comes from Object.keys of the repository schema's own definitions.
       model.sections.push({ id: `def-${name}`, title: s.$defs[name].title ?? name, description: s.$defs[name].description, root: b.node([{ schema: { $ref: `#/$defs/${name}` }, docId }], name, name, "field", false) });
     }
   }
-  return model;
 }
 
 export function flatten(node: FieldNode, out: FieldNode[] = []): FieldNode[] {

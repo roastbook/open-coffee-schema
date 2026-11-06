@@ -36,7 +36,6 @@ Nobody creates tags by hand.
 
 Try the asset build locally without publishing: `scripts/release-assets.sh v0.4.0`, then `(cd release/npm && bun pm pack --dry-run)`.
 
-
 ### Publishing to npm
 
 The schema package goes to the public npm registry (`https://registry.npmjs.org`). Its `publishConfig` sets that registry, public access and provenance, and its `repository` field points at `https://github.com/Roastbook/open-coffee-schema`, which provenance requires. The caller `.github/workflows/release.yml` passes `npm_registry: https://registry.npmjs.org` and grants `id-token: write`. The publish job of the shared release workflow then runs `npm publish --provenance --access public` with npm Trusted Publishing: npm accepts the workflow's OIDC identity, so no npm token or repository secret exists. Versions that already exist are skipped, so rerunning a release is safe.

@@ -10,25 +10,25 @@ const show = (v: unknown) => (typeof v === "string" ? v : JSON.stringify(v));
 <ul class="tree">
   {nodes.map((n) => (
     <li class="field" id={n.anchor}>
-      <div class="field__head">
-        <a class="field__name" href={`#${n.anchor}`} title={`Link to ${n.path}`}><code>{n.key}</code></a>
+      <div class="field-head">
+        <a class="field-name" href={`#${n.anchor}`} title={`Link to ${n.path}`}><code>{n.key}</code></a>
         <span class="badge">{n.label}</span>
-        {n.required && <span class="badge badge--required">required</span>}
-        {n.path.includes(".") && <span class="field__path muted">{n.path}</span>}
+        {n.required && <span class="badge badge-required">required</span>}
+        {n.path.includes(".") && <span class="field-path muted">{n.path}</span>}
       </div>
-      {(n.description ?? n.title) && <p class="field__desc">{n.description ?? n.title}</p>}
+      {(n.description ?? n.title) && <p class="field-desc">{n.description ?? n.title}</p>}
       {n.enum && (
-        <p class="field__meta">Values: {n.enum.map((v, i) => <>{i > 0 && " "}<code>{show(v)}</code></>)}</p>
+        <p class="field-meta">Values: {n.enum.map((v, i) => <>{i > 0 && " "}<code>{show(v)}</code></>)}</p>
       )}
-      {n.const !== undefined && <p class="field__meta">Always <code>{show(n.const)}</code></p>}
-      {constraintWords(n).length > 0 && <p class="field__meta">{constraintWords(n).join(" · ")}</p>}
-      {n.patterns.map((p) => <p class="field__meta">{n.array ? "Each entry matches the pattern" : "Pattern"} <code>{p}</code></p>)}
-      {n.examples && <p class="field__meta">Example{n.examples.length > 1 && "s"}: {n.examples.map((v, i) => <>{i > 0 && ", "}<code>{show(v)}</code></>)}</p>}
-      {allowedWhenText(n) && <p class="field__rule">{allowedWhenText(n)}</p>}
-      {n.rules.map((r) => <p class="field__rule">{r}</p>)}
-      {n.closed && n.children.length > 0 && <p class="field__meta muted">No other fields allowed.</p>}
-      {n.recordOf && recordHref && <p class="field__meta">Each entry is one <a href={recordHref}>{n.recordOf} record</a>, described above.</p>}
-      {n.ref && <p class="field__ref muted">Defined in <code>{n.ref}</code></p>}
+      {n.const !== undefined && <p class="field-meta">Always <code>{show(n.const)}</code></p>}
+      {constraintWords(n).length > 0 && <p class="field-meta">{constraintWords(n).join(" · ")}</p>}
+      {n.patterns.map((p) => <p class="field-meta">{n.array ? "Each entry matches the pattern" : "Pattern"} <code>{p}</code></p>)}
+      {n.examples && <p class="field-meta">Example{n.examples.length > 1 && "s"}: {n.examples.map((v, i) => <>{i > 0 && ", "}<code>{show(v)}</code></>)}</p>}
+      {allowedWhenText(n) && <p class="field-rule">{allowedWhenText(n)}</p>}
+      {n.rules.map((r) => <p class="field-rule">{r}</p>)}
+      {n.closed && n.children.length > 0 && <p class="field-meta muted">No other fields allowed.</p>}
+      {n.recordOf && recordHref && <p class="field-meta">Each entry is one <a href={recordHref}>{n.recordOf} record</a>, described above.</p>}
+      {n.ref && <p class="field-ref muted">Defined in <code>{n.ref}</code></p>}
       {n.children.length > 0 && <Astro.self nodes={n.children} recordHref={recordHref} />}
     </li>
   ))}

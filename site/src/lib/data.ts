@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename -- Build-time paths come from the repository root and discovered schema families; no request input reaches them. */
 // Build-time access to the schemas, examples and contexts in the repository root.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";

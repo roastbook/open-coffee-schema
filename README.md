@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -- GitHub README branding uses HTML for alignment and image sizing. -->
 <p align="center">
   <img src="packages/ui/assets/mark.svg" alt="Roastbook" width="96">
 </p>
@@ -12,6 +13,8 @@
   <a href="LICENSE"><img alt="Licence: MIT" src="https://img.shields.io/badge/licence-MIT-aa612f"></a>
   <a href="https://schema.roastbook.coffee/"><img alt="Schema Explorer" src="https://img.shields.io/badge/explorer-schema.roastbook.coffee-6f4e37"></a>
 </p>
+
+<!-- markdownlint-enable MD033 -->
 
 ## What this is
 

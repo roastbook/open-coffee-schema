@@ -62,7 +62,8 @@ assert.equal(bumpBetween(list({ pattern: "^x" }), list({})), "minor", "item patt
 assert.equal(bumpBetween(list({ minLength: 1 }), list({ minLength: 3 })), "major", "item minLength tightened");
 {
   const f = file("1.0.0", list({ minLength: 3 }, { minItems: 1 }));
-  const n = flatten(buildModel(f, new Registry([f])).sections[0].root).find((x) => x.key === "l")!;
+  const n = flatten(buildModel(f, new Registry([f])).sections[0].root).find((x) => x.key === "l");
+  assert.ok(n);
   assert.deepEqual([n.constraints, n.itemConstraints], [{ minItems: 1 }, { minLength: 3 }], "item limits stay apart from list limits");
 }
 
@@ -121,6 +122,6 @@ assert.deepEqual(locate(err("/places/0/roasters_served/1/url", "format", {}), do
 assert.deepEqual(locate(err("/meta/city", "pattern", {}), doc, t, false), { where: "meta.city", anchor: "file-meta.city" });
 assert.deepEqual(locate(err("/serving", "required", { missingProperty: "filter" }), {}, t, true), { where: "serving", anchor: "field-serving.filter" });
 assert.equal(locate(err("/serving", "additionalProperties", { additionalProperty: "drip" }), {}, t, true).anchor, "field-serving");
-assert.equal(explain(err("", "type", { type: "boolean" }) as any), "Must be true or false.");
-assert.equal(explain(err("", "maximum", { comparison: "<=", limit: 1 }) as any), "Must be at most 1.");
+assert.equal(explain(err("", "type", { type: "boolean" })), "Must be true or false.");
+assert.equal(explain(err("", "maximum", { comparison: "<=", limit: 1 })), "Must be at most 1.");
 console.log("self-test: ok");
