@@ -1,0 +1,137 @@
+{
+  "$schema": "https://schema.roastbook.coffee/pour-patterns/pour-patterns.schema.v0.5.0.json",
+  "meta": {
+    "licence": "CDLA-Permissive-2.0"
+  },
+  "pour_patterns": [
+    {
+      "id": "pulse",
+      "name": "Pulse pouring",
+      "kind": "flow",
+      "description": "The water goes on in several separate pours with pauses between them, so the slurry level rises and falls.",
+      "defaults": {
+        "dose_g": 15,
+        "brew_water_g": 250
+      },
+      "phases": [
+        {
+          "id": "pour-1",
+          "type": "pour",
+          "duration_seconds": 10,
+          "water_fraction": 0.5,
+          "flow": "constant"
+        },
+        {
+          "id": "pause",
+          "type": "hold",
+          "duration_seconds": 20,
+          "flow": "constant"
+        },
+        {
+          "id": "pour-2",
+          "type": "pour",
+          "duration_seconds": 10,
+          "water_fraction": 0.5,
+          "flow": "constant"
+        },
+        {
+          "id": "drawdown",
+          "type": "drawdown",
+          "duration_seconds": 60
+        }
+      ],
+      "checked_at": "2026-11-09T12:00:00Z"
+    },
+    {
+      "id": "spiral",
+      "name": "Spiral pour",
+      "kind": "movement",
+      "description": "The kettle moves from the centre outwards and back in a spiral, wetting the whole bed evenly.",
+      "path": [
+        {
+          "shape": "spiral",
+          "radius": 0.7,
+          "turns": 3
+        }
+      ],
+      "checked_at": "2026-11-09T12:00:00Z"
+    },
+    {
+      "id": "example-two-pour",
+      "name": "Two-pour example",
+      "kind": "recipe",
+      "creator": "Example Roasters",
+      "brew_methods": [
+        "v60"
+      ],
+      "flow_patterns": [
+        "pulse"
+      ],
+      "description": "A bloom, then two equal pulses in a spiral, followed by a swirl and the drawdown.",
+      "defaults": {
+        "dose_g": 15,
+        "brew_water_g": 250,
+        "brew_temperature_celsius": 96,
+        "grind_size": "medium_fine"
+      },
+      "scaling": {
+        "water": "proportional",
+        "timing": "fixed"
+      },
+      "phases": [
+        {
+          "id": "bloom",
+          "type": "pour",
+          "duration_seconds": 10,
+          "water_fraction": 0.2,
+          "flow": "constant",
+          "movement": "spiral"
+        },
+        {
+          "id": "bloom-rest",
+          "type": "hold",
+          "duration_seconds": 35,
+          "agitation": [
+            "gentle_swirl"
+          ]
+        },
+        {
+          "id": "pour-2",
+          "type": "pour",
+          "duration_seconds": 20,
+          "water_fraction": 0.4,
+          "flow": "ramp_down",
+          "movement": "spiral"
+        },
+        {
+          "id": "pour-3",
+          "type": "pour",
+          "duration_seconds": 20,
+          "water_fraction": 0.4,
+          "flow": "custom",
+          "flow_curve": [
+            {
+              "at_seconds": 0,
+              "grams_per_second": 6
+            },
+            {
+              "at_seconds": 20,
+              "grams_per_second": 4
+            }
+          ],
+          "movement": "spiral"
+        },
+        {
+          "id": "drawdown",
+          "type": "drawdown",
+          "duration_seconds": 60,
+          "agitation": [
+            "spin"
+          ],
+          "scored": false
+        }
+      ],
+      "checked_at": "2026-11-09T12:00:00Z"
+    }
+  ]
+}

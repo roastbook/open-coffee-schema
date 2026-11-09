@@ -27,11 +27,12 @@ if (ahead.length) {
 
 // ---- Type names --------------------------------------------------------------------------------
 const pascal = (s: string) => s.replace(/(^|[^a-zA-Z0-9]+)([a-zA-Z0-9])/g, (_, __, c: string) => c.toUpperCase());
-const PREFIX: Record<string, string> = { "coffee-places": "CoffeePlace", equipment: "Equipment", "brew-methods": "BrewMethod", common: "" };
-const ROOT_NAME: Record<string, string> = { "coffee-places": "CoffeePlacesDataset", equipment: "EquipmentCatalog", "brew-methods": "BrewMethodsDataset" };
+const PREFIX: Record<string, string> = { "coffee-places": "CoffeePlace", equipment: "Equipment", "brew-methods": "BrewMethod", "pour-patterns": "PourPattern", common: "" };
+const ROOT_NAME: Record<string, string> = { "coffee-places": "CoffeePlacesDataset", equipment: "EquipmentCatalog", "brew-methods": "BrewMethodsDataset", "pour-patterns": "PourPatternsDataset" };
 const DEF_NAME: Record<string, string> = {
   "coffee-places#place": "CoffeePlace", "coffee-places#tier": "SpecialtyTier",
   "brew-methods#brew_method": "BrewMethod", "brew-methods#parameter": "BrewParameter", "brew-methods#grind_size": "GrindSize",
+  "pour-patterns#pour_pattern": "PourPattern", "pour-patterns#phase": "PourPhase",
   "brew-methods#paper_filter_position": "PaperFilterPosition", "brew-methods#distribution_method": "DistributionMethod",
   // Avoid shadowing globals such as Date and URL.
   "common#id": "OpenCoffeeId", "common#date": "IsoDate", "common#datetime": "IsoDateTime", "common#url": "HttpUrl",

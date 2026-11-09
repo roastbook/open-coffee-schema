@@ -7,6 +7,7 @@ import "../styles/site.css";
 const familyCopy: Record<string, { title: string; description: string }> = {
   "coffee-places": { title: "Coffee places", description: "Cafés, roasteries and coffee bars. Describe their location, coffee, opening hours and amenities." },
   "brew-methods": { title: "Brew methods", description: "From espresso to pour-over. Define brewing techniques, parameters and what a journal should record." },
+  "pour-patterns": { title: "Pour patterns", description: "How the water goes on: flow patterns, kettle movements and named recipes such as the 4:6 method, as timed phases." },
   equipment: { title: "Equipment", description: "Machines, grinders and brewing tools. A consistent catalog of models and their specifications." },
   common: { title: "Common definitions", description: "The building blocks behind every schema: identifiers, sources, links and shared values." },
 };
@@ -28,7 +29,7 @@ curl -sSO https://data.roastbook.coffee/datasets/coffee-places/de/munich.json
 bunx -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true -c ajv-formats \\
   -s ${cp.fileName} -r common.schema.v${latestOf("common").version}.json -d munich.json`;
 ---
-<Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment and brew methods." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL}>
+<Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment, brew methods and pour patterns." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL}>
   <section class="schema-hero" aria-labelledby="intro-title">
     <div class="schema-hero-copy">
       <p class="schema-release"><span class="badge">JSON Schema</span> <span>Open standard · v{cp.version}</span></p>

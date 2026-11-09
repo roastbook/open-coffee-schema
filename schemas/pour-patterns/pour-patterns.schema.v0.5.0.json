@@ -1,0 +1,448 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/pour-patterns/pour-patterns.schema.v0.5.0.json",
+  "title": "Open Coffee pour patterns",
+  "description": "How water goes onto the coffee in pour-over brewing. Three kinds of record share one list: flow patterns (how the amount of water is spread over time, for example pulse pouring or a ramp-up), kettle movements (where the stream lands, for example a spiral) and recipes (named techniques such as the 4:6 method, written as a timed list of phases). Flow patterns carry an example phase list so every record can be drawn as a pour curve. Part of Roastbook Open Coffee.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "pour_patterns"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/pour-patterns/pour-patterns\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "pour_patterns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pour_pattern"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "title": "Readable id",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Lowercase letters and digits in words joined by hyphens, for example ramp-up or hoffmann-better-1-cup. Never renamed or reused."
+    },
+    "agitation": {
+      "title": "Agitation",
+      "enum": [
+        "swirl",
+        "gentle_swirl",
+        "stir",
+        "spin"
+      ],
+      "description": "Extra agitation during or after a phase. swirl: turn the whole brewer to move the slurry; gentle_swirl: a light swirl that only flattens the bed; stir: stir the slurry with a spoon or paddle; spin: the Rao spin, a quick swirl after the last pour that flattens the bed for an even drawdown."
+    },
+    "path_segment": {
+      "title": "Path segment",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shape"
+      ],
+      "description": "One part of the stream's path seen from above. Positions are fractions of the coffee bed radius: 0 is the centre, 1 the paper wall.",
+      "properties": {
+        "shape": {
+          "enum": [
+            "point",
+            "circle",
+            "spiral",
+            "line"
+          ],
+          "description": "point: the stream stays in one place (radius is the distance from the centre); circle: small circles at radius around the centre; spiral: from the centre out to radius and back (turns full turns each way); line: sweeps back and forth across the bed, radius on each side of the centre."
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Distance from the centre as a fraction of the bed radius (0 to 1)."
+        },
+        "turns": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 20,
+          "description": "Full turns of a circle or spiral, or sweeps of a line, per pour."
+        },
+        "angle_degrees": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 360,
+          "description": "Direction of a line or of an off-centre point, in degrees clockwise from the top."
+        }
+      }
+    },
+    "flow_point": {
+      "title": "Flow point",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at_seconds",
+        "grams_per_second"
+      ],
+      "description": "One point of a recorded or drawn flow curve. Points are joined by straight lines.",
+      "properties": {
+        "at_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Seconds since the start of the phase."
+        },
+        "grams_per_second": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 50,
+          "description": "Flow from the kettle at that moment, in grams of water per second."
+        }
+      }
+    },
+    "phase": {
+      "title": "Phase",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "duration_seconds"
+      ],
+      "description": "One step of a brew. Phases run one after the other; a recipe's timeline is the sum of their durations.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "Id of the phase, unique within the record, for example bloom or pour-2."
+        },
+        "type": {
+          "enum": [
+            "pour",
+            "hold",
+            "drawdown"
+          ],
+          "description": "pour: water goes onto the coffee; hold: wait without pouring (bloom rest, pause between pulses); drawdown: the last water drains through the bed."
+        },
+        "duration_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 3600,
+          "description": "Length of the phase in seconds, at the recipe's default amounts."
+        },
+        "water_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Share of the total brew water poured in this phase (0 to 1). Only on pour phases; the pour phases of a recipe add up to 1."
+        },
+        "flow": {
+          "enum": [
+            "constant",
+            "ramp_up",
+            "ramp_down",
+            "custom"
+          ],
+          "description": "Shape of the flow within a pour phase. constant: the same rate throughout; ramp_up: starts slow and gets faster; ramp_down: starts fast and gets slower; custom: follows flow_curve."
+        },
+        "flow_curve": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/flow_point"
+          },
+          "description": "Flow over time for a custom pour, for example a recorded reference pour. Required when flow is custom."
+        },
+        "movement": {
+          "$ref": "#/$defs/slug",
+          "description": "Id of the kettle movement record used in this pour phase."
+        },
+        "agitation": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/agitation"
+          },
+          "description": "Agitation in this phase."
+        },
+        "note": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200,
+          "description": "Short instruction in plain words, for example \"pour in the centre only\"."
+        },
+        "scored": {
+          "type": "boolean",
+          "description": "Whether a follow-along app should compare the brewer's pour with this phase. Absent means yes for pour phases and no otherwise."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "pour"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "water_fraction",
+              "flow"
+            ],
+            "properties": {
+              "water_fraction": true,
+              "flow": true
+            }
+          },
+          "else": {
+            "properties": {
+              "water_fraction": false,
+              "flow": false,
+              "flow_curve": false,
+              "movement": false
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "flow"
+            ],
+            "properties": {
+              "flow": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "flow_curve"
+            ],
+            "properties": {
+              "flow_curve": true
+            }
+          },
+          "else": {
+            "properties": {
+              "flow_curve": false
+            }
+          }
+        }
+      ]
+    },
+    "pour_pattern": {
+      "title": "Pour pattern",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "description",
+        "checked_at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Common name, for example Pulse pouring or 4:6 Method."
+        },
+        "kind": {
+          "enum": [
+            "flow",
+            "movement",
+            "recipe"
+          ],
+          "description": "flow: a way of spreading the water over time; movement: where the kettle stream lands; recipe: a named technique that combines flow patterns and movements."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600,
+          "description": "Short neutral explanation in our own words."
+        },
+        "creator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Person or company that published the recipe, as they publish it, for example James Hoffmann or April Coffee Roasters. Recipes only."
+        },
+        "published_year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Year the recipe was first published."
+        },
+        "url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/url",
+          "description": "Where the creator published the recipe (their own page or video)."
+        },
+        "brew_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/slug"
+          },
+          "description": "Ids of brew methods from the brew-methods dataset this record applies to, for example v60."
+        },
+        "flow_patterns": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/slug"
+          },
+          "description": "Ids of the flow pattern records a recipe combines, for example bloom and pulse."
+        },
+        "defaults": {
+          "title": "Default amounts",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dose_g",
+            "brew_water_g"
+          ],
+          "description": "The amounts the phases are written for.",
+          "properties": {
+            "dose_g": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 200,
+              "description": "Ground coffee in grams."
+            },
+            "brew_water_g": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 5000,
+              "description": "Total brew water in grams."
+            },
+            "brew_temperature_celsius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Temperature of the brew water, in degrees Celsius."
+            },
+            "grind_size": {
+              "$ref": "https://schema.roastbook.coffee/brew-methods/brew-methods.schema.v0.4.0.json#/$defs/grind_size"
+            }
+          }
+        },
+        "scaling": {
+          "title": "Scaling",
+          "type": "object",
+          "additionalProperties": false,
+          "description": "How the recipe changes when the amounts change.",
+          "properties": {
+            "water": {
+              "enum": [
+                "proportional",
+                "fixed"
+              ],
+              "description": "proportional: every pour keeps its share of the water; fixed: pours keep their gram amounts."
+            },
+            "timing": {
+              "enum": [
+                "proportional",
+                "fixed"
+              ],
+              "description": "proportional: phase durations grow with the water; fixed: phase durations stay the same."
+            }
+          }
+        },
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/phase"
+          },
+          "description": "The timed steps in order. On a flow pattern, an example that shows the pattern."
+        },
+        "path": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/path_segment"
+          },
+          "description": "The stream's path seen from above, for kettle movements. Several segments mean the movement switches between them."
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/datetime"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "movement"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "path"
+            ],
+            "properties": {
+              "phases": false,
+              "defaults": false,
+              "scaling": false,
+              "flow_patterns": false,
+              "path": true
+            }
+          },
+          "else": {
+            "required": [
+              "phases",
+              "defaults"
+            ],
+            "properties": {
+              "path": false,
+              "phases": true,
+              "defaults": true
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "recipe"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "creator",
+              "brew_methods",
+              "flow_patterns"
+            ],
+            "properties": {
+              "creator": true,
+              "brew_methods": true,
+              "flow_patterns": true
+            }
+          },
+          "else": {
+            "properties": {
+              "creator": false,
+              "published_year": false,
+              "url": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}
