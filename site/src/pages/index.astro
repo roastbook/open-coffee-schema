@@ -1,88 +1,90 @@
 ---
 import Layout from "@roastbook/ui/astro/Layout.astro";
 import { buildDate, contextsOf, familyNames, families, latestOf } from "../lib/data.ts";
+import { FAMILY_TITLES, siteNav } from "../lib/nav.ts";
 import { BASE_URL } from "../../../lib/schemas.ts";
 import "../styles/site.css";
 
-const familyCopy: Record<string, { title: string; description: string }> = {
-  "coffee-places": { title: "Coffee places", description: "Cafés, roasteries and coffee bars. Describe their location, coffee, opening hours and amenities." },
-  "brew-methods": { title: "Brew methods", description: "From espresso to pour-over. Define brewing techniques, parameters and what a journal should record." },
-  "pour-patterns": { title: "Pour patterns", description: "How the water goes on: flow patterns, kettle movements and named recipes such as the 4:6 method, as timed phases." },
-  equipment: { title: "Equipment", description: "Machines, grinders and brewing tools. A consistent catalog of models and their specifications." },
-  common: { title: "Common definitions", description: "The building blocks behind every schema: identifiers, sources, links and shared values." },
+const familyCopy: Record<string, string> = {
+  "coffee-places": "Cafés, roasteries and coffee bars: location, coffee, opening hours and amenities.",
+  "brew-methods": "Brewing techniques from espresso to pour-over, with their parameters.",
+  "pour-patterns": "Flow patterns, kettle movements and named pour-over recipes as timed phases.",
+  equipment: "Machines, grinders and brewing tools as a catalog of models.",
+  common: "Identifiers, sources, links and other definitions shared by every schema.",
 };
-const recordPreview = `{
-  "name": "Corner Café",
-  "serving": {
-    "espresso": true,
-    "filter": true
-  },
-  "amenities": {
-    "wifi": true
-  }
-}`;
 const cp = latestOf("coffee-places");
+const common = latestOf("common");
+const filePreview = `{
+  "$schema": "${cp.expectedId}",
+  "meta": { "licence": "CDLA-Permissive-2.0", "country_code": "DE", "city": "munich", "city_name": "Munich" },
+  "places": [
+    {
+      "id": "cp-7k2m9x4qvd",
+      "name": "Corner Café",
+      "serving": { "espresso": true, "filter": true }
+    }
+  ]
+}`;
 const quickStart = `curl -sSO ${cp.expectedId}
-curl -sSO ${BASE_URL}common/common.schema.v${latestOf("common").version}.json
+curl -sSO ${BASE_URL}common/common.schema.v${common.version}.json
 curl -sSO https://data.roastbook.coffee/datasets/coffee-places/de/munich.json
 
 bunx -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true -c ajv-formats \\
-  -s ${cp.fileName} -r common.schema.v${latestOf("common").version}.json -d munich.json`;
+  -s ${cp.fileName} -r common.schema.v${common.version}.json -d munich.json`;
 ---
-<Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment, brew methods and pour patterns." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL}>
-  <section class="schema-hero" aria-labelledby="intro-title">
-    <div class="schema-hero-copy">
-      <p class="schema-release"><span class="badge">JSON Schema</span> <span>Open standard · v{cp.version}</span></p>
+<Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment, brew methods and pour patterns." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL} nav={siteNav("home")}>
+  <section class="hero" aria-labelledby="intro-title">
+    <div class="hero-copy">
       <h1 id="intro-title">Open Coffee Schema</h1>
-      <p class="lead">Coffee places, brewing methods and equipment, described in a format everyone can use.</p>
-      <p class="muted">Explore the fields, compare versions or check your own data. Published versions have permanent addresses and never change.</p>
+      <p class="lead">JSON Schema definitions for coffee places, brew methods, pour patterns and equipment. Versioned, documented and served at permanent addresses.</p>
       <div class="actions">
-        <a class="button" data-variant="primary" href="/coffee-places/latest/">Explore the schema</a>
-        <a class="button" href="/playground/">Validate your data</a>
+        <a class="button" data-variant="primary" href="/coffee-places/latest/">Browse the fields</a>
+        <a class="button" href="/playground/">Validate a file</a>
       </div>
     </div>
-    <figure class="schema-preview">
-      <figcaption><span>Inside a coffee place</span><code>JSON</code></figcaption>
-      <pre><code>{recordPreview}</code></pre>
-      <p>An excerpt. <a href="/coffee-places/latest/#field">Every field has a definition.</a></p>
+    <figure class="hero-code">
+      <figcaption>A data file names its schema</figcaption>
+      <pre><code>{filePreview}</code></pre>
     </figure>
   </section>
 
   <section aria-labelledby="families">
-    <div class="section-heading">
-      <h2 id="families">Explore the schemas</h2>
-      <p>Versioned definitions. Ready for your app.</p>
-    </div>
+    <h2 id="families">Schemas</h2>
     <ul class="families">
       {familyNames.map((family) => {
-        const latest = latestOf(family), copy = familyCopy[family];
+        const latest = latestOf(family);
         return (
-          <li class="card family-card">
-            <div class="family-heading">
-              <h3><a href={`/${family}/latest/`}>{copy?.title ?? family}</a></h3>
+          <li class="family">
+            <div class="family-head">
+              <h3><a href={`/${family}/latest/`}>{FAMILY_TITLES[family] ?? family}</a></h3>
               <span class="badge tabular">v{latest.version}</span>
             </div>
-            <p>{copy?.description}</p>
-            <div class="family-links">
-              <a href={`/${family}/${latest.fileName}`}>Download JSON</a>
-              <a href={`/${family}/diff/`}>Compare {families.get(family)!.length} versions</a>
-              {family !== "common" && <a href={`/playground/?schema=${family}@${latest.version}`}>Try it</a>}
-            </div>
+            <p>{familyCopy[family]}</p>
+            <p class="family-links">
+              <a href={`/${family}/${latest.fileName}`}>JSON</a>
+              <a href={`/${family}/diff/`}>{families.get(family)!.length} version{families.get(family)!.length === 1 ? "" : "s"}</a>
+              {family !== "common" && <a href={`/playground/?schema=${family}@${latest.version}`}>Playground</a>}
+            </p>
           </li>
         );
       })}
     </ul>
   </section>
 
-  <section class="standard-note" aria-labelledby="what">
-    <h2 id="what">One format, wherever your data goes</h2>
-    <p>A data file names its exact version in <code>$schema</code>, so any JSON Schema validator can check it. Coffee places also have a <a href={`/coffee-places/${contextsOf("coffee-places").at(-1)}`}>JSON-LD context</a> for schema.org. See the standard in use in the <a href="https://data.roastbook.coffee/">Open Coffee dataset</a>.</p>
-  </section>
-
   <section aria-labelledby="quick-start">
     <h2 id="quick-start">Quick start</h2>
-    <p>Each schema is served at its <code>$id</code>. Download the schema and the shared definitions it references, then validate a data file:</p>
+    <p>Every schema is served at its <code>$id</code>. Download it with the shared definitions it references and validate a data file with any JSON Schema 2020-12 validator:</p>
     <pre><code>{quickStart}</code></pre>
-    <p>In JavaScript, <code>@roastbook/open-coffee-schema</code> (on npm: <code>bun add @roastbook/open-coffee-schema</code>, <a href="https://github.com/Roastbook/open-coffee-schema/tree/main/packages/schema#install">install guide</a>) gives you TypeScript types, the schema files for Ajv and the allowed values of every list. To link to a field, use <code>{BASE_URL}coffee-places/latest/#field-serving.filter</code>; the path after <code>field-</code> is relative to one record.</p>
+    <p>In JavaScript, <code>bun add @roastbook/open-coffee-schema</code> gives you TypeScript types, the schema files for Ajv and the allowed values of every list (<a href="https://github.com/Roastbook/open-coffee-schema/tree/main/packages/schema#install">install guide</a>).</p>
+  </section>
+
+  <section aria-labelledby="conventions">
+    <h2 id="conventions">Conventions</h2>
+    <ul class="conventions">
+      <li><strong>Permanent versions.</strong> A published schema file never changes. A data file names its exact version in <code>$schema</code>.</li>
+      <li><strong>Linked data.</strong> Coffee places have a <a href={`/coffee-places/${contextsOf("coffee-places").at(-1)}`}>JSON-LD context</a> that maps fields to schema.org.</li>
+      <li><strong>Field links.</strong> <code>{BASE_URL}coffee-places/latest/#field-serving.filter</code> links to one field; the path after <code>field-</code> is relative to one record.</li>
+      <li><strong>In use.</strong> The <a href="https://data.roastbook.coffee/">Open Coffee dataset</a> publishes data in this format.</li>
+    </ul>
   </section>
 </Layout>

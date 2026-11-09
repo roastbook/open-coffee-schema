@@ -3,6 +3,7 @@ import Layout from "@roastbook/ui/astro/Layout.astro";
 import FieldTree from "../../../components/FieldTree.astro";
 import FamilyNav from "../../../components/FamilyNav.astro";
 import { buildDate, contextsOf, examplesOf, families, latestOf, modelOf } from "../../../lib/data.ts";
+import { FAMILY_TITLES, siteNav } from "../../../lib/nav.ts";
 import { BASE_URL } from "../../../../../lib/schemas.ts";
 import "../../../styles/site.css";
 
@@ -18,72 +19,94 @@ const { family } = Astro.params;
 const model = modelOf(file);
 const isLatest = latestOf(family).version === file.version;
 const examples = examplesOf(family).filter((e) => e.kind === "valid" && JSON.parse(e.text).$schema === file.json.$id);
-const contexts = contextsOf(family);
+const context = contextsOf(family).at(-1);
 const canonical = `${BASE_URL}${family}/v${file.version}/`;
-const hasRecords = model.sections.some((s) => s.id === "field") && model.recordKey;
+const recordSection = model.sections.find((s) => s.id === "field");
+const fieldCount = model.sections.reduce((n, s) => n + s.root.children.length, 0);
+const playground = family !== "common" ? `/playground/?schema=${family}@${file.version}` : undefined;
+const title = FAMILY_TITLES[family] ?? model.title ?? family;
 ---
-<Layout title={`${family} v${file.version}`} description={model.description} site="schema" version={file.version} buildDate={buildDate} canonical={canonical}>
-  <p class="eyebrow"><a href="/">Schemas</a> / {family}</p>
-  <h1>{model.title ?? family} <span class="badge tabular">v{file.version}</span> {isLatest && <span class="badge badge-latest">latest</span>}</h1>
-  {alias && <p class="muted">This page always shows the newest version. Link to <a href={canonical}>v{file.version}</a> for a stable reference.</p>}
-  {model.description && <p class="lead">{model.description}</p>}
-  <FamilyNav family={family} current={alias ? "latest" : file.version} />
-
-  <dl class="facts card">
-    <dt>$id</dt><dd><a href={`/${family}/${file.fileName}`}><code>{file.json.$id}</code></a></dd>
-    {isLatest && <><dt>Latest alias</dt><dd><a href={`/${family}/${family}.schema.latest.json`}><code>{`${BASE_URL}${family}/${family}.schema.latest.json`}</code></a></dd></>}
-    {contexts.length > 0 && <><dt>JSON-LD context</dt><dd>{contexts.map((c) => <a href={`/${family}/${c}`}><code>{`${BASE_URL}${family}/${c}`}</code></a>)}</dd></>}
-    {hasRecords && <><dt>Records</dt><dd>Listed under <a href={`#file-${model.recordKey}`}><code>{model.recordKey}</code></a>. Field links such as <code>#field-…</code> are relative to one record.</dd></>}
-    {family !== "common" && <><dt>Check a file</dt><dd><a href={`/playground/?schema=${family}@${file.version}`}>Open in the Playground</a></dd></>}
-  </dl>
-
-  <nav class="toc" aria-label="On this page">
-    <ul>
-      {model.sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
-      {examples.length > 0 && <li><a href="#examples">Examples</a></li>}
-      <li><a href="#raw">Raw JSON</a></li>
-    </ul>
-  </nav>
-
-  <div class="field-search" role="search">
-    <label for="field-query">Find a field</label>
-    <div class="field-search-controls">
-      <input id="field-query" type="search" placeholder="Search names, paths or descriptions…" autocomplete="off" />
-      <button type="button" data-fields-expand>Expand all</button>
-      <button type="button" data-fields-collapse>Collapse all</button>
+<Layout title={`${title} v${file.version}`} description={model.description} site="schema" version={file.version} buildDate={buildDate} canonical={canonical} nav={siteNav(family)}>
+  <p class="eyebrow"><a href="/">Schemas</a> / {title}</p>
+  <header class="page-intro">
+    <div>
+      <h1>{title} <span class="badge tabular">v{file.version}</span> {isLatest && <span class="badge" data-tone="positive">latest</span>}</h1>
+      {model.description && <p>{model.description}</p>}
     </div>
-    <p data-field-count role="status" aria-live="polite"></p>
-  </div>
+    <div class="actions">
+      {playground && <a class="button" data-variant="primary" href={playground}>Validate a file</a>}
+      <a class="button" href={`/${family}/${file.fileName}`}>Schema JSON</a>
+    </div>
+  </header>
+  <FamilyNav family={family} current={alias ? "latest" : file.version} />
+  {alias && <p class="muted">This address always shows the newest version. Link to <a href={canonical}>v{file.version}</a> for a stable reference.</p>}
 
-  {model.sections.map((s) => (
-    <section class="schema-section" aria-labelledby={s.id}>
-      <h2 id={s.id}>{s.title}</h2>
-      {s.description && <p>{s.description}</p>}
-      {s.root.rules.map((r) => <p class="field-rule">{r}</p>)}
-      <FieldTree nodes={s.root.children.length ? s.root.children : [s.root]} recordHref="#field" />
-    </section>
-  ))}
+  <div class="schema-layout">
+    <aside class="schema-side">
+      <div class="field-search" role="search">
+        <label for="field-query">Find a field</label>
+        <input id="field-query" type="search" placeholder="Name, path or description" autocomplete="off" />
+        <p data-field-count role="status" aria-live="polite"></p>
+        <div class="field-search-actions">
+          <button type="button" data-fields-expand>Expand all</button>
+          <button type="button" data-fields-collapse>Collapse all</button>
+        </div>
+      </div>
+      <nav class="toc" aria-label="On this page">
+        <ul>
+          {model.sections.map((s) => (
+            <li>
+              <a href={`#${s.id}`}>{s.title}</a>
+              {s.id === "field" && s.root.children.length > 0 && (
+                <ul>{s.root.children.map((c) => <li><a href={`#${c.anchor}`}><code>{c.key}</code></a></li>)}</ul>
+              )}
+            </li>
+          ))}
+          {examples.length > 0 && <li><a href="#examples">Examples</a></li>}
+          <li><a href="#raw">Raw JSON</a></li>
+        </ul>
+      </nav>
+    </aside>
 
-  {examples.length > 0 && (
-    <section aria-labelledby="examples">
-      <h2 id="examples">Examples</h2>
-      {examples.map((e) => (
-        <details class="card example">
-          <summary><code>examples/{family}/valid/{e.name}</code></summary>
-          <p><a class="button" href={`/playground/?schema=${family}@${file.version}&example=${encodeURIComponent(`${e.family}/${e.kind}/${e.name}`)}`}>Open this example in Playground</a></p>
-          <pre><code>{e.text}</code></pre>
-        </details>
+    <div class="schema-main">
+      <dl class="facts schema-facts">
+        <dt>$id</dt><dd><a href={`/${family}/${file.fileName}`}><code>{file.json.$id}</code></a></dd>
+        {isLatest && <><dt>Latest alias</dt><dd><a href={`/${family}/${family}.schema.latest.json`}><code>{`${BASE_URL}${family}/${family}.schema.latest.json`}</code></a></dd></>}
+        {context && <><dt>JSON-LD context</dt><dd><a href={`/${family}/${context}`}><code>{`${BASE_URL}${family}/${context}`}</code></a></dd></>}
+        <dt>Fields</dt><dd>{fieldCount} top-level{recordSection && model.recordKey && <>, records listed under <a href={`#file-${model.recordKey}`}><code>{model.recordKey}</code></a>. Field links such as <code>#field-…</code> are relative to one record</>}.</dd>
+      </dl>
+
+      {model.sections.map((s) => (
+        <section class="schema-section" aria-labelledby={s.id}>
+          <h2 id={s.id}>{s.title}</h2>
+          {s.description && <p class="section-desc">{s.description}</p>}
+          {s.root.rules.map((r) => <p class="field-rule">{r}</p>)}
+          <FieldTree nodes={s.root.children.length ? s.root.children : [s.root]} recordHref="#field" />
+        </section>
       ))}
-    </section>
-  )}
 
-  <section aria-labelledby="raw">
-    <h2 id="raw">Raw JSON</h2>
-    <details class="card">
-      <summary>Show <code>{file.fileName}</code></summary>
-      <pre><code>{file.raw}</code></pre>
-    </details>
-  </section>
+      {examples.length > 0 && (
+        <section aria-labelledby="examples">
+          <h2 id="examples">Examples</h2>
+          {examples.map((e) => (
+            <details class="card example">
+              <summary><code>examples/{family}/valid/{e.name}</code></summary>
+              {playground && <p><a href={`${playground}&example=${encodeURIComponent(`${e.family}/${e.kind}/${e.name}`)}`}>Open in the Playground</a></p>}
+              <pre><code>{e.text}</code></pre>
+            </details>
+          ))}
+        </section>
+      )}
+
+      <section aria-labelledby="raw">
+        <h2 id="raw">Raw JSON</h2>
+        <details class="card">
+          <summary><code>{file.fileName}</code></summary>
+          <pre><code>{file.raw}</code></pre>
+        </details>
+      </section>
+    </div>
+  </div>
 </Layout>
 
 <script>

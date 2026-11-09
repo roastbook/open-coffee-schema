@@ -11,6 +11,6 @@
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "astro": "^7.4.0",
-    "@roastbook/ui": "github:roastbook/ui#c8436c26408f6fe9ae497a44d7ec98a1f76106cb"
+    "@roastbook/ui": "github:roastbook/ui#67647b616a17bcbb786368887917010b4f84256e"
   }
 }

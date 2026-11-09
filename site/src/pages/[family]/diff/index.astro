@@ -2,18 +2,25 @@
 import Layout from "@roastbook/ui/astro/Layout.astro";
 import FamilyNav from "../../../components/FamilyNav.astro";
 import { buildDate, families, latestOf } from "../../../lib/data.ts";
+import { FAMILY_TITLES, siteNav } from "../../../lib/nav.ts";
 import "../../../styles/site.css";
 
 export const getStaticPaths = () => [...families.keys()].map((family) => ({ params: { family } }));
 const { family } = Astro.params;
+const title = FAMILY_TITLES[family] ?? family;
 const versions = families.get(family)!.map((f) => f.version);
 const pairs = versions.flatMap((a, i) => versions.slice(i + 1).map((b) => [a, b])).reverse();
 ---
-<Layout title={`Compare ${family} versions`} site="schema" version={latestOf(family).version} buildDate={buildDate}>
-  <p class="eyebrow"><a href="/">Schemas</a> / <a href={`/${family}/latest/`}>{family}</a></p>
-  <h1>Compare {family} versions</h1>
+<Layout title={`Compare ${title} versions`} site="schema" version={latestOf(family).version} buildDate={buildDate} nav={siteNav(family)}>
+  <p class="eyebrow"><a href="/">Schemas</a> / <a href={`/${family}/latest/`}>{title}</a></p>
+  <header class="page-intro">
+    <div>
+      <h1>Compare versions</h1>
+      <p>Every change between two published versions of {title}, with the version bump it required.</p>
+    </div>
+  </header>
   <FamilyNav family={family} current="diff" />
   {pairs.length === 0
-    ? <p class="card">Only one version (v{versions[0]}) exists, so there is nothing to compare yet. Each new version gets a structural comparison with every earlier one here.</p>
+    ? <p class="muted">Only one version (v{versions[0]}) exists, so there is nothing to compare yet.</p>
     : <ul class="pairs">{pairs.map(([a, b]) => <li><a href={`/${family}/diff/v${a}...v${b}/`}>v{a} → v{b}</a></li>)}</ul>}
 </Layout>

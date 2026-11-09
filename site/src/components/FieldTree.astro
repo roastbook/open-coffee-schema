@@ -12,23 +12,23 @@ const show = (v: unknown) => (typeof v === "string" ? v : JSON.stringify(v));
     <li class="field" id={n.anchor} data-field-search={[n.path, n.key, n.title, n.description, ...(n.enum ?? []).map(show)].filter(Boolean).join(" ")}>
       <div class="field-head">
         <a class="field-name" href={`#${n.anchor}`} title={`Link to ${n.path}`}><code>{n.key}</code></a>
-        <span class="badge">{n.label}</span>
-        {n.required && <span class="badge badge-required">required</span>}
-        {n.path.includes(".") && <span class="field-path muted">{n.path}</span>}
+        <span class="field-type">{n.label}</span>
+        {n.required && <span class="field-required">required</span>}
+        {n.path.includes(".") && <span class="field-path">{n.path}</span>}
       </div>
       {(n.description ?? n.title) && <p class="field-desc">{n.description ?? n.title}</p>}
       {n.enum && (
-        <p class="field-meta">Values: {n.enum.map((v, i) => <>{i > 0 && " "}<code>{show(v)}</code></>)}</p>
+        <p class="field-meta"><span class="field-meta-label">Values</span> {n.enum.map((v) => <code>{show(v)}</code>)}</p>
       )}
-      {n.const !== undefined && <p class="field-meta">Always <code>{show(n.const)}</code></p>}
-      {constraintWords(n).length > 0 && <p class="field-meta">{constraintWords(n).join(" · ")}</p>}
-      {n.patterns.map((p) => <p class="field-meta">{n.array ? "Each entry matches the pattern" : "Pattern"} <code>{p}</code></p>)}
-      {n.examples && <p class="field-meta">Example{n.examples.length > 1 && "s"}: {n.examples.map((v, i) => <>{i > 0 && ", "}<code>{show(v)}</code></>)}</p>}
+      {n.const !== undefined && <p class="field-meta"><span class="field-meta-label">Always</span> <code>{show(n.const)}</code></p>}
+      {constraintWords(n).length > 0 && <p class="field-meta"><span class="field-meta-label">Limits</span> {constraintWords(n).join(" · ")}</p>}
+      {n.patterns.map((p) => <p class="field-meta"><span class="field-meta-label">{n.array ? "Each entry matches" : "Pattern"}</span> <code>{p}</code></p>)}
+      {n.examples && <p class="field-meta"><span class="field-meta-label">Example{n.examples.length > 1 && "s"}</span> {n.examples.map((v) => <code>{show(v)}</code>)}</p>}
       {allowedWhenText(n) && <p class="field-rule">{allowedWhenText(n)}</p>}
       {n.rules.map((r) => <p class="field-rule">{r}</p>)}
       {n.closed && n.children.length > 0 && <p class="field-meta muted">No other fields allowed.</p>}
       {n.recordOf && recordHref && <p class="field-meta">Each entry is one <a href={recordHref}>{n.recordOf} record</a>, described above.</p>}
-      {n.ref && <p class="field-ref muted">Defined in <code>{n.ref}</code></p>}
+      {n.ref && <p class="field-meta muted">Defined in <code>{n.ref}</code></p>}
       {n.children.length > 0 && (
         <details class="field-children" open>
           <summary>{n.children.length} fields in <code>{n.key}</code></summary>

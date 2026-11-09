@@ -6,8 +6,8 @@ const { family, current } = Astro.props;
 const versions = families.get(family)!.map((f) => f.version).reverse();
 ---
 <nav class="versions" aria-label="Versions">
-  <span class="muted">Version</span>
+  <span class="muted">Versions</span>
   <a href={`/${family}/latest/`} aria-current={current === "latest" ? "page" : undefined}>latest</a>
   {versions.map((v) => <a href={`/${family}/v${v}/`} aria-current={current === v ? "page" : undefined}>v{v}</a>)}
-  <a href={`/${family}/diff/`} aria-current={current === "diff" ? "page" : undefined}>Compare versions</a>
+  <a class="versions-compare" href={`/${family}/diff/`} aria-current={current === "diff" ? "page" : undefined}>Compare versions</a>
 </nav>

@@ -2,6 +2,7 @@
 import Layout from "@roastbook/ui/astro/Layout.astro";
 import { anchorsOf } from "../../../lib/tree.ts";
 import { buildDate, examplesOf, families, familyNames, files, latestOf, modelOf } from "../lib/data.ts";
+import { siteNav } from "../lib/nav.ts";
 import "../styles/site.css";
 
 const targets = familyNames.filter((f) => f !== "common").flatMap((family) =>
@@ -19,9 +20,13 @@ const data = {
   examples: familyNames.flatMap(examplesOf),
 };
 ---
-<Layout title="Playground" description="Validate a coffee place record or a whole data file in your browser." site="schema" version={latestOf("coffee-places").version} buildDate={buildDate}>
-  <h1>Playground</h1>
-  <p class="lead">Paste one record or a whole data file and check it against any schema version. Everything runs in your browser with <a href="https://ajv.js.org/">Ajv</a>, the same validator CI uses; nothing is uploaded.</p>
+<Layout title="Playground" description="Validate a coffee place record or a whole data file in your browser." site="schema" version={latestOf("coffee-places").version} buildDate={buildDate} nav={siteNav("playground")}>
+  <header class="page-intro">
+    <div>
+      <h1>Playground</h1>
+      <p>Paste one record or a whole data file and check it against any schema version. Everything runs in your browser with <a href="https://ajv.js.org/">Ajv</a>, the same validator CI uses; nothing is uploaded.</p>
+    </div>
+  </header>
 
   <form id="pg" class="playground card">
     <div class="row">
