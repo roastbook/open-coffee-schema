@@ -33,20 +33,20 @@ bunx -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft2020 --strict=true -
   -s ${cp.fileName} -r common.schema.v${common.version}.json -d munich.json`;
 ---
 <Layout title="An open standard for coffee data" description="JSON Schema, JSON-LD context and plain-language docs for coffee places, equipment, brew methods and pour patterns." site="schema" version={cp.version} buildDate={buildDate} canonical={BASE_URL} nav={siteNav("home")}>
-  <section class="hero" aria-labelledby="intro-title">
-    <div class="hero-copy">
-      <h1 id="intro-title">Open Coffee Schema</h1>
-      <p class="lead">JSON Schema definitions for coffee places, brew methods, pour patterns and equipment. Versioned, documented and served at permanent addresses.</p>
-      <div class="actions">
-        <a class="button" data-variant="primary" href="/coffee-places/latest/">Browse the fields</a>
-        <a class="button" href="/playground/">Validate a file</a>
-      </div>
+  <header class="page-intro">
+    <div>
+      <h1>Open Coffee Schema</h1>
+      <p>JSON Schema definitions for coffee places, brew methods, pour patterns and equipment. Versioned, documented and served at permanent addresses.</p>
     </div>
-    <figure class="hero-code">
-      <figcaption>A data file names its schema</figcaption>
-      <pre><code>{filePreview}</code></pre>
-    </figure>
-  </section>
+    <div class="actions">
+      <a class="button" data-variant="primary" href="/coffee-places/latest/">Browse the fields</a>
+      <a class="button" href="/playground/">Validate a file</a>
+    </div>
+  </header>
+  <figure class="hero-code">
+    <figcaption>A data file names its schema</figcaption>
+    <pre><code>{filePreview}</code></pre>
+  </figure>
 
   <section aria-labelledby="families">
     <h2 id="families">Schemas</h2>

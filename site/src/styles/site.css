@@ -1,25 +1,6 @@
 /* Schema Explorer styles on top of @roastbook/ui. */
 
 /* Home */
-.hero {
-  display: grid;
-  gap: 2rem 3rem;
-  align-items: center;
-  margin: 0.5rem 0 1rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
-}
-.hero h1 {
-  font-size: clamp(2.25rem, 4.5vw, 3rem);
-  max-width: 12ch;
-}
-.hero .lead {
-  font-size: 1.125rem;
-  color: var(--foreground);
-}
-.hero .actions {
-  margin-top: 1.5rem;
-}
 .hero-code {
   min-width: 0;
   margin: 0;
@@ -45,11 +26,6 @@
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-}
-@media (width >= 900px) {
-  .hero {
-    grid-template-columns: 1fr 1.2fr;
-  }
 }
 
 .families {
@@ -157,8 +133,8 @@ h1 .badge {
   }
   .schema-side {
     position: sticky;
-    top: 1rem;
-    max-height: calc(100dvh - 2rem);
+    top: 4rem;
+    max-height: calc(100dvh - 5rem);
     overflow: auto;
     scrollbar-width: thin;
   }
@@ -253,7 +229,6 @@ h1 .badge {
 .schema-section {
   margin-top: 0;
   padding-top: 0.5rem;
-  scroll-margin-top: 1rem;
 }
 .schema-section > h2 {
   margin: 0 0 0.5rem;
@@ -283,7 +258,6 @@ section[aria-labelledby="raw"] {
 .field {
   padding: 0.875rem 0.5rem;
   border-radius: 0.5rem;
-  scroll-margin-top: 1rem;
 }
 .tree > .field + .field {
   border-top: 1px solid var(--border);

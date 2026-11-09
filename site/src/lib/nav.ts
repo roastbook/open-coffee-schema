@@ -11,7 +11,7 @@ export const FAMILY_TITLES: Record<string, string> = {
 
 /** The site's sections for the shared header; `current` is "home", "playground" or a family name. */
 export const siteNav = (current: string): NavLink[] => [
-  { href: "/", label: "Overview", current: current === "home" },
+  { href: "/", label: "Home", current: current === "home" },
   ...familyNames.map((f) => ({ href: `/${f}/latest/`, label: FAMILY_TITLES[f] ?? f, current: current === f })),
   { href: "/playground/", label: "Playground", current: current === "playground" },
 ];
