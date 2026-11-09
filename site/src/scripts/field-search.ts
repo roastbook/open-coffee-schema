@@ -15,6 +15,24 @@ const entries = fields.map((element) => ({
 }));
 let savedGroups: boolean[] | null = null;
 
+function revealAncestors(element: HTMLElement, openGroups: boolean) {
+  let parent = element.parentElement;
+  while (parent) {
+    if (parent.matches("[data-field-search]")) parent.hidden = false;
+    if (openGroups && parent instanceof HTMLDetailsElement) parent.open = true;
+    parent = parent.parentElement;
+  }
+}
+
+function restoreGroups() {
+  const saved = savedGroups;
+  if (!saved) return;
+  groups.forEach((group, index) => {
+    group.open = saved.at(index) ?? true;
+  });
+  savedGroups = null;
+}
+
 function search() {
   if (!input || !count) return;
   const words = fold(input.value).trim().split(/\s+/).filter(Boolean);
@@ -27,25 +45,14 @@ function search() {
     if (match) matches++;
   }
   for (const { element, text } of entries) {
-    if (!words.every((word) => text.includes(word))) continue;
-    let parent = element.parentElement;
-    while (parent) {
-      if (parent.matches("[data-field-search]")) parent.hidden = false;
-      if (words.length && parent instanceof HTMLDetailsElement)
-        parent.open = true;
-      parent = parent.parentElement;
-    }
+    if (words.every((word) => text.includes(word)))
+      revealAncestors(element, words.length > 0);
   }
   for (const section of sections)
     section.hidden = !section.querySelector(
       "[data-field-search]:not([hidden])",
     );
-  if (!words.length && savedGroups) {
-    groups.forEach((group, index) => {
-      group.open = savedGroups?.[index] ?? true;
-    });
-    savedGroups = null;
-  }
+  if (!words.length) restoreGroups();
   count.textContent = words.length
     ? `${matches} matching field${matches === 1 ? "" : "s"}${matches ? "" : ". Try another name or clear the search."}`
     : `${fields.length} fields. Search names, dotted paths and descriptions.`;
@@ -69,7 +76,9 @@ function revealHash() {
     if (parent instanceof HTMLDetailsElement) parent.open = true;
     parent = parent.parentElement;
   }
-  requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+  requestAnimationFrame(() => {
+    target.scrollIntoView({ block: "start" });
+  });
 }
 input?.addEventListener("input", search);
 for (const [selector, open] of [
