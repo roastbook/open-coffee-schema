@@ -11,11 +11,13 @@ Pour-over brews differ less in their amounts than in how the water goes on. The 
 ## Design
 
 - Ids are readable slugs, as for brew methods (decision 0003). Recipes reference flow patterns (`flow_patterns`), kettle movements (`phases[].movement`) and brew methods (`brew_methods`) by id; data repositories check those references.
-- Recipes and flow patterns are a list of **phases** (`pour`, `hold`, `drawdown`) that run one after the other. A pour gives its share of the water (`water_fraction`), so a recipe scales to other doses; `scaling` says whether gram amounts and times scale. The pour phases add up to 1.
+- Recipes and flow patterns are a list of **phases** (`pour`, `hold`, `drawdown`) that run one after the other. A pour gives its share of the water (`water_fraction`), never grams, and the pour phases add up to 1.
+- A recipe is built on a **ratio**, not on one dose: `defaults.brew_ratio` is the main fact, and `dose_g` and `brew_water_g` are the creator's published example brew, used to draw the phases. Apps scale the water to any dose; `scaling` says whether times scale too (usually not: creators keep their timings and adjust the grind).
+- **Temperature** is what the creator gives and no more: one range for any coffee (`celsius`), ranges by roast level (`by_roast`), or `off_the_boil` when they only say "boiling" or "as hot as possible". Numbers are never invented to fill a gap.
 - Within a pour, `flow` is `constant`, `ramp_up`, `ramp_down` or `custom` with a `flow_curve` in grams per second, which also stores a recorded reference pour. Every flow pattern carries an example phase list, so apps draw all three kinds with the same code.
 - A kettle movement is a `path` of segments (`point`, `circle`, `spiral`, `line`) in fractions of the bed radius; several segments make a hybrid movement.
 - `scored` marks phases a follow-along app should compare with the brewer's own pour.
-- Field names follow the brew-methods family (`dose_g`, `brew_water_g`, `brew_temperature_celsius`, `grind_size`) so journals such as Roastbook can import recipes without mapping.
+- Field names follow the brew-methods family (`brew_ratio`, `dose_g`, `brew_water_g`, `grind_size` and its range object for temperatures) so journals such as Roastbook can import recipes without mapping.
 
 ## Prior art
 

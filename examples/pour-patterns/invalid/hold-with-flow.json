@@ -10,6 +10,7 @@
       "kind": "flow",
       "description": "The water goes on in several separate pours with pauses between them, so the slurry level rises and falls.",
       "defaults": {
+        "brew_ratio": 16.7,
         "dose_g": 15,
         "brew_water_g": 250
       },
@@ -69,9 +70,31 @@
       ],
       "description": "A bloom, then two equal pulses in a spiral, followed by a swirl and the drawdown.",
       "defaults": {
+        "brew_ratio": 16.7,
         "dose_g": 15,
         "brew_water_g": 250,
-        "brew_temperature_celsius": 96,
+        "temperature": {
+          "by_roast": [
+            {
+              "roasts": [
+                "light"
+              ],
+              "celsius": {
+                "typical": 96
+              }
+            },
+            {
+              "roasts": [
+                "medium",
+                "dark"
+              ],
+              "celsius": {
+                "min": 88,
+                "max": 94
+              }
+            }
+          ]
+        },
         "grind_size": "medium_fine"
       },
       "scaling": {
