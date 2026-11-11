@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.roastbook.coffee/distribution-methods/distribution-methods.schema.v0.5.1.json",
+  "title": "Open Coffee distribution methods",
+  "description": "Ways of spreading ground coffee evenly in an espresso basket before tamping (puck preparation), such as WDT, a blind shaker or Stockfleth's move. Ids match the distribution_method values coffee journals record (brew-methods family). Part of Roastbook Open Coffee.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "meta",
+    "distribution_methods"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "pattern": "^https://schema\\.roastbook\\.coffee/distribution-methods/distribution-methods\\.schema\\.v[0-9]+\\.[0-9]+\\.[0-9]+\\.json$",
+      "description": "Canonical URL of the schema version this file follows."
+    },
+    "meta": {
+      "type": "object",
+      "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/dataset_meta",
+      "unevaluatedProperties": false
+    },
+    "distribution_methods": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/distribution_method"
+      }
+    }
+  },
+  "$defs": {
+    "distribution_method": {
+      "title": "Distribution method",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "description",
+        "action",
+        "reach",
+        "checked_at"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/id",
+          "description": "Stable readable id, the value journals record as distribution_method, for example wdt or blind_shaker. Never reused.",
+          "examples": [
+            "wdt"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Common English name, for example Weiss Distribution Technique."
+        },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Other names and abbreviations in any language, for example WDT."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600,
+          "description": "Short neutral explanation of how it is done, in our own words."
+        },
+        "action": {
+          "enum": [
+            "stir",
+            "shake",
+            "tap",
+            "sweep",
+            "rotate"
+          ],
+          "description": "What moves the grounds. stir: needles stir through the bed; shake: the grounds are shaken in a closed cup before they go into the basket; tap: knocks settle the bed; sweep: a finger or straight edge drags across the top; rotate: a hand or tool turns on the basket."
+        },
+        "reach": {
+          "enum": [
+            "whole_bed",
+            "surface"
+          ],
+          "description": "Which part of the dose it evens out. whole_bed: from the bottom of the basket to the top; surface: mainly the top layer."
+        },
+        "equipment_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/equipment/equipment.schema.v0.4.0.json#/$defs/type"
+          },
+          "description": "Equipment types needed, from the equipment schema's type list, for example wdt. Absent when hands are enough."
+        },
+        "brew_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/id"
+          },
+          "description": "Ids of brew methods from the brew-methods dataset this applies to, for example espresso."
+        },
+        "creator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Person or company credited with the method or its first device, as they publish their name."
+        },
+        "introduced_year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Year the method was first described or its first device sold."
+        },
+        "origin_country_code": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/country_code"
+        },
+        "url": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/url",
+          "description": "Where the creator published the method (their own page or video)."
+        },
+        "checked_at": {
+          "$ref": "https://schema.roastbook.coffee/common/common.schema.v0.4.0.json#/$defs/datetime"
+        }
+      }
+    }
+  }
+}

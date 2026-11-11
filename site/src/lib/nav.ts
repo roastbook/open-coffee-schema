@@ -5,6 +5,7 @@ export const FAMILY_TITLES: Record<string, string> = {
   "coffee-places": "Coffee places",
   "brew-methods": "Brew methods",
   "pour-patterns": "Pour patterns",
+  "distribution-methods": "Distribution methods",
   equipment: "Equipment",
   common: "Common definitions",
 };

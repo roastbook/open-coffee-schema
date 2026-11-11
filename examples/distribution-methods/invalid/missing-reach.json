@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.roastbook.coffee/distribution-methods/distribution-methods.schema.v0.5.1.json",
+  "meta": {
+    "licence": "CDLA-Permissive-2.0"
+  },
+  "distribution_methods": [
+    {
+      "id": "wdt",
+      "name": "Weiss Distribution Technique",
+      "aliases": [
+        "WDT"
+      ],
+      "description": "Thin needles stir the grounds in the basket, usually through a funnel that stops spills, to break up clumps and even out the density from the bottom of the bed to the top before tamping. Any stirring pattern works as long as it reaches the whole bed.",
+      "action": "stir",
+      "equipment_types": [
+        "wdt"
+      ],
+      "brew_methods": [
+        "espresso"
+      ],
+      "creator": "John Weiss",
+      "introduced_year": 2005,
+      "url": "https://www.home-barista.com/weiss-distribution-technique-steps.html",
+      "checked_at": "2026-11-11T09:00:00Z"
+    }
+  ]
+}
