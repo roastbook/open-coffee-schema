@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.roastbook.coffee/pour-patterns/pour-patterns.schema.v0.5.1.json",
+  "meta": {
+    "licence": "CDLA-Permissive-2.0"
+  },
+  "pour_patterns": [
+    {
+      "id": "wac-2017-miczka",
+      "name": "World AeroPress Champion 2017",
+      "kind": "recipe",
+      "creator": "Paulina Miczka",
+      "published_year": 2017,
+      "url": "https://aeropress.com/blogs/w-a-c-aeropress-recipes/1st-paulina-miczka-england-2017",
+      "brew_methods": [
+        "aeropress"
+      ],
+      "flow_patterns": [
+        "immersion"
+      ],
+      "description": "A concentrate of coffee ground as for a V60: 150 g of water mixed for 20 seconds, pressing from 1:05 to 1:35, then 150 to 200 g of water from the same kettle.",
+      "defaults": {
+        "brew_ratio": 4.3,
+        "dose_g": 35,
+        "brew_water_g": 150,
+        "bypass_water_g": 150,
+        "temperature": {
+          "celsius": {
+            "typical": 84
+          }
+        },
+        "grind_size": "medium_fine"
+      },
+      "scaling": {
+        "water": "proportional",
+        "timing": "fixed"
+      },
+      "phases": [
+        {
+          "id": "pour",
+          "type": "pour",
+          "duration_seconds": 10,
+          "water_fraction": 1,
+          "flow": "constant"
+        },
+        {
+          "id": "stir",
+          "type": "hold",
+          "duration_seconds": 20,
+          "agitation": [
+            "stir"
+          ],
+          "note": "mix with a stirrer or the back of a spoon"
+        },
+        {
+          "id": "steep",
+          "type": "hold",
+          "duration_seconds": 35
+        },
+        {
+          "id": "press",
+          "type": "press",
+          "duration_seconds": 30,
+          "water_fraction": 0.1
+        }
+      ],
+      "checked_at": "2026-11-11T09:00:00Z"
+    }
+  ]
+}
