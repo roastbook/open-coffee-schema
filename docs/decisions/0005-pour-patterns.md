@@ -17,7 +17,7 @@ Pour-over brews differ less in their amounts than in how the water goes on. The 
 - Within a pour, `flow` is `constant`, `ramp_up`, `ramp_down` or `custom` with a `flow_curve` in grams per second, which also stores a recorded reference pour. Every flow pattern carries an example phase list, so apps draw all three kinds with the same code.
 - A kettle movement is a `path` of segments (`point`, `circle`, `spiral`, `line`) in fractions of the bed radius; several segments make a hybrid movement.
 - `scored` marks phases a follow-along app should compare with the brewer's own pour.
-- **AeroPress** (v0.5.1): immersion recipes use the same list. A `press` phase is the plunger pushing the brew through the filter, a steep is a `hold`, and `defaults.bypass_water_g` is water added to a concentrate afterwards, kept out of `brew_ratio`. Brewing upside down (inverted) is not modelled yet.
+- **AeroPress** (v0.5.1): immersion recipes use the same list. A `press` phase is the plunger pushing the brew through the filter, a steep is a `hold`, and `defaults.bypass_water_g` is water added to a concentrate afterwards, kept out of `brew_ratio`. A `flip` phase turns an upside-down (inverted) brewer over before the press, so inverted recipes need no separate flag. When a creator gives only a chamber mark, `defaults.fill_mark` keeps it and `brew_water_g` is an estimate for that mark.
 - Field names follow the brew-methods family (`brew_ratio`, `dose_g`, `brew_water_g`, `grind_size` and its range object for temperatures) so journals such as Roastbook can import recipes without mapping.
 
 ## Prior art

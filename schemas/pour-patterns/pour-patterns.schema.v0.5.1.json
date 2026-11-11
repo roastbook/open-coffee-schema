@@ -126,9 +126,10 @@
             "pour",
             "hold",
             "drawdown",
-            "press"
+            "press",
+            "flip"
           ],
-          "description": "pour: water goes onto the coffee; hold: wait without pouring (bloom rest, pause between pulses, an immersion steep); drawdown: the last water drains through the bed; press: a plunger pushes the brew through the filter, as in an AeroPress."
+          "description": "pour: water goes onto the coffee; hold: wait without pouring (bloom rest, pause between pulses, an immersion steep); drawdown: the last water drains through the bed; press: a plunger pushes the brew through the filter, as in an AeroPress; flip: an upside-down (inverted) AeroPress is turned over onto the cup, so a recipe with a flip phase is brewed inverted."
         },
         "duration_seconds": {
           "type": "number",
@@ -335,6 +336,12 @@
               "exclusiveMinimum": 0,
               "maximum": 5000,
               "description": "Total brew water in the published example brew, in grams."
+            },
+            "fill_mark": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8,
+              "description": "Number on the AeroPress chamber the creator fills the water to, when they give no grams. brew_water_g is then an estimate for that mark, not a published amount."
             },
             "bypass_water_g": {
               "type": "number",
