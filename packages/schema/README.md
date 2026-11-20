@@ -9,7 +9,7 @@ The package version is the release of the standard (`1.2.0` = tag `v1.2.0` of [R
 The package is on the public npm registry. No token or registry setting is needed:
 
 ```sh
-bun add @roastbook/open-coffee-schema     # or: npm i @roastbook/open-coffee-schema
+bun add @roastbook/open-coffee-schema
 ```
 
 Releases are published from GitHub Actions with npm Trusted Publishing and carry provenance, which links each version to the release workflow run in [Roastbook/open-coffee-schema](https://github.com/Roastbook/open-coffee-schema). Versions 0.1.0 to 0.3.0 were published only to GitHub Packages (`npm.pkg.github.com`); from 0.4.0 the package is on npmjs.org.
@@ -27,6 +27,14 @@ const filterBars: CoffeePlace[] = munich.places.filter((p) => p.serving?.filter)
 The types come from the newest version of each family. Rules that TypeScript cannot express (patterns, ranges, "closed_on only when status is closed") are checked by validation, below.
 
 ## Validation with Ajv
+
+Install the validator alongside the schema package:
+
+```sh
+bun add ajv ajv-formats
+```
+
+Use the parsed JSON record as `data` in the example below.
 
 ```ts
 import Ajv2020 from "ajv/dist/2020.js";
